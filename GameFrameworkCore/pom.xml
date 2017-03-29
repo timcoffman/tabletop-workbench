@@ -1,0 +1,21 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.tcoffman</groupId>
+    <artifactId>tabletop-workbench-pom</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <relativePath/>
+  </parent>
+  <artifactId>game-framework-core</artifactId>
+  <packaging>jar</packaging>
+  <name>GameFrameworkCore</name>
+  
+  <dependencies>
+  	<dependency>
+  		<groupId>com.tcoffman</groupId>
+  		<artifactId>game-framework-api</artifactId>
+  		<version>${project.version}</version>
+  	</dependency>
+  </dependencies>
+</project>
