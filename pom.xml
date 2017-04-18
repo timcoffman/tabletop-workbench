@@ -11,5 +11,6 @@
     <module>TabletopWorkbenchPom</module>
     <module>GameFrameworkApi</module>
     <module>GameFrameworkCore</module>
+    <module>GameServer</module>
   </modules>
 </project>
