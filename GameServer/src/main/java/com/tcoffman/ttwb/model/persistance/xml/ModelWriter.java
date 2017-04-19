@@ -30,7 +30,7 @@ import com.tcoffman.ttwb.model.GameModel;
 import com.tcoffman.ttwb.model.GameRole;
 import com.tcoffman.ttwb.model.GameRule;
 import com.tcoffman.ttwb.model.GameStage;
-import com.tcoffman.ttwb.model.GameStageRef;
+import com.tcoffman.ttwb.model.GameComponentRef;
 import com.tcoffman.ttwb.model.pattern.GameOperationPattern;
 import com.tcoffman.ttwb.model.pattern.GamePartPattern;
 import com.tcoffman.ttwb.model.pattern.GamePartPlacePattern;
@@ -157,7 +157,7 @@ public class ModelWriter {
 		operationPattern.getQuantityPattern().ifPresent((p) -> writePattern(operationPatternElement, p));
 	}
 
-	private void writeResult(Element operationPatternElement, GameStageRef resultRef) {
+	private void writeResult(Element operationPatternElement, GameComponentRef<GameStage> resultRef) {
 		operationPatternElement.setAttribute(MODEL_ATTR_NAME_RESULT, idFor(resultRef.get()));
 	}
 

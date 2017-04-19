@@ -49,19 +49,18 @@ public class StandardGameStage implements GameStage {
 			return StandardGameStage.this;
 		}
 
-		public void setTerminal(boolean isTerminal) {
+		public Editor setTerminal(boolean isTerminal) {
 			requireNotDone();
 			m_terminal = isTerminal;
+			return this;
 		}
 
-		public StandardGameRule.Editor createRule(PluginName plugin) {
-			requireNotDone();
-			return StandardGameRule.create().completed(m_rules::add);
+		public Editor createRule(PluginName plugin, Initializer<StandardGameRule.Editor> initializer) throws GameModelBuilderException {
+			return configure(StandardGameRule.create().completed(m_rules::add), initializer);
 		}
 
-		public StandardGameStage.Editor createStage() {
-			requireNotDone();
-			return StandardGameStage.create(model()).completed(m_stages::add);
+		public Editor createStage(Initializer<StandardGameStage.Editor> initializer) throws GameModelBuilderException {
+			return configure(StandardGameStage.create(model()).completed(m_stages::add), initializer);
 		}
 
 	}

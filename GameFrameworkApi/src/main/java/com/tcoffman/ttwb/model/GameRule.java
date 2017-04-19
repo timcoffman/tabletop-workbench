@@ -8,6 +8,6 @@ public interface GameRule {
 
 	Stream<? extends GameOperationPattern> operationPatterns();
 
-	GameStageRef getResult();
+	GameComponentRef<GameStage> getResult();
 
 }

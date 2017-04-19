@@ -1,15 +1,25 @@
 <?xml version="1.0"?>
-<model
+<doc
 	xmlns="urn:com.tcoffman.ttwb.model/v/1.0"
 	xmlns:core="urn:com.tcoffman.ttwb.core/v/1.0"
 	xmlns:grid="urn:com.tcoffman.ttwb.grid/v/1.0"
+	lang="en-us"
 	>
 
-	<name>Tic-Tac-Toe</name>
+	<contents>
+	
+		<prototype>
+			
+		</prototype>
+	
+	</contents>
+
+	<name format="long">Tic-Tac-Toe</name>
+	<name format="short">Tic-Tac-Toe</name>
 
 	<role id="x"/>
 	<role id="o"/>
-
+	
 	<prototype id="supply">
 		<place type="core:bottom"/>
 		<place type="core:top"/>
@@ -139,8 +149,8 @@
 
 	</stage>
 	
-	<stage id="epilog">
+	<stage id="epilogue">
 		
 	</stage>
 
-</model>
+</doc>

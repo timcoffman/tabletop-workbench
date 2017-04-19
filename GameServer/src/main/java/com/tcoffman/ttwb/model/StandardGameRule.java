@@ -15,7 +15,7 @@ public class StandardGameRule implements GameRule {
 
 	public Collection<GameOperationPattern> m_operationPatterns = new ArrayList<GameOperationPattern>();
 	public Type m_type;
-	private GameStageRef m_result;
+	private GameComponentRef<GameStage> m_result;
 
 	private StandardGameRule() {
 	}
@@ -26,7 +26,7 @@ public class StandardGameRule implements GameRule {
 	}
 
 	@Override
-	public GameStageRef getResult() {
+	public GameComponentRef<GameStage> getResult() {
 		return m_result;
 	}
 
@@ -42,12 +42,9 @@ public class StandardGameRule implements GameRule {
 
 		@Override
 		protected void validate() throws GameModelBuilderException {
-			if (m_operationPatterns.isEmpty())
-				throw new GameModelBuilderException(CORE, "missing operation patterns");
-			if (null == m_type)
-				throw new GameModelBuilderException(CORE, "missing operation type");
-			if (null == m_result)
-				throw new IllegalStateException("missing result");
+			requireNotEmpty(CORE, "operation patterns", m_operationPatterns);
+			requirePresent(CORE, "operation type", m_type);
+			requirePresent(CORE, "result", m_result);
 		}
 
 		@Override
@@ -55,12 +52,11 @@ public class StandardGameRule implements GameRule {
 			return StandardGameRule.this;
 		}
 
-		public StandardGameOperationPattern.Editor createOperationPattern() {
-			requireNotDone();
-			return StandardGameOperationPattern.create().completed(m_operationPatterns::add);
+		public Editor createOperationPattern(Initializer<StandardGameOperationPattern.Editor> initializer) throws GameModelBuilderException {
+			return configure(StandardGameOperationPattern.create().completed(m_operationPatterns::add), initializer);
 		}
 
-		public void setResult(GameStageRef result) {
+		public void setResult(GameComponentRef<GameStage> result) {
 			requireNotDone();
 			m_result = result;
 		}

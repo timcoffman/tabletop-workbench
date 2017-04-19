@@ -6,16 +6,17 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.stream.Stream;
 
-import com.tcoffman.ttwb.model.GameStageRef;
+import com.tcoffman.ttwb.model.GameComponentRef;
+import com.tcoffman.ttwb.model.GameStage;
 
 public final class GameStateLogEntry {
 
-	private final GameStageRef m_forward;
-	private final GameStageRef m_rollback;
+	private final GameComponentRef<GameStage> m_forward;
+	private final GameComponentRef<GameStage> m_rollback;
 	private final List<GameStateMutation> m_forwardMutations = new ArrayList<GameStateMutation>();
 	private final List<GameStateMutation> m_rollbackMutations = new ArrayList<GameStateMutation>();
 
-	public GameStateLogEntry(GameStageRef forward, GameStageRef rollback) {
+	public GameStateLogEntry(GameComponentRef<GameStage> forward, GameComponentRef<GameStage> rollback) {
 		m_forward = forward;
 		m_rollback = rollback;
 	}
@@ -25,11 +26,11 @@ public final class GameStateLogEntry {
 		m_rollbackMutations.add(0, rollback);
 	}
 
-	public GameStageRef getForward() {
+	public GameComponentRef<GameStage> getForward() {
 		return m_forward;
 	}
 
-	public GameStageRef getRollback() {
+	public GameComponentRef<GameStage> getRollback() {
 		return m_rollback;
 	}
 

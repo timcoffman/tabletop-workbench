@@ -16,11 +16,12 @@ import com.tcoffman.ttwb.plugin.PluginName;
 public class StandardGameModel implements GameModel {
 
 	private final Set<PluginName> m_requiredPlugins = new HashSet<PluginName>();
-	private final Collection<StandardGamePartPrototype> m_parts = new ArrayList<StandardGamePartPrototype>();
+	private final Collection<StandardGamePartPrototype> m_prototypes = new ArrayList<StandardGamePartPrototype>();
+	private final Collection<StandardGamePartInstance> m_parts = new ArrayList<StandardGamePartInstance>();
 	private final Collection<StandardGameRole> m_roles = new ArrayList<StandardGameRole>();
 	private final Collection<GameStage> m_stages = new ArrayList<GameStage>();
 	private String m_name;
-	private GameStageRef m_initialStage;
+	private GameComponentRef<GameStage> m_initialStage;
 
 	private StandardGameModel() {
 	}
@@ -39,7 +40,7 @@ public class StandardGameModel implements GameModel {
 	}
 
 	@Override
-	public GameStageRef getInitialStage() {
+	public GameComponentRef<GameStage> getInitialStage() {
 		return m_initialStage;
 	}
 
@@ -59,7 +60,12 @@ public class StandardGameModel implements GameModel {
 	}
 
 	@Override
-	public Stream<? extends GamePartPrototype> parts() {
+	public Stream<? extends GamePartPrototype> prototypes() {
+		return m_prototypes.parallelStream();
+	}
+
+	@Override
+	public Stream<? extends GamePartInstance> parts() {
 		return m_parts.parallelStream();
 	}
 
@@ -83,8 +89,7 @@ public class StandardGameModel implements GameModel {
 			m_modelPlugins.parallelStream().forEach((mp) -> mp.validate(StandardGameModel.this, errors::add));
 			if (!errors.isEmpty())
 				throw errors.iterator().next();
-			if (null == m_initialStage)
-				throw new GameModelBuilderException(CORE, "missing initial stage");
+			requirePresent(CORE, "initial stage", m_initialStage);
 		}
 
 		public void setName(String name) {
@@ -99,19 +104,18 @@ public class StandardGameModel implements GameModel {
 				m_modelPlugins.add((ModelPlugin) plugin);
 		}
 
-		public void setInitialStage(GameStageRef initialStage) {
+		public Editor setInitialStage(GameComponentRef<GameStage> initialStage) {
 			requireNotDone();
 			m_initialStage = initialStage;
+			return this;
 		}
 
-		public StandardGameRole.Editor createRole() {
-			requireNotDone();
-			return StandardGameRole.create().completed(m_roles::add);
+		public Editor createRole(Initializer<StandardGameRole.Editor> initializer) throws GameModelBuilderException {
+			return configure(StandardGameRole.create().completed(m_roles::add), initializer);
 		}
 
-		public StandardGameStage.Editor createStage() {
-			requireNotDone();
-			return StandardGameStage.create(model()).completed(m_stages::add).completed(this::autoAssignInitialStage);
+		public Editor createStage(Initializer<StandardGameStage.Editor> initializer) throws GameModelBuilderException {
+			return configure(StandardGameStage.create(model()).completed(m_stages::add).completed(this::autoAssignInitialStage), initializer);
 		}
 
 		private void autoAssignInitialStage(StandardGameStage stage) {
@@ -119,9 +123,12 @@ public class StandardGameModel implements GameModel {
 				setInitialStage(() -> stage);
 		}
 
-		public void addPart(StandardGamePartPrototype part) {
-			requireNotDone();
-			m_parts.add(part);
+		public Editor createPrototype(PluginName declaringPlugin, Initializer<StandardGamePartPrototype.Editor> initializer) throws GameModelBuilderException {
+			return configure(StandardGamePartPrototype.create(declaringPlugin).completed(m_prototypes::add), initializer);
+		}
+
+		public Editor createInstance(Initializer<StandardGamePartInstance.Editor> initializer) throws GameModelBuilderException {
+			return configure(StandardGamePartInstance.create().completed(m_parts::add), initializer);
 		}
 
 	}

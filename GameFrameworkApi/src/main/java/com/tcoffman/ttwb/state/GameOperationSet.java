@@ -2,12 +2,13 @@ package com.tcoffman.ttwb.state;
 
 import java.util.stream.Stream;
 
-import com.tcoffman.ttwb.model.GameStageRef;
+import com.tcoffman.ttwb.model.GameComponentRef;
+import com.tcoffman.ttwb.model.GameStage;
 
 public interface GameOperationSet {
 
 	Stream<? extends GameOperation> operations();
 
-	GameStageRef getResult();
+	GameComponentRef<GameStage> getResult();
 
 }

@@ -15,14 +15,14 @@
 	<initialStage ref="prologue"/>
 
 	<stage id="prologue" doc-ref="#prolog">
-		<rule to-stage="epilog">
+		<rule to-stage="epilogue">
 			<signal xmlns="urn:com.tcoffman.ttwb.model/v/1.0">
 				<role> <filter role-ref="only-role"/> </role>
 			</signal>
 		</rule>		
 	</stage>
 	
-	<stage id="epilog" terminal="yes">
+	<stage id="epilogue" terminal="yes">
 		
 	</stage>
 

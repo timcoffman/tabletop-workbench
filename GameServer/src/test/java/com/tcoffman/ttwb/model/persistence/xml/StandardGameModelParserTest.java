@@ -31,7 +31,7 @@ public class StandardGameModelParserTest {
 
 	@Test
 	public void canParseCompleteModel() throws GameModelBuilderException, XMLStreamException {
-		final GameModel model = m_standardGameModelParser.parse(StandardGameModelParserTest.class.getResourceAsStream("model.xml"));
+		final GameModel model = m_standardGameModelParser.parse(StandardGameModelParserTest.class.getResourceAsStream("complete-model/model.xml"));
 		assertThat(model, notNullValue());
 		assertThat(model.getName(), equalTo("Tic-Tac-Toe"));
 
@@ -39,7 +39,7 @@ public class StandardGameModelParserTest {
 
 	@Test
 	public void canParseMinimalModel() throws GameModelBuilderException, XMLStreamException {
-		final GameModel model = m_standardGameModelParser.parse(StandardGameModelParserTest.class.getResourceAsStream("minimal.xml"));
+		final GameModel model = m_standardGameModelParser.parse(StandardGameModelParserTest.class.getResourceAsStream("minimal-model/model.xml"));
 		assertThat(model, notNullValue());
 		assertThat(model.getName(), equalTo("Minimal"));
 
@@ -49,7 +49,8 @@ public class StandardGameModelParserTest {
 	public void canWriteMinimalModel() throws TransformerException, PluginException {
 		final StandardGameModelBuilder builder = new StandardGameModelBuilder(m_pluginFactory);
 		builder.setName("minimal");
-		builder.createStage().done();
+		builder.createStage((s) -> {
+		});
 		final GameModel model = builder.build();
 		m_standardGameModelParser.write(model, System.out);
 

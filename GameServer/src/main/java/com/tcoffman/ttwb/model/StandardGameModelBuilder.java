@@ -1,5 +1,6 @@
 package com.tcoffman.ttwb.model;
 
+import com.tcoffman.ttwb.model.AbstractEditor.Initializer;
 import com.tcoffman.ttwb.plugin.PluginException;
 import com.tcoffman.ttwb.plugin.PluginFactory;
 import com.tcoffman.ttwb.plugin.PluginName;
@@ -29,17 +30,19 @@ public class StandardGameModelBuilder {
 		return this;
 	}
 
-	public StandardGameRole.Editor createRole() throws PluginException {
-		return m_editor.createRole();
+	public StandardGameModelBuilder createRole(Initializer<StandardGameRole.Editor> initializer) throws GameModelBuilderException {
+		m_editor.createRole(initializer);
+		return this;
 	}
 
-	public StandardGameModelBuilder setInitialStage(GameStageRef stageRef) throws PluginException {
+	public StandardGameModelBuilder setInitialStage(GameComponentRef<GameStage> stageRef) {
 		m_editor.setInitialStage(stageRef);
 		return this;
 	}
 
-	public StandardGameStage.Editor createStage() throws PluginException {
-		return m_editor.createStage();
+	public StandardGameModelBuilder createStage(AbstractEditor.Initializer<StandardGameStage.Editor> initializer) throws PluginException {
+		m_editor.createStage(initializer);
+		return this;
 	}
 
 }

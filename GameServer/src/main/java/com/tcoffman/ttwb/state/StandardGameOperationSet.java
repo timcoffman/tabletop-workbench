@@ -4,14 +4,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Stream;
 
-import com.tcoffman.ttwb.model.GameStageRef;
+import com.tcoffman.ttwb.model.GameComponentRef;
+import com.tcoffman.ttwb.model.GameStage;
 
 public class StandardGameOperationSet implements GameOperationSet {
 
-	private final GameStageRef m_result;
+	private final GameComponentRef<GameStage> m_result;
 	private final Collection<StandardGameOperation> m_operations = new ArrayList<StandardGameOperation>();
 
-	public StandardGameOperationSet(GameStageRef result) {
+	public StandardGameOperationSet(GameComponentRef<GameStage> result) {
 		m_result = result;
 	}
 
@@ -25,7 +26,7 @@ public class StandardGameOperationSet implements GameOperationSet {
 	}
 
 	@Override
-	public GameStageRef getResult() {
+	public GameComponentRef<GameStage> getResult() {
 		return m_result;
 	}
 

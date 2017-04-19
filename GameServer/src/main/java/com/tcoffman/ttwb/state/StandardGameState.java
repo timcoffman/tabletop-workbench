@@ -6,12 +6,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import com.tcoffman.ttwb.model.GameComponentRef;
 import com.tcoffman.ttwb.model.GameModel;
 import com.tcoffman.ttwb.model.GameModelBuilderException;
 import com.tcoffman.ttwb.model.GamePart;
 import com.tcoffman.ttwb.model.GameRole;
 import com.tcoffman.ttwb.model.GameRule;
-import com.tcoffman.ttwb.model.GameStageRef;
+import com.tcoffman.ttwb.model.GameStage;
 import com.tcoffman.ttwb.model.pattern.GameOperationPattern;
 import com.tcoffman.ttwb.model.pattern.GameOperationPatternSet;
 import com.tcoffman.ttwb.model.pattern.StandardGameOperationPattern;
@@ -27,7 +28,7 @@ public class StandardGameState implements GameState {
 	private final GameModel m_model;
 	private final PluginSet m_pluginSet;
 	private final Map<Long, StandardGamePart> m_parts = new HashMap<Long, StandardGamePart>();
-	private GameStageRef m_currentStage;
+	private GameComponentRef<GameStage> m_currentStage;
 
 	public StandardGameState(GameModel model, PluginFactory pluginFactory) {
 		m_model = model;
@@ -36,7 +37,7 @@ public class StandardGameState implements GameState {
 	}
 
 	@Override
-	public GameStageRef getCurrentStage() {
+	public GameComponentRef<GameStage> getCurrentStage() {
 		return m_currentStage;
 	}
 

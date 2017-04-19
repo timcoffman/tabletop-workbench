@@ -11,10 +11,12 @@ public interface GameModel extends GameStageContainer {
 
 	Collection<PluginName> getRequiredPlugins();
 
-	Stream<? extends GamePartPrototype> parts();
+	Stream<? extends GamePartPrototype> prototypes();
+
+	Stream<? extends GamePartInstance> parts();
 
 	Stream<? extends GameRole> roles();
 
-	GameStageRef getInitialStage();
+	GameComponentRef<GameStage> getInitialStage();
 
 }
