@@ -12,6 +12,6 @@ public interface StateView {
 
 	Stream<? extends GamePart> parts();
 
-	Stream<? extends GamePartRelationship> relationships();
+	Stream<? extends GamePartRelationshipInstance> relationships();
 
 }

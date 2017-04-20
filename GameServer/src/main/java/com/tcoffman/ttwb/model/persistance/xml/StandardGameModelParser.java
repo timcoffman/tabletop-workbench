@@ -76,7 +76,7 @@ public class StandardGameModelParser {
 		final XMLEventReader eventReader = s_xmlInputFactory.createXMLEventReader(is);
 
 		final StandardGameModel.Editor editor = StandardGameModel.create();
-		final ModelParser modelParser = new ModelParser(editor);
+		final ModelParser modelParser = new ModelParser(m_pluginFactory, editor);
 		final EventDispatcher<GameModelBuilderException> dispatcher = EventDispatcher.from(eventReader, GameModelBuilderException.class);
 		dispatcher.on(MODEL_ELEMENT_QNAME, modelParser::parse);
 		dispatcher.other((e, d) -> d.skip());

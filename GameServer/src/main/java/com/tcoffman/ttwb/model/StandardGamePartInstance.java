@@ -27,12 +27,17 @@ public class StandardGamePartInstance implements GamePartInstance {
 		@Override
 		protected void validate() throws GameModelBuilderException {
 			requirePresent(CORE, "prototype", m_prototype);
-
 		}
 
 		@Override
 		protected StandardGamePartInstance model() {
 			return StandardGamePartInstance.this;
+		}
+
+		public Editor setPrototype(GameComponentRef<GamePartPrototype> prototype) {
+			requireNotDone();
+			m_prototype = prototype;
+			return this;
 		}
 
 	}

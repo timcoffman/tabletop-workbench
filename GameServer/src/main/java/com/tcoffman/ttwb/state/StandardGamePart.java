@@ -1,14 +1,19 @@
 package com.tcoffman.ttwb.state;
 
+import com.tcoffman.ttwb.model.GameComponentRef;
 import com.tcoffman.ttwb.model.GamePart;
 import com.tcoffman.ttwb.model.GamePartPrototype;
 
 public class StandardGamePart implements GamePart {
 
-	private GamePartPrototype m_prototype;
+	private final GameComponentRef<GamePartPrototype> m_prototype;
+
+	public StandardGamePart(GameComponentRef<GamePartPrototype> prototype) {
+		m_prototype = prototype;
+	}
 
 	@Override
-	public GamePartPrototype getPrototype() {
+	public GameComponentRef<GamePartPrototype> getPrototype() {
 		return m_prototype;
 	}
 

@@ -129,7 +129,8 @@ public class EventDispatcher<E extends Throwable> {
 	public <T> T produce(Producer<T, E> producer) throws XMLStreamException, E {
 		while (m_eventReader.hasNext() && !m_completed) {
 			final XMLEvent event = m_eventReader.nextEvent();
-			System.out.println("*** " + event.getEventType() + ": " + event.toString());
+			// System.out.println("*** " + event.getEventType() + ": " +
+			// event.toString());
 			switch (event.getEventType()) {
 			case XMLEvent.END_DOCUMENT:
 			case XMLEvent.END_ELEMENT:

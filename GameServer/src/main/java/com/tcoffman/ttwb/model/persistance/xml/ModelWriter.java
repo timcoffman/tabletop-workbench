@@ -26,14 +26,15 @@ import javax.xml.namespace.QName;
 
 import org.w3c.dom.Element;
 
+import com.tcoffman.ttwb.model.GameComponentRef;
 import com.tcoffman.ttwb.model.GameModel;
 import com.tcoffman.ttwb.model.GameRole;
 import com.tcoffman.ttwb.model.GameRule;
 import com.tcoffman.ttwb.model.GameStage;
-import com.tcoffman.ttwb.model.GameComponentRef;
 import com.tcoffman.ttwb.model.pattern.GameOperationPattern;
 import com.tcoffman.ttwb.model.pattern.GamePartPattern;
-import com.tcoffman.ttwb.model.pattern.GamePartPlacePattern;
+import com.tcoffman.ttwb.model.pattern.GamePlacePattern;
+import com.tcoffman.ttwb.model.pattern.GameQuantityPattern;
 import com.tcoffman.ttwb.model.pattern.GameRolePattern;
 import com.tcoffman.ttwb.plugin.PluginName;
 
@@ -161,7 +162,7 @@ public class ModelWriter {
 		operationPatternElement.setAttribute(MODEL_ATTR_NAME_RESULT, idFor(resultRef.get()));
 	}
 
-	private void writePattern(Element operationPatternElement, GamePartPlacePattern p) {
+	private void writePattern(Element operationPatternElement, GameQuantityPattern p) {
 		createAndAppendElement(operationPatternElement, MODEL_ELEMENT_QNAME_PATTERN_QUANTITY);
 	}
 
@@ -173,7 +174,7 @@ public class ModelWriter {
 		createAndAppendElement(operationPatternElement, MODEL_ELEMENT_QNAME_PATTERN_SUBJECT);
 	}
 
-	private void writeSubjectPattern(Element operationPatternElement, GamePartPlacePattern p) {
+	private void writeSubjectPattern(Element operationPatternElement, GamePlacePattern p) {
 		createAndAppendElement(operationPatternElement, MODEL_ELEMENT_QNAME_PATTERN_SUBJECT);
 	}
 
@@ -181,7 +182,7 @@ public class ModelWriter {
 		createAndAppendElement(operationPatternElement, MODEL_ELEMENT_QNAME_PATTERN_TARGET);
 	}
 
-	private void writeTargetPattern(Element operationPatternElement, GamePartPlacePattern p) {
+	private void writeTargetPattern(Element operationPatternElement, GamePlacePattern p) {
 		createAndAppendElement(operationPatternElement, MODEL_ELEMENT_QNAME_PATTERN_TARGET);
 	}
 

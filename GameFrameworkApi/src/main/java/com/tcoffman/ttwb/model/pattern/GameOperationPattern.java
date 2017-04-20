@@ -12,12 +12,12 @@ public interface GameOperationPattern {
 
 	Optional<GamePartPattern> getSubjectPattern();
 
-	Optional<GamePartPlacePattern> getSubjectPlacePattern();
+	Optional<GamePlacePattern> getSubjectPlacePattern();
 
 	Optional<GamePartPattern> getTargetPattern();
 
-	Optional<GamePartPlacePattern> getTargetPlacePattern();
+	Optional<GamePlacePattern> getTargetPlacePattern();
 
-	Optional<GamePartPlacePattern> getQuantityPattern();
+	Optional<GameQuantityPattern> getQuantityPattern();
 
 }

@@ -4,22 +4,22 @@ import com.tcoffman.ttwb.model.GameRole;
 
 public class StandardGameMoveOperation extends StandardGameOperation implements GameMoveOperation {
 
-	private final GamePartPlace m_subject;
-	private final GamePartPlace m_target;
+	private final StandardGamePlaceInstance m_subject;
+	private final StandardGamePlaceInstance m_target;
 
-	public StandardGameMoveOperation(GameRole role, GamePartPlace subject, GamePartPlace target) {
+	public StandardGameMoveOperation(GameRole role, StandardGamePlaceInstance subject, StandardGamePlaceInstance target) {
 		super(role);
 		m_subject = subject;
 		m_target = target;
 	}
 
 	@Override
-	public GamePartPlace getSubject() {
+	public StandardGamePlaceInstance getSubject() {
 		return m_subject;
 	}
 
 	@Override
-	public GamePartPlace getTarget() {
+	public StandardGamePlaceInstance getTarget() {
 		return m_target;
 	}
 

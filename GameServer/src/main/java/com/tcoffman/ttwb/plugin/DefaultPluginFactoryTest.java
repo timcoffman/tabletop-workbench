@@ -25,16 +25,39 @@ public class DefaultPluginFactoryTest {
 	}
 
 	private static class PrivateTestPlugin implements Plugin {
+		@Override
+		public PluginName getName() {
+			return PLUGIN_NAME;
+		}
 
+		@Override
+		public void setName(PluginName name) {
+		}
 	}
 
 	public static class TestPlugin implements Plugin {
+		@Override
+		public PluginName getName() {
+			return PLUGIN_NAME;
+		}
 
+		@Override
+		public void setName(PluginName name) {
+		}
 	}
 
 	public static class MissingConstructorTestPlugin implements Plugin {
 		public MissingConstructorTestPlugin(int i) {
 		};
+
+		@Override
+		public PluginName getName() {
+			return PLUGIN_NAME;
+		}
+
+		@Override
+		public void setName(PluginName name) {
+		}
 	}
 
 	@Test

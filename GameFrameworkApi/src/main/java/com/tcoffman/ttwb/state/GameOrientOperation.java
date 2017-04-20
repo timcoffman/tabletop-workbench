@@ -13,8 +13,8 @@ public interface GameOrientOperation extends GameOperation {
 		return visitor.visit(this);
 	}
 
-	GamePartPlace getSubject();
+	GamePlaceInstance getSubject();
 
-	GamePartPlace getTarget();
+	GamePlaceInstance getTarget();
 
 }

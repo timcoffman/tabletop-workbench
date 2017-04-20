@@ -20,7 +20,9 @@ public class DefaultPluginFactory implements PluginFactory {
 			throw new PluginException(name, "no plugin registered");
 		try {
 			final Constructor<? extends Plugin> ctor = pluginClass.getConstructor();
-			return ctor.newInstance();
+			final Plugin plugin = ctor.newInstance();
+			plugin.setName(name);
+			return plugin;
 		} catch (final NoSuchMethodException ex) {
 			throw new PluginException(name, "missing no-arg constructor", ex);
 		} catch (final InvocationTargetException ex) {

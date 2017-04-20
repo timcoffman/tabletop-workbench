@@ -26,7 +26,7 @@ public class StandardGameModelBuilder {
 	}
 
 	public StandardGameModelBuilder addRequiredPlugin(PluginName name) throws PluginException {
-		m_editor.addRequiredPlugin(name, m_plugins.requirePlugin(name));
+		m_editor.addRequiredPlugin(m_plugins.requirePlugin(name));
 		return this;
 	}
 
@@ -40,8 +40,14 @@ public class StandardGameModelBuilder {
 		return this;
 	}
 
-	public StandardGameModelBuilder createStage(AbstractEditor.Initializer<StandardGameStage.Editor> initializer) throws PluginException {
+	public StandardGameModelBuilder createStage(AbstractEditor.Initializer<StandardGameStage.Editor> initializer) throws GameModelBuilderException {
 		m_editor.createStage(initializer);
+		return this;
+	}
+
+	public StandardGameModelBuilder createPrototype(PluginName declaringPlugin, AbstractEditor.Initializer<StandardGamePartPrototype.Editor> initializer)
+			throws GameModelBuilderException {
+		m_editor.createPrototype(declaringPlugin, initializer);
 		return this;
 	}
 

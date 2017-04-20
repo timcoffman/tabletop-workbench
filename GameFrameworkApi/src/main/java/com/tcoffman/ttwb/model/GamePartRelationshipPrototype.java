@@ -1,12 +1,12 @@
 package com.tcoffman.ttwb.model;
 
-import com.tcoffman.ttwb.state.GamePartPlace;
+import com.tcoffman.ttwb.state.GamePlaceInstance;
 
 public interface GamePartRelationshipPrototype {
 
-	GamePartPlace getSource();
+	GamePlaceInstance getSource();
 
-	GamePartPlace getDestination();
+	GamePlaceInstance getDestination();
 
 	GamePartRelationshipType getType();
 

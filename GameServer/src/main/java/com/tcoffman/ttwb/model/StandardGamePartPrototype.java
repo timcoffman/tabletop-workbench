@@ -1,15 +1,17 @@
 package com.tcoffman.ttwb.model;
 
-import java.util.Collections;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import com.tcoffman.ttwb.plugin.PluginName;
-import com.tcoffman.ttwb.state.GamePartPlace;
 
 public class StandardGamePartPrototype implements GamePartPrototype {
 
 	private final PluginName m_declaringPlugin;
-	private Map<String, GamePartPlace> m_places;
+	private Optional<GameComponentRef<GamePartPrototype>> m_parent = Optional.empty();
+	private final Collection<StandardGamePlace> m_places = new ArrayList<StandardGamePlace>();
 
 	protected StandardGamePartPrototype(PluginName declaringPlugin) {
 		m_declaringPlugin = declaringPlugin;
@@ -21,8 +23,13 @@ public class StandardGamePartPrototype implements GamePartPrototype {
 	}
 
 	@Override
-	public Map<String, GamePartPlace> getPlaces() {
-		return Collections.unmodifiableMap(m_places);
+	public Optional<GameComponentRef<GamePartPrototype>> getParent() {
+		return m_parent;
+	}
+
+	@Override
+	public Stream<? extends GamePlace> places() {
+		return m_places.parallelStream();
 	}
 
 	public static Editor create(PluginName declaringPlugin) {
@@ -42,6 +49,16 @@ public class StandardGamePartPrototype implements GamePartPrototype {
 		@Override
 		protected StandardGamePartPrototype model() {
 			return StandardGamePartPrototype.this;
+		}
+
+		public Editor setParent(GameComponentRef<GamePartPrototype> parentRef) {
+			requireNotDone();
+			m_parent = Optional.of(parentRef);
+			return this;
+		}
+
+		public Editor createPlace(AbstractEditor.Initializer<StandardGamePlace.Editor> initializer) throws GameModelBuilderException {
+			return configure(StandardGamePlace.create(model()).completed(m_places::add), initializer);
 		}
 
 	}

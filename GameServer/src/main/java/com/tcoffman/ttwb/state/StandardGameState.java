@@ -2,8 +2,8 @@ package com.tcoffman.ttwb.state;
 
 import static com.tcoffman.ttwb.plugin.CorePlugins.CORE;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.stream.Stream;
 
 import com.tcoffman.ttwb.model.GameComponentRef;
@@ -27,13 +27,19 @@ public class StandardGameState implements GameState {
 
 	private final GameModel m_model;
 	private final PluginSet m_pluginSet;
-	private final Map<Long, StandardGamePart> m_parts = new HashMap<Long, StandardGamePart>();
+	private final Collection<StandardGamePart> m_parts = new ArrayList<StandardGamePart>();
 	private GameComponentRef<GameStage> m_currentStage;
 
 	public StandardGameState(GameModel model, PluginFactory pluginFactory) {
 		m_model = model;
 		m_pluginSet = new PluginSet(pluginFactory);
 		m_currentStage = m_model.getInitialStage();
+
+		m_model.parts().map((i) -> {
+
+			return new StandardGamePart(i.getPrototype());
+
+		}).forEach(m_parts::add);
 	}
 
 	@Override
@@ -56,11 +62,11 @@ public class StandardGameState implements GameState {
 
 	@Override
 	public Stream<? extends GamePart> parts() {
-		return m_parts.values().stream();
+		return m_parts.parallelStream();
 	}
 
 	@Override
-	public Stream<? extends GamePartRelationship> relationships() {
+	public Stream<? extends GamePartRelationshipInstance> relationships() {
 		// TODO Auto-generated method stub
 		return null;
 	}

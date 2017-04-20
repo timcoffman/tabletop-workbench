@@ -7,6 +7,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.function.Consumer;
 
@@ -48,6 +49,7 @@ public class StandardGameModelBuilderTest {
 	@Test
 	public void cannotBuildWithInvalidModel() throws GameModelBuilderException, PluginException {
 		final ModelPlugin modelPlugin = mock(ModelPlugin.class);
+		when(modelPlugin.getName()).thenReturn(PLUGIN_NAME);
 		doReturn(modelPlugin).when(m_pluginFactory).create(PLUGIN_NAME);
 
 		doAnswer(invocation -> {

@@ -50,11 +50,13 @@
 		<part prototype-ref="supply" id="supply-1" binding="x"/>
 
 		<!-- core:location implies from(#core:bottom) to(#core:top) -->
+		<!--
 		<rel type="core:location" from="x-piece-1" to="x-supply"/>
 		<rel type="core:location" from="x-piece-2" to="x-supply"/>
 		<rel type="core:location" from="x-piece-3" to="x-supply"/>
 		<rel type="core:location" from="x-piece-4" to="x-supply"/>
 		<rel type="core:location" from="x-piece-5" to="x-supply"/>
+		-->
 		
 		<part prototype-ref="o-piece" id="o-piece-1"/>
 		<part prototype-ref="o-piece" id="o-piece-2"/>
@@ -64,10 +66,12 @@
 		<part prototype-ref="supply" id="supply-2" binding="o"/>
 
 		<!-- core:location implies from(#core:bottom) to(#core:top) -->
+		<!--
 		<rel type="core:location" from="o-piece-1" to="o-supply"/>
 		<rel type="core:location" from="o-piece-2" to="o-supply"/>
 		<rel type="core:location" from="o-piece-3" to="o-supply"/>
 		<rel type="core:location" from="o-piece-4" to="o-supply"/>
+		-->
 		
 	</parts>
 

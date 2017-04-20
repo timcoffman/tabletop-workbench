@@ -97,9 +97,12 @@ public class StandardGameModel implements GameModel {
 			m_name = name;
 		}
 
-		public void addRequiredPlugin(PluginName name, Plugin plugin) {
+		public void addRequiredPlugin(Plugin plugin) {
 			requireNotDone();
-			m_requiredPlugins.add(name);
+			final PluginName pluginName = plugin.getName();
+			if (null == pluginName)
+				throw new IllegalStateException("cannot require a plugin (" + plugin.getClass().getName() + ") that has no name");
+			m_requiredPlugins.add(pluginName);
 			if (plugin instanceof ModelPlugin)
 				m_modelPlugins.add((ModelPlugin) plugin);
 		}
@@ -127,7 +130,7 @@ public class StandardGameModel implements GameModel {
 			return configure(StandardGamePartPrototype.create(declaringPlugin).completed(m_prototypes::add), initializer);
 		}
 
-		public Editor createInstance(Initializer<StandardGamePartInstance.Editor> initializer) throws GameModelBuilderException {
+		public Editor createPart(Initializer<StandardGamePartInstance.Editor> initializer) throws GameModelBuilderException {
 			return configure(StandardGamePartInstance.create().completed(m_parts::add), initializer);
 		}
 

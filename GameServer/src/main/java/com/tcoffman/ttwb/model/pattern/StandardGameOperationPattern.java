@@ -13,10 +13,10 @@ public class StandardGameOperationPattern implements GameOperationPattern {
 	private GameOperation.Type m_type;
 	private GameRolePattern m_rolePattern;
 	private Optional<GamePartPattern> m_subjectPattern = Optional.empty();
-	private Optional<GamePartPlacePattern> m_subjectPlacePattern = Optional.empty();
+	private Optional<GamePlacePattern> m_subjectPlacePattern = Optional.empty();
 	private Optional<GamePartPattern> m_targetPattern = Optional.empty();
-	private Optional<GamePartPlacePattern> m_targetPlacePattern = Optional.empty();
-	private Optional<GamePartPlacePattern> m_quantityPattern = Optional.empty();
+	private Optional<GamePlacePattern> m_targetPlacePattern = Optional.empty();
+	private Optional<GameQuantityPattern> m_quantityPattern = Optional.empty();
 
 	protected StandardGameOperationPattern() {
 	}
@@ -37,7 +37,7 @@ public class StandardGameOperationPattern implements GameOperationPattern {
 	}
 
 	@Override
-	public Optional<GamePartPlacePattern> getSubjectPlacePattern() {
+	public Optional<GamePlacePattern> getSubjectPlacePattern() {
 		return m_subjectPlacePattern;
 	}
 
@@ -47,12 +47,12 @@ public class StandardGameOperationPattern implements GameOperationPattern {
 	}
 
 	@Override
-	public Optional<GamePartPlacePattern> getTargetPlacePattern() {
+	public Optional<GamePlacePattern> getTargetPlacePattern() {
 		return m_targetPlacePattern;
 	}
 
 	@Override
-	public Optional<GamePartPlacePattern> getQuantityPattern() {
+	public Optional<GameQuantityPattern> getQuantityPattern() {
 		return m_quantityPattern;
 	}
 
@@ -94,7 +94,7 @@ public class StandardGameOperationPattern implements GameOperationPattern {
 			m_subjectPattern = Optional.of(subjectPattern);
 		}
 
-		public void setSubjectPlacePattern(GamePartPlacePattern subjectPlacePattern) {
+		public void setSubjectPlacePattern(GamePlacePattern subjectPlacePattern) {
 			requireNotDone();
 			m_subjectPlacePattern = Optional.of(subjectPlacePattern);
 		}
@@ -104,12 +104,12 @@ public class StandardGameOperationPattern implements GameOperationPattern {
 			m_targetPattern = Optional.of(targetPattern);
 		}
 
-		public void setTargetPlacePattern(GamePartPlacePattern targetPlacePattern) {
+		public void setTargetPlacePattern(GamePlacePattern targetPlacePattern) {
 			requireNotDone();
 			m_targetPlacePattern = Optional.of(targetPlacePattern);
 		}
 
-		public void setQuantityPattern(GamePartPlacePattern quantityPattern) {
+		public void setQuantityPattern(GameQuantityPattern quantityPattern) {
 			requireNotDone();
 			m_quantityPattern = Optional.of(quantityPattern);
 		}

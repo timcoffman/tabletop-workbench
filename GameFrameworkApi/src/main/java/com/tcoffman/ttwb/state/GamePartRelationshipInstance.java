@@ -2,12 +2,12 @@ package com.tcoffman.ttwb.state;
 
 import com.tcoffman.ttwb.model.GamePartRelationshipPrototype;
 
-public interface GamePartRelationship {
+public interface GamePartRelationshipInstance {
 
 	GamePartRelationshipPrototype getPrototype();
 
-	GamePartPlace getOrigin();
+	GamePlaceInstance getOrigin();
 
-	GamePartPlace getTerminus();
+	GamePlaceInstance getTerminus();
 
 }

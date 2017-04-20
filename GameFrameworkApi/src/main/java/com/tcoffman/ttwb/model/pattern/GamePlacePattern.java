@@ -2,10 +2,10 @@ package com.tcoffman.ttwb.model.pattern;
 
 import java.util.function.Predicate;
 
-import com.tcoffman.ttwb.state.GamePartPlace;
+import com.tcoffman.ttwb.state.GamePlaceInstance;
 
-public interface GamePartPlacePattern {
+public interface GamePlacePattern {
 
-	Predicate<GamePartPlace> allows();
+	Predicate<GamePlaceInstance> allows();
 
 }

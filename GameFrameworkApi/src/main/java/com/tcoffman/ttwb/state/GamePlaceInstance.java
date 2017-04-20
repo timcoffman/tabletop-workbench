@@ -2,15 +2,15 @@ package com.tcoffman.ttwb.state;
 
 import java.util.stream.Stream;
 
-import com.tcoffman.ttwb.model.GamePartPlaceType;
-import com.tcoffman.ttwb.model.GamePartPrototype;
+import com.tcoffman.ttwb.model.GamePartInstance;
+import com.tcoffman.ttwb.model.GamePlace;
 import com.tcoffman.ttwb.model.GamePartRelationshipPrototype;
 
-public interface GamePartPlace {
+public interface GamePlaceInstance {
 
-	GamePartPrototype getPart();
+	GamePartInstance getPart();
 
-	GamePartPlaceType getType();
+	GamePlace getPlacePrototype();
 
 	Stream<? extends GamePartRelationshipPrototype> outgoingRelationships();
 

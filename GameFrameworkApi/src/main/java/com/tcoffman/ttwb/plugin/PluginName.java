@@ -26,7 +26,7 @@ public class PluginName {
 			throw new IllegalArgumentException("plugin uri does not have enough parts");
 		if (!URI_PATH_VERSION_DELIMITER.equals(sspParts[1]))
 			throw new IllegalArgumentException("plugin uri does not have a version delimiter");
-		return new PluginName(sspParts[0], sspParts[1]);
+		return new PluginName(sspParts[0], sspParts[2]);
 	}
 
 	public URI toURI() {
