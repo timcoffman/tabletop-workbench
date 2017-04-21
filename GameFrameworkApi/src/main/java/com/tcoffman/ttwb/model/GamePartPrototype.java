@@ -11,6 +11,8 @@ public interface GamePartPrototype {
 
 	Stream<? extends GamePlace> places();
 
-	Optional<GameComponentRef<GamePartPrototype>> getParent();
+	Optional<GameComponentRef<GamePartPrototype>> getExtends();
+
+	Optional<GameComponentRef<GameRole>> getRoleBinding();
 
 }

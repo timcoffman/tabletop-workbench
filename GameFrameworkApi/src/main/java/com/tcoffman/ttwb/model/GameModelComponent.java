@@ -2,11 +2,13 @@ package com.tcoffman.ttwb.model;
 
 import java.util.stream.Stream;
 
-public interface GamePlace {
+import com.tcoffman.ttwb.plugin.PluginName;
 
-	GamePartPrototype getOwningPrototype();
+public interface GameModelComponent {
 
-	GameComponentRef<GamePlaceType> getType();
+	PluginName getDeclaringPlugin();
+
+	String getLocalName();
 
 	Stream<? extends GameModelProperty> properties();
 

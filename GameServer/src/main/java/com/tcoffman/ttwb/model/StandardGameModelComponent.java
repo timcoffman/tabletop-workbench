@@ -1,24 +1,26 @@
 package com.tcoffman.ttwb.model;
 
-import static com.tcoffman.ttwb.plugin.CorePlugins.CORE;
-
-import java.lang.ref.Reference;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Stream;
 
 import com.tcoffman.ttwb.plugin.PluginName;
 
-public class StandardGamePlace implements GamePlace {
+public class StandardGameModelComponent implements GameModelComponent {
 
-	private final Reference<StandardGamePartPrototype> m_prototype;
-	private GameComponentRef<GamePlaceType> m_type;
+	private final PluginName m_declaringPlugin;
+	private final String m_localName;
 	private final Collection<GameModelProperty> m_properties = new ArrayList<GameModelProperty>();
 	private final Collection<GameModelComponent> m_components = new ArrayList<GameModelComponent>();
 
-	private StandardGamePlace(StandardGamePartPrototype prototype) {
-		m_prototype = new WeakReference<StandardGamePartPrototype>(prototype);
+	@Override
+	public PluginName getDeclaringPlugin() {
+		return m_declaringPlugin;
+	}
+
+	@Override
+	public String getLocalName() {
+		return m_localName;
 	}
 
 	@Override
@@ -31,40 +33,28 @@ public class StandardGamePlace implements GamePlace {
 		return m_components.parallelStream();
 	}
 
-	@Override
-	public GamePartPrototype getOwningPrototype() {
-		return m_prototype.get();
+	public StandardGameModelComponent(PluginName declaringPlugin, String localName) {
+		m_declaringPlugin = declaringPlugin;
+		m_localName = localName;
 	}
 
-	@Override
-	public GameComponentRef<GamePlaceType> getType() {
-		return m_type;
-	}
-
-	public static Editor create(StandardGamePartPrototype prototype) {
-		return new StandardGamePlace(prototype).edit();
+	public static Editor create(PluginName declaringPlugin, String localName) {
+		return new StandardGameModelComponent(declaringPlugin, localName).edit();
 	}
 
 	private Editor edit() {
 		return new Editor();
 	}
 
-	public final class Editor extends AbstractEditor<StandardGamePlace> {
+	public final class Editor extends AbstractEditor<StandardGameModelComponent> {
 
 		@Override
 		protected void validate() throws GameModelBuilderException {
-			requirePresent(CORE, "place type", m_type);
 		}
 
 		@Override
-		protected StandardGamePlace model() {
-			return StandardGamePlace.this;
-		}
-
-		public Editor setType(GameComponentRef<GamePlaceType> type) {
-			requireNotDone();
-			m_type = type;
-			return this;
+		protected StandardGameModelComponent model() {
+			return StandardGameModelComponent.this;
 		}
 
 		public Editor createProperty(PluginName declaringPlugin, String localName, AbstractEditor.Initializer<StandardGameModelProperty.Editor> initializer)
@@ -78,5 +68,4 @@ public class StandardGamePlace implements GamePlace {
 		}
 
 	}
-
 }

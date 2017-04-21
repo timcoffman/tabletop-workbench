@@ -11,6 +11,6 @@ public interface ModelPlugin extends Plugin {
 
 	void validate(GameModel model, Consumer<GameModelBuilderException> reporter);
 
-	GameComponentRef<GamePlaceType> getPlaceType(String placePhysicalTop) throws PluginException;
+	GameComponentRef<GamePlaceType> getPlaceType(String localName) throws PluginException;
 
 }

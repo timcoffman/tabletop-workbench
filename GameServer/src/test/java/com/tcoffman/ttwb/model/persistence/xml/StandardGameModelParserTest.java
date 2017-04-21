@@ -5,6 +5,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -23,20 +24,35 @@ import com.tcoffman.ttwb.model.GameModel;
 import com.tcoffman.ttwb.model.GameModelBuilderException;
 import com.tcoffman.ttwb.model.StandardGameModelBuilder;
 import com.tcoffman.ttwb.model.persistance.xml.StandardGameModelParser;
+import com.tcoffman.ttwb.plugin.ModelPlugin;
 import com.tcoffman.ttwb.plugin.PluginException;
 import com.tcoffman.ttwb.plugin.PluginFactory;
+import com.tcoffman.ttwb.plugin.PluginName;
 
 public class StandardGameModelParserTest {
 
 	private PluginFactory m_pluginFactory;
 	private StandardGameModelParser m_standardGameModelParser;
 
+	public static final PluginName GRID = new PluginName("com.tcoffman.ttwb.grid", "1.0");
+
 	@Before
 	public void setup() throws PluginException {
 		m_pluginFactory = mock(PluginFactory.class);
-		final Core corePlugin = new Core();
-		corePlugin.setName(CORE);
-		when(m_pluginFactory.create(CORE)).thenReturn(corePlugin);
+
+		when(m_pluginFactory.create(any(PluginName.class))).thenAnswer(invocation -> {
+			final PluginName pluginName = (PluginName) invocation.getArguments()[0];
+			if (CORE.equals(pluginName)) {
+				final Core corePlugin = new Core();
+				corePlugin.setName(CORE);
+				return corePlugin;
+			} else {
+				final ModelPlugin genericPlugin = mock(ModelPlugin.class);
+				when(genericPlugin.getName()).thenReturn(pluginName);
+				return genericPlugin;
+			}
+		});
+
 		m_standardGameModelParser = new StandardGameModelParser(m_pluginFactory);
 	}
 

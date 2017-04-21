@@ -2,10 +2,11 @@ package com.tcoffman.ttwb.model;
 
 import com.tcoffman.ttwb.plugin.PluginName;
 
-public interface GamePlaceType {
+public interface GameModelProperty {
 
 	PluginName getDeclaringPlugin();
 
 	String getLocalName();
 
+	String getValue();
 }

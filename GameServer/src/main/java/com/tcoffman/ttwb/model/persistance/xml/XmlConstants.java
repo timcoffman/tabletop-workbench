@@ -29,8 +29,12 @@ final class XmlConstants {
 	public static final String MODEL_ATTR_NAME_IS_TERMINAL = "terminal";
 	public static final String MODEL_ATTR_NAME_RESULT = "to-stage";
 	public static final String MODEL_ATTR_NAME_ID = "id";
+	public static final String MODEL_ATTR_NAME_ABSTRACT = "abstract";
 	public static final String MODEL_ATTR_NAME_TYPE = "type";
 	public static final String MODEL_ATTR_NAME_REF = "ref";
+	public static final String MODEL_ATTR_NAME_STAGE_REF = "ref";
 	public static final String MODEL_ATTR_NAME_PROTOTYPE_REF = "prototype-ref";
+	public static final String MODEL_ATTR_NAME_EXTENDS = "extends";
+	public static final String MODEL_ATTR_NAME_BINDING = "binding";
 
 }

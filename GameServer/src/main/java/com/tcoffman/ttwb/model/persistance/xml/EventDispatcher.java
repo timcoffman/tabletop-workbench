@@ -1,6 +1,8 @@
 package com.tcoffman.ttwb.model.persistance.xml;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -9,10 +11,13 @@ import java.util.function.Predicate;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
 public class EventDispatcher<E extends Throwable> {
+	private final String m_elementNamespaceURI;
+	private final Iterator<Attribute> m_attributes;
 	private final XMLEventReader m_eventReader;
 	private boolean m_completed = false;
 
@@ -21,7 +26,23 @@ public class EventDispatcher<E extends Throwable> {
 	}
 
 	public interface EventConsumer<T extends XMLEvent, E extends Throwable> {
-		void accept(T obj, EventDispatcher<E> dispatcher) throws XMLStreamException, E;
+		void accept(T event, EventDispatcher<E> dispatcher) throws XMLStreamException, E;
+	}
+
+	public interface AttributeConsumer<E extends Throwable> {
+		void accept(QName qualifiedName, String value) throws XMLStreamException, E;
+	}
+
+	public interface AttributeValueConsumer<E extends Throwable> {
+		void accept(String value) throws XMLStreamException, E;
+	}
+
+	private EventConsumer<Attribute, E> eventConsumer(AttributeConsumer<E> consumer) {
+		return (e, d) -> consumer.accept(e.getName(), e.getValue());
+	}
+
+	private AttributeConsumer<E> attributeConsumer(AttributeValueConsumer<E> consumer) {
+		return (qn, v) -> consumer.accept(v);
 	}
 
 	private class EventHandler<T extends XMLEvent> {
@@ -42,10 +63,19 @@ public class EventDispatcher<E extends Throwable> {
 	}
 
 	private <T extends XMLEvent> void accept(EventConsumer<T, E> consumer, T event) throws XMLStreamException, E {
-		final EventDispatcher<E> dispatcher = new EventDispatcher<E>(m_eventReader);
-		consumer.accept(event, dispatcher);
-		if (!dispatcher.completed())
-			throw new IllegalStateException("handler failed to fully process event " + event);
+		if (event.isAttribute())
+			consumer.accept(event, this);
+		else if (event.isStartElement()) {
+			final String namespaceURI = event.asStartElement().getName().getNamespaceURI();
+			@SuppressWarnings("unchecked")
+			final Iterator<Attribute> attributes = event.asStartElement().getAttributes();
+			final EventDispatcher<E> dispatcher = new EventDispatcher<E>(namespaceURI, attributes, m_eventReader);
+			consumer.accept(event, dispatcher);
+			if (!dispatcher.completed())
+				throw new IllegalStateException("handler failed to fully process event " + event);
+
+		} else
+			throw new IllegalStateException("handler cannot consume " + event);
 	}
 
 	private <T extends XMLEvent> EventHandler<T> createEventHandler(Predicate<T> predicate, EventConsumer<T, E> consumer) {
@@ -53,14 +83,22 @@ public class EventDispatcher<E extends Throwable> {
 	}
 
 	private final List<EventHandler<StartElement>> m_startElementHandlers = new ArrayList<EventHandler<StartElement>>();
+	private final List<EventHandler<Attribute>> m_attributeHandlers = new ArrayList<EventHandler<Attribute>>();
 	private Optional<EventConsumer<StartElement, E>> m_unhandledStartElementConsumer = Optional.empty();
+	private Optional<EventConsumer<Attribute, E>> m_unhandledAttributeConsumer = Optional.empty();
 
 	public static <E extends Throwable> EventDispatcher<E> from(XMLEventReader eventReader, Class<E> exceptionClass) {
 		return new EventDispatcher<E>(eventReader);
 	}
 
 	public EventDispatcher(XMLEventReader eventReader) {
+		this(null, Collections.emptyIterator(), eventReader);
+	}
+
+	public EventDispatcher(String elementNamespaceURI, Iterator<Attribute> attributes, XMLEventReader eventReader) {
 		m_eventReader = eventReader;
+		m_elementNamespaceURI = elementNamespaceURI;
+		m_attributes = attributes;
 	}
 
 	public EventDispatcher<E> other(EventConsumer<StartElement, E> consumer) {
@@ -73,11 +111,37 @@ public class EventDispatcher<E extends Throwable> {
 	}
 
 	public EventDispatcher<E> on(String localName, EventConsumer<StartElement, E> consumer) {
-		return on((e) -> localName.equals(e.getName().getLocalPart()), consumer);
+		return on(new QName(localName), consumer);
 	}
 
 	public EventDispatcher<E> on(Predicate<StartElement> predicate, EventConsumer<StartElement, E> consumer) {
 		m_startElementHandlers.add(createEventHandler(predicate, consumer));
+		return this;
+	}
+
+	public EventDispatcher<E> attr(AttributeConsumer<E> consumer) {
+		m_unhandledAttributeConsumer = Optional.of(eventConsumer(consumer));
+		return this;
+	}
+
+	public EventDispatcher<E> attr(QName qname, AttributeConsumer<E> consumer) {
+		return attr((e) -> qname.equals(e.getName()), consumer);
+	}
+
+	public EventDispatcher<E> attr(QName qname, AttributeValueConsumer<E> consumer) {
+		return attr(qname, attributeConsumer(consumer));
+	}
+
+	public EventDispatcher<E> attr(String localName, AttributeConsumer<E> consumer) {
+		return attr(new QName(localName), consumer);
+	}
+
+	public EventDispatcher<E> attr(String localName, AttributeValueConsumer<E> consumer) {
+		return attr(localName, attributeConsumer(consumer));
+	}
+
+	public EventDispatcher<E> attr(Predicate<Attribute> predicate, AttributeConsumer<E> consumer) {
+		m_attributeHandlers.add(createEventHandler(predicate, (e, d) -> consumer.accept(e.getName(), e.getValue())));
 		return this;
 	}
 
@@ -127,6 +191,9 @@ public class EventDispatcher<E extends Throwable> {
 	}
 
 	public <T> T produce(Producer<T, E> producer) throws XMLStreamException, E {
+		while (m_attributes.hasNext())
+			handle(m_attributes.next());
+
 		while (m_eventReader.hasNext() && !m_completed) {
 			final XMLEvent event = m_eventReader.nextEvent();
 			// System.out.println("*** " + event.getEventType() + ": " +
@@ -158,5 +225,20 @@ public class EventDispatcher<E extends Throwable> {
 		}
 
 		throw new IllegalStateException("no handler for " + startElement + " at " + startElement.getLocation().getLineNumber());
+	}
+
+	private void handle(Attribute attribute) throws XMLStreamException, E {
+		for (final EventHandler<Attribute> handler : m_attributeHandlers)
+			if (handler.handle(attribute))
+				return;
+
+		if (m_unhandledAttributeConsumer.isPresent()) {
+			accept(m_unhandledAttributeConsumer.get(), attribute);
+			return;
+		}
+
+		/* only throw if the attribute is in the namespace of its element */
+		if (attribute.getName().getNamespaceURI().equals(m_elementNamespaceURI))
+			throw new IllegalStateException("no handler for " + attribute + " at " + m_eventReader.peek().getLocation().getLineNumber());
 	}
 }

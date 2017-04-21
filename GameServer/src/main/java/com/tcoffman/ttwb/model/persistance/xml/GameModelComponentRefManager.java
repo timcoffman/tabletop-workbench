@@ -18,12 +18,20 @@ public class GameModelComponentRefManager<T> {
 	}
 
 	public void resolveAll() {
-		m_modelComponentRefs.forEach((id, ref) -> ref.set(m_managedComponents.get(id)));
+		m_modelComponentRefs.forEach((id, ref) -> ref.set(resolve(id)));
+	}
+
+	private T resolve(String id) {
+		final T component = m_managedComponents.get(id);
+		if (null == component)
+			throw new IllegalStateException("failed to resolve component id \"" + id + "\"");
+		return component;
 	}
 
 	public GameComponentRef<T> createRef(String id) {
-		final GameComponentManagedRef<T> ref = new GameComponentManagedRef<T>();
-		m_modelComponentRefs.put(id, ref);
+		GameComponentManagedRef<T> ref = m_modelComponentRefs.get(id);
+		if (null == ref)
+			m_modelComponentRefs.put(id, ref = new GameComponentManagedRef<T>());
 		return ref;
 	}
 
@@ -35,6 +43,8 @@ public class GameModelComponentRefManager<T> {
 		}
 
 		public void set(T component) {
+			if (null == component)
+				throw new IllegalStateException("cannot register using a missing component");
 			if (null != m_component && m_component != component)
 				throw new IllegalStateException("cannot register two different components with the same id");
 			m_component = component;
@@ -42,6 +52,8 @@ public class GameModelComponentRefManager<T> {
 
 		@Override
 		public T get() {
+			if (null == m_component)
+				throw new IllegalStateException("managed reference " + this.hashCode() + " was never resolved");
 			return m_component;
 		}
 

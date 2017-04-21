@@ -1,10 +1,13 @@
 package com.tcoffman.ttwb.model.persistance.xml;
 
+import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ATTR_NAME_ABSTRACT;
+import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ATTR_NAME_BINDING;
+import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ATTR_NAME_EXTENDS;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ATTR_NAME_ID;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ATTR_NAME_IS_TERMINAL;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ATTR_NAME_PROTOTYPE_REF;
-import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ATTR_NAME_REF;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ATTR_NAME_RESULT;
+import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ATTR_NAME_STAGE_REF;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ATTR_NAME_TYPE;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_INITIAL_STAGE;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_NAME;
@@ -27,13 +30,9 @@ import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT
 import static com.tcoffman.ttwb.plugin.CorePlugins.CORE;
 
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 
 import com.tcoffman.ttwb.model.AbstractEditor;
@@ -44,6 +43,7 @@ import com.tcoffman.ttwb.model.GamePlaceType;
 import com.tcoffman.ttwb.model.GameRole;
 import com.tcoffman.ttwb.model.GameStage;
 import com.tcoffman.ttwb.model.StandardGameModel;
+import com.tcoffman.ttwb.model.StandardGameModelComponent;
 import com.tcoffman.ttwb.model.StandardGamePartInstance;
 import com.tcoffman.ttwb.model.StandardGamePartPrototype;
 import com.tcoffman.ttwb.model.StandardGamePlace;
@@ -63,22 +63,34 @@ class ModelParser {
 	private final PluginSet m_pluginSet;
 	private final StandardGameModel.Editor m_editor;
 	private final GameModelComponentRefManager<GameStage> m_stageRefManager = new GameModelComponentRefManager<GameStage>();
+	private final GameModelComponentRefManager<GameRole> m_roleManager = new GameModelComponentRefManager<GameRole>();
 	private final GameModelComponentRefManager<GamePartPrototype> m_prototypeRefManager = new GameModelComponentRefManager<GamePartPrototype>();
-
-	private final Map<String, GameRole> m_roles = new HashMap<String, GameRole>();
 
 	public ModelParser(PluginFactory pluginFactory, StandardGameModel.Editor editor) {
 		m_pluginSet = new PluginSet(pluginFactory);
 		m_editor = editor;
 	}
 
-	private ModelPlugin requireModelPlugin(StartElement startElement, String prefix) throws PluginException {
+	private ModelPlugin requireModelPlugin(StartElement startElement, String prefix) throws GameModelBuilderException {
 		return requireModelPlugin(startElement.getNamespaceURI(prefix));
 	}
 
-	private ModelPlugin requireModelPlugin(String uri) throws PluginException {
+	private ModelPlugin requireModelPlugin(QName qualifiedName) throws GameModelBuilderException {
+		return requireModelPlugin(qualifiedName.getNamespaceURI());
+	}
+
+	private ModelPlugin requireModelPlugin(StartElement startElement) throws GameModelBuilderException {
+		return requireModelPlugin(startElement.getName());
+	}
+
+	private ModelPlugin requireModelPlugin(String uri) throws GameModelBuilderException {
 		final PluginName pluginName = PluginName.create(URI.create(uri));
-		final ModelPlugin plugin = (ModelPlugin) m_pluginSet.requirePlugin(pluginName);
+		final ModelPlugin plugin;
+		try {
+			plugin = (ModelPlugin) m_pluginSet.requirePlugin(pluginName);
+		} catch (final PluginException ex) {
+			throw new GameModelBuilderException(ex.getPluginName(), ex);
+		}
 		m_editor.addRequiredPlugin(plugin);
 		return plugin;
 	}
@@ -115,10 +127,6 @@ class ModelParser {
 		}
 	}
 
-	private Optional<String> getAttribute(StartElement startElement, String localName) {
-		return Optional.ofNullable(startElement.getAttributeByName(QName.valueOf(localName))).map(Attribute::getValue);
-	}
-
 	void parse(StartElement startElement, EventDispatcher<GameModelBuilderException> dispatcher) throws XMLStreamException, GameModelBuilderException {
 
 		dispatcher.on(MODEL_ELEMENT_QNAME_NAME, this::parseName);
@@ -131,12 +139,12 @@ class ModelParser {
 		dispatcher.read();
 		m_stageRefManager.resolveAll();
 		m_prototypeRefManager.resolveAll();
+		m_roleManager.resolveAll();
 	}
 
 	private void parseInitialStage(StartElement startElement, EventDispatcher<GameModelBuilderException> dispatcher) throws GameModelBuilderException,
 			XMLStreamException {
-		final String stageId = getAttribute(startElement, MODEL_ATTR_NAME_REF).orElseThrow(ModelParser.this::missingAttribute);
-		m_editor.setInitialStage(m_stageRefManager.createRef(stageId));
+		dispatcher.attr(MODEL_ATTR_NAME_STAGE_REF, (id) -> m_editor.setInitialStage(m_stageRefManager.createRef(id)));
 		dispatcher.read();
 	}
 
@@ -153,11 +161,8 @@ class ModelParser {
 	XMLStreamException {
 		createAndInitialize(m_editor::createRole, (r) -> {
 
-			dispatcher.skip();
-
-			r.completed((role) -> {
-				getAttribute(startElement, MODEL_ATTR_NAME_ID).ifPresent((s) -> m_roles.put(s, role));
-			});
+			dispatcher.attr(MODEL_ATTR_NAME_ID, (id) -> r.completed((role) -> m_roleManager.register(role, id)));
+			dispatcher.read();
 		});
 
 	}
@@ -190,11 +195,12 @@ class ModelParser {
 				XMLStreamException {
 
 			dispatcher.on(MODEL_ELEMENT_QNAME_PLACE, this::parsePlace);
+			dispatcher.attr(MODEL_ATTR_NAME_ABSTRACT, (abs) -> m_editor.setAbstract("yes".equals(abs)));
+			dispatcher.attr(MODEL_ATTR_NAME_EXTENDS, (id) -> m_editor.setExtends(m_prototypeRefManager.createRef(id)));
+			dispatcher.attr(MODEL_ATTR_NAME_BINDING, (id) -> m_editor.setBinding(m_roleManager.createRef(id)));
+			dispatcher.attr(MODEL_ATTR_NAME_ID, (id) -> m_editor.completed((prototype) -> m_prototypeRefManager.register(prototype, id)));
 			dispatcher.read();
 
-			m_editor.completed((prototype) -> {
-				getAttribute(startElement, MODEL_ATTR_NAME_ID).ifPresent((s) -> m_prototypeRefManager.register(prototype, s));
-			});
 		}
 
 		private void parsePlace(StartElement startElement, EventDispatcher<GameModelBuilderException> dispatcher) throws GameModelBuilderException,
@@ -212,9 +218,11 @@ class ModelParser {
 
 		public void parse(StartElement startElement, EventDispatcher<GameModelBuilderException> dispatcher) throws GameModelBuilderException,
 		XMLStreamException {
-			final String id = getAttribute(startElement, MODEL_ATTR_NAME_PROTOTYPE_REF).orElseThrow(ModelParser.this::missingAttribute);
-			m_editor.setPrototype(m_prototypeRefManager.createRef(id));
 
+			dispatcher.attr(MODEL_ATTR_NAME_PROTOTYPE_REF, (id) -> m_editor.setPrototype(m_prototypeRefManager.createRef(id)));
+			dispatcher.attr(MODEL_ATTR_NAME_BINDING, (id) -> m_editor.setBinding(m_roleManager.createRef(id)));
+			dispatcher.attr(MODEL_ATTR_NAME_ID, (id) -> {
+			});
 			dispatcher.read();
 		}
 	}
@@ -231,18 +239,17 @@ class ModelParser {
 			if (typeParts.length == 0)
 				throw missingAttribute();
 
+			ModelPlugin modelPlugin;
+			String name;
+			if (typeParts.length == 1) {
+				modelPlugin = requireModelPlugin(startElement);
+				name = typeParts[0];
+			} else {
+				modelPlugin = requireModelPlugin(startElement, typeParts[0]);
+				name = typeParts[1];
+			}
 			try {
-				ModelPlugin modelPlugin;
-				String name;
-				if (typeParts.length == 1) {
-					modelPlugin = requireModelPlugin(startElement.getName().getNamespaceURI());
-					name = typeParts[0];
-				} else {
-					modelPlugin = requireModelPlugin(startElement, typeParts[0]);
-					name = typeParts[1];
-				}
 				return modelPlugin.getPlaceType(name);
-
 			} catch (final PluginException ex) {
 				throw new GameModelBuilderException(ex.getPluginName(), ex);
 			}
@@ -251,10 +258,63 @@ class ModelParser {
 		private void parse(StartElement startElement, EventDispatcher<GameModelBuilderException> dispatcher) throws GameModelBuilderException,
 		XMLStreamException {
 
-			final String type = getAttribute(startElement, MODEL_ATTR_NAME_TYPE).orElseThrow(ModelParser.this::missingAttribute);
-			m_editor.setType(parseType(startElement, type));
+			// final String type = getAttribute(startElement,
+			// MODEL_ATTR_NAME_TYPE).orElseThrow(ModelParser.this::missingAttribute);
+			// m_editor.setType(parseType(startElement, type));
 
+			dispatcher.attr(MODEL_ATTR_NAME_TYPE, (type) -> m_editor.setType(parseType(startElement, type)));
+			dispatcher.attr(this::parseProperty);
+			dispatcher.other(this::parseComponent);
 			dispatcher.read();
+		}
+
+		private void parseProperty(QName name, String value) throws XMLStreamException, GameModelBuilderException {
+			final ModelPlugin modelPlugin = requireModelPlugin(name);
+			m_editor.createProperty(modelPlugin.getName(), name.getLocalPart(), (p) -> p.setValue(value));
+		}
+
+		private void parseComponent(StartElement startElement, EventDispatcher<GameModelBuilderException> dispatcher) throws GameModelBuilderException,
+		XMLStreamException {
+			final ModelPlugin modelPlugin = requireModelPlugin(startElement);
+			final Creator<StandardGameModelComponent.Editor> creator = (i) -> m_editor.createComponent(modelPlugin.getName(), startElement.getName()
+					.getLocalPart(), i);
+			createAndInitialize(creator, (c) -> {
+
+				new ComponentParser(c).parse(startElement, dispatcher);
+
+			});
+		}
+	}
+
+	private class ComponentParser {
+		private final StandardGameModelComponent.Editor m_editor;
+
+		public ComponentParser(StandardGameModelComponent.Editor editor) {
+			m_editor = editor;
+		}
+
+		private void parse(StartElement startElement, EventDispatcher<GameModelBuilderException> dispatcher) throws GameModelBuilderException,
+				XMLStreamException {
+			dispatcher.attr(this::parseProperty);
+			dispatcher.other(this::parseComponent);
+			dispatcher.read();
+		}
+
+		private void parseProperty(QName name, String value) throws GameModelBuilderException, XMLStreamException {
+			final ModelPlugin modelPlugin = requireModelPlugin(name);
+			m_editor.createProperty(modelPlugin.getName(), name.getLocalPart(), (p) -> p.setValue(value));
+		}
+
+		private void parseComponent(StartElement startElement, EventDispatcher<GameModelBuilderException> dispatcher) throws GameModelBuilderException,
+		XMLStreamException {
+			final ModelPlugin modelPlugin = requireModelPlugin(startElement);
+			final Creator<StandardGameModelComponent.Editor> creator = (i) -> m_editor.createComponent(modelPlugin.getName(), startElement.getName()
+					.getLocalPart(), i);
+			createAndInitialize(creator, (c) -> {
+
+				new ComponentParser(c).parse(startElement, dispatcher);
+
+			});
 		}
 	}
 
@@ -267,16 +327,14 @@ class ModelParser {
 
 		private void parse(StartElement startElement, EventDispatcher<GameModelBuilderException> dispatcher) throws GameModelBuilderException,
 				XMLStreamException {
-			m_editor.setTerminal(getAttribute(startElement, MODEL_ATTR_NAME_IS_TERMINAL).map("yes"::equals).orElse(false));
 
+			dispatcher.attr(MODEL_ATTR_NAME_IS_TERMINAL, (t) -> m_editor.setTerminal("yes".equals(t)));
 			dispatcher.on(MODEL_ELEMENT_QNAME_STAGE, this::parseStage);
 			dispatcher.on(MODEL_ELEMENT_QNAME_RULE, this::parseRule);
 			dispatcher.on(MODEL_ELEMENT_QNAME_INITIAL_STAGE, this::parseInitialStage);
+			dispatcher.attr(MODEL_ATTR_NAME_ID, (id) -> m_editor.completed((stage) -> m_stageRefManager.register(stage, id)));
 			dispatcher.read();
 
-			m_editor.completed((stage) -> {
-				getAttribute(startElement, MODEL_ATTR_NAME_ID).ifPresent((s) -> m_stageRefManager.register(stage, s));
-			});
 		}
 
 		private void parseRule(StartElement startElement, EventDispatcher<GameModelBuilderException> dispatcher) throws GameModelBuilderException,
@@ -291,7 +349,10 @@ class ModelParser {
 
 		private void parseInitialStage(StartElement startElement, EventDispatcher<GameModelBuilderException> dispatcher) throws GameModelBuilderException,
 				XMLStreamException {
-			dispatcher.skip();
+
+			dispatcher.attr(MODEL_ATTR_NAME_STAGE_REF, (id) -> {
+			});
+			dispatcher.read();
 		}
 
 		private void parseStage(StartElement startElement, EventDispatcher<GameModelBuilderException> dispatcher) throws GameModelBuilderException,
@@ -310,10 +371,7 @@ class ModelParser {
 		private void parse(StartElement startElement, EventDispatcher<GameModelBuilderException> dispatcher) throws GameModelBuilderException,
 		XMLStreamException {
 
-			final String stageId = getAttribute(startElement, MODEL_ATTR_NAME_RESULT).orElseThrow(ModelParser.this::missingAttribute);
-			final GameComponentRef<GameStage> result = m_stageRefManager.createRef(stageId);
-			m_editor.setResult(result);
-
+			dispatcher.attr(MODEL_ATTR_NAME_RESULT, (id) -> m_editor.setResult(m_stageRefManager.createRef(id)));
 			dispatcher.on(MODEL_ELEMENT_QNAME_ROLE, this::parseRolePattern);
 			dispatcher.on(MODEL_ELEMENT_QNAME_OP_SIGNAL, (e, d) -> parseOperationPattern(e, d, GameOperation.Type.SIGNAL));
 			dispatcher.on(MODEL_ELEMENT_QNAME_OP_MOVE, (e, d) -> parseOperationPattern(e, d, GameOperation.Type.MOVE));

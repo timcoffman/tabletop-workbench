@@ -2,9 +2,12 @@ package com.tcoffman.ttwb.model;
 
 import static com.tcoffman.ttwb.plugin.CorePlugins.CORE;
 
+import java.util.Optional;
+
 public class StandardGamePartInstance implements GamePartInstance {
 
 	private GameComponentRef<GamePartPrototype> m_prototype;
+	public Optional<GameComponentRef<GameRole>> m_binding = Optional.empty();
 
 	private StandardGamePartInstance() {
 	}
@@ -37,6 +40,12 @@ public class StandardGamePartInstance implements GamePartInstance {
 		public Editor setPrototype(GameComponentRef<GamePartPrototype> prototype) {
 			requireNotDone();
 			m_prototype = prototype;
+			return this;
+		}
+
+		public Editor setBinding(GameComponentRef<GameRole> binding) {
+			requireNotDone();
+			m_binding = Optional.of(binding);
 			return this;
 		}
 

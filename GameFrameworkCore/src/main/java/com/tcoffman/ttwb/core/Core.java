@@ -56,21 +56,32 @@ public class Core implements ModelPlugin, StatePlugin {
 	private GamePlaceType m_physicalBottom = null;
 
 	private final class CoreGamePlaceType implements GamePlaceType {
+		private final String m_localName;
+
+		public CoreGamePlaceType(String localName) {
+			m_localName = localName;
+		}
+
 		@Override
 		public PluginName getDeclaringPlugin() {
 			return getName();
+		}
+
+		@Override
+		public String getLocalName() {
+			return m_localName;
 		}
 	}
 
 	private GameComponentRef<GamePlaceType> getPlaceTypePhysicalTop() {
 		if (null == m_physicalTop)
-			m_physicalTop = new CoreGamePlaceType();
+			m_physicalTop = new CoreGamePlaceType(PLACE_PHYSICAL_TOP);
 		return () -> m_physicalTop;
 	}
 
 	private GameComponentRef<GamePlaceType> getPlaceTypePhysicalBottom() {
 		if (null == m_physicalBottom)
-			m_physicalBottom = new CoreGamePlaceType();
+			m_physicalBottom = new CoreGamePlaceType(PLACE_PHYSICAL_BOTTOM);
 		return () -> m_physicalBottom;
 	}
 

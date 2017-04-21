@@ -10,7 +10,8 @@ import com.tcoffman.ttwb.plugin.PluginName;
 public class StandardGamePartPrototype implements GamePartPrototype {
 
 	private final PluginName m_declaringPlugin;
-	private Optional<GameComponentRef<GamePartPrototype>> m_parent = Optional.empty();
+	private Optional<GameComponentRef<GamePartPrototype>> m_extendsPrototype = Optional.empty();
+	private Optional<GameComponentRef<GameRole>> m_roleBinding = Optional.empty();
 	private final Collection<StandardGamePlace> m_places = new ArrayList<StandardGamePlace>();
 
 	protected StandardGamePartPrototype(PluginName declaringPlugin) {
@@ -23,8 +24,13 @@ public class StandardGamePartPrototype implements GamePartPrototype {
 	}
 
 	@Override
-	public Optional<GameComponentRef<GamePartPrototype>> getParent() {
-		return m_parent;
+	public Optional<GameComponentRef<GameRole>> getRoleBinding() {
+		return m_roleBinding;
+	}
+
+	@Override
+	public Optional<GameComponentRef<GamePartPrototype>> getExtends() {
+		return m_extendsPrototype;
 	}
 
 	@Override
@@ -51,14 +57,25 @@ public class StandardGamePartPrototype implements GamePartPrototype {
 			return StandardGamePartPrototype.this;
 		}
 
-		public Editor setParent(GameComponentRef<GamePartPrototype> parentRef) {
+		public Editor setExtends(GameComponentRef<GamePartPrototype> prototypeRef) {
 			requireNotDone();
-			m_parent = Optional.of(parentRef);
+			m_extendsPrototype = Optional.of(prototypeRef);
+			return this;
+		}
+
+		public Editor setBinding(GameComponentRef<GameRole> binding) {
+			requireNotDone();
+			m_roleBinding = Optional.of(binding);
 			return this;
 		}
 
 		public Editor createPlace(AbstractEditor.Initializer<StandardGamePlace.Editor> initializer) throws GameModelBuilderException {
 			return configure(StandardGamePlace.create(model()).completed(m_places::add), initializer);
+		}
+
+		public Editor setAbstract(boolean isAbstract) {
+			// TODO Auto-generated method stub
+			return this;
 		}
 
 	}
