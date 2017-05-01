@@ -101,8 +101,8 @@ public abstract class AbstractGameParser {
 		GameComponentRef<T> apply(ModelPlugin plugin, String localName) throws PluginException;
 	}
 
-	protected <T> GameComponentRef<T> parseRef(String ref, StartElement starteElement, ModelPluginLookup<T> pluginLookup) throws GameComponentBuilderException {
-		return parseRef(ref, starteElement.getName(), starteElement.getNamespaceContext(), pluginLookup);
+	protected <T> GameComponentRef<T> parseRef(String ref, StartElement startElement, ModelPluginLookup<T> pluginLookup) throws GameComponentBuilderException {
+		return parseRef(ref, startElement.getName(), startElement.getNamespaceContext(), pluginLookup);
 	}
 
 	protected <T> GameComponentRef<T> parseRef(String ref, QName qname, NamespaceContext nsCtx, ModelPluginLookup<T> pluginLookup)

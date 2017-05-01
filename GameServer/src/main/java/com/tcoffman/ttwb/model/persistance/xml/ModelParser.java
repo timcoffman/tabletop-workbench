@@ -154,6 +154,24 @@ class ModelParser extends AbstractGameParser {
 		createAndInitialize(m_editor::createPart, (p) -> new PartParser(p).parse(startElement, dispatcher));
 	}
 
+	private GameComponentRef<GameComponentDocumentation> defaultDocumentation(StartElement startElement) throws GameComponentBuilderException {
+		return defaultDocumentation(startElement, MODEL_ATTR_NAME_ID);
+	}
+
+	private GameComponentRef<GameComponentDocumentation> defaultDocumentation(StartElement startElement, String identifyingAttrName)
+			throws GameComponentBuilderException {
+		final StandardComponentDocumentation doc = StandardComponentDocumentation
+				.create()
+				.setName(
+						GameComponentDocumentation.Format.SHORT,
+						startElement.getName().getLocalPart() + "#"
+								+ Optional.ofNullable(startElement.getAttributeByName(new QName(identifyingAttrName))).map(Attribute::getValue).orElse(""))
+								.setDescription(
+										startElement.getName().getLocalPart() + "@" + startElement.getLocation().getLineNumber() + ":"
+												+ startElement.getLocation().getColumnNumber()).done();
+		return () -> doc;
+	}
+
 	private class PartPrototypeParser {
 		private final StandardGamePartPrototype.Editor m_editor;
 
@@ -164,16 +182,7 @@ class ModelParser extends AbstractGameParser {
 		public void parse(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher) throws GameComponentBuilderException,
 				XMLStreamException {
 
-			final StandardComponentDocumentation defaultDocumentation = StandardComponentDocumentation
-					.create()
-					.setName(
-							GameComponentDocumentation.Format.SHORT,
-							startElement.getName().getLocalPart() + "#"
-									+ Optional.ofNullable(startElement.getAttributeByName(new QName(MODEL_ATTR_NAME_ID))).map(Attribute::getValue).orElse(""))
-									.setDescription(
-											startElement.getName().getLocalPart() + "@" + startElement.getLocation().getLineNumber() + ":"
-													+ startElement.getLocation().getColumnNumber()).done();
-			m_editor.setDocumentation(() -> defaultDocumentation);
+			m_editor.setDocumentation(defaultDocumentation(startElement));
 
 			dispatcher.on(MODEL_ELEMENT_QNAME_PLACE, this::parsePlace);
 			dispatcher.attr(MODEL_ATTR_NAME_DOC, (doc) -> m_editor.setDocumentation(lookupPrototoypeDocumentation(doc, startElement.getNamespaceContext())));
@@ -216,21 +225,20 @@ class ModelParser extends AbstractGameParser {
 			m_editor = editor;
 		}
 
-		private GameComponentRef<GamePlaceType> parseType(StartElement startElement, String type) throws GameComponentBuilderException {
-			return parseRef(type, startElement, (p, n) -> p.getPlaceType(n));
-		}
-
 		private void parse(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher) throws GameComponentBuilderException,
 				XMLStreamException {
 
-			// final String type = getAttribute(startElement,
-			// MODEL_ATTR_NAME_TYPE).orElseThrow(ModelParser.this::missingAttribute);
-			// m_editor.setType(parseType(startElement, type));
+			m_editor.setDocumentation(defaultDocumentation(startElement, MODEL_ATTR_NAME_TYPE));
 
+			dispatcher.attr(MODEL_ATTR_NAME_DOC, (doc) -> m_editor.setDocumentation(lookupPrototoypeDocumentation(doc, startElement.getNamespaceContext())));
 			dispatcher.attr(MODEL_ATTR_NAME_TYPE, (type) -> m_editor.setType(parseType(startElement, type)));
 			dispatcher.attr(this::parseProperty);
 			dispatcher.other(this::parseComponent);
 			dispatcher.read();
+		}
+
+		private GameComponentRef<GamePlaceType> parseType(StartElement startElement, String type) throws GameComponentBuilderException {
+			return parseRef(type, startElement, (p, n) -> p.getPlaceType(n));
 		}
 
 		private void parseProperty(QName name, String value) throws XMLStreamException, GameComponentBuilderException {

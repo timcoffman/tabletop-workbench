@@ -1,6 +1,7 @@
 package com.tcoffman.ttwb.model.persistence.xml;
 
 import static com.tcoffman.ttwb.plugin.CorePlugins.CORE;
+import static com.tcoffman.ttwb.plugin.CorePlugins.GRID;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -25,6 +26,7 @@ import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.component.persistence.GameComponentRefResolver;
 import com.tcoffman.ttwb.component.persistence.xml.BundleHelper;
 import com.tcoffman.ttwb.core.Core;
+import com.tcoffman.ttwb.core.Grid;
 import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 import com.tcoffman.ttwb.doc.persistence.DocumentationRefResolver;
 import com.tcoffman.ttwb.model.GameModel;
@@ -40,8 +42,6 @@ public class StandardGameModelParserTest {
 	private PluginFactory m_pluginFactory;
 	private StandardGameModelParser m_standardGameModelParser;
 
-	public static final PluginName GRID = new PluginName("com.tcoffman.ttwb.grid", "1.0");
-
 	private static final String DOC_NAME = "COMPONENT-NAME";
 	private static final String DOC_DESC = "COMPONENT-DESC";
 
@@ -55,6 +55,10 @@ public class StandardGameModelParserTest {
 				final Core corePlugin = new Core();
 				corePlugin.setName(CORE);
 				return corePlugin;
+			} else if (GRID.equals(pluginName)) {
+				final Grid gridPlugin = new Grid();
+				gridPlugin.setName(GRID);
+				return gridPlugin;
 			} else {
 				final ModelPlugin genericPlugin = mock(ModelPlugin.class);
 				when(genericPlugin.getName()).thenReturn(pluginName);

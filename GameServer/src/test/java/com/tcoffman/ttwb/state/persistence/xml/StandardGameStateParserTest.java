@@ -1,6 +1,7 @@
 package com.tcoffman.ttwb.state.persistence.xml;
 
 import static com.tcoffman.ttwb.plugin.CorePlugins.CORE;
+import static com.tcoffman.ttwb.plugin.CorePlugins.GRID;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -25,6 +26,7 @@ import com.tcoffman.ttwb.component.GameComponentRef;
 import com.tcoffman.ttwb.component.persistence.GameComponentRefResolver;
 import com.tcoffman.ttwb.component.persistence.xml.BundleHelper;
 import com.tcoffman.ttwb.core.Core;
+import com.tcoffman.ttwb.core.Grid;
 import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 import com.tcoffman.ttwb.doc.persistence.DocumentationRefResolver;
 import com.tcoffman.ttwb.model.GameModel;
@@ -63,6 +65,10 @@ public class StandardGameStateParserTest {
 				final Core corePlugin = new Core();
 				corePlugin.setName(CORE);
 				return corePlugin;
+			} else if (GRID.equals(pluginName)) {
+				final Grid gridPlugin = new Grid();
+				gridPlugin.setName(GRID);
+				return gridPlugin;
 			} else {
 				final StatePlugin genericPlugin = mock(CombinedPlugin.class);
 				when(genericPlugin.getName()).thenReturn(pluginName);

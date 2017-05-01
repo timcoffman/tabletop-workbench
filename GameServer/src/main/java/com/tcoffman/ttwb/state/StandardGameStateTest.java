@@ -94,7 +94,8 @@ public class StandardGameStateTest {
 		}
 
 		public GameComponentRef<GameComponentDocumentation> gen(String shortName, String longName, String description) throws GameComponentBuilderException {
-			StandardComponentDocumentation doc = StandardComponentDocumentation.create().setName(SHORT, shortName).setName(LONG, longName).setDescription(description).done();
+			final StandardComponentDocumentation doc = StandardComponentDocumentation.create().setName(SHORT, shortName).setName(LONG, longName)
+					.setDescription(description).done();
 			return () -> doc;
 		}
 	}
@@ -129,12 +130,14 @@ public class StandardGameStateTest {
 			proto.setDocumentation(doc.gen("PROTOTYPE"));
 
 			proto.createPlace((place) -> {
+				place.setDocumentation(doc.gen("TOP"));
 
 				place.setType(placeTypeTop);
 
 			});
 
 			proto.createPlace((place) -> {
+				place.setDocumentation(doc.gen("BOTTOM"));
 
 				place.setType(placeTypeBottom);
 

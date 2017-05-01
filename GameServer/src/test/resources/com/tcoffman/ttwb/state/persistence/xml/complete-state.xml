@@ -11,6 +11,6 @@
 	    <part prototype-ref="m:board" id="b1"/>
 	</parts>
 	<relationships>
-		<rel type="core:location" src="p1/core:bottom" dst="b1/core:top[grid:coords=1,1]"/>
+		<rel type="core:location" src="p1/core:bottom" dst="b1/grid:1-1"/>
 	</relationships>
 </state>

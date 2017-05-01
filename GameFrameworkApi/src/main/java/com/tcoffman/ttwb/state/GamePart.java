@@ -12,6 +12,6 @@ public interface GamePart {
 
 	Stream<? extends GamePlace> places();
 
-	GamePlace findPlace(GameComponentRef<GamePlaceType> parsePlaceType);
+	GamePlace findPlace(GameComponentRef<GamePlaceType> type);
 
 }

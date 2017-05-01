@@ -12,9 +12,10 @@ import java.util.stream.Stream;
 import com.tcoffman.ttwb.component.AbstractEditor;
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.component.GameComponentRef;
+import com.tcoffman.ttwb.component.StandardDocumentableComponent;
 import com.tcoffman.ttwb.plugin.PluginName;
 
-public class StandardGamePlacePrototype implements GamePlacePrototype {
+public class StandardGamePlacePrototype extends StandardDocumentableComponent implements GamePlacePrototype {
 
 	private final Reference<StandardGamePartPrototype> m_prototype;
 	private GameComponentRef<GamePlaceType> m_type;
@@ -59,16 +60,12 @@ public class StandardGamePlacePrototype implements GamePlacePrototype {
 		return new Editor();
 	}
 
-	public final class Editor extends AbstractEditor<StandardGamePlacePrototype> {
+	public final class Editor extends StandardDocumentableComponent.Editor<StandardGamePlacePrototype> {
 
 		@Override
 		protected void validate() throws GameComponentBuilderException {
+			super.validate();
 			requirePresent(CORE, "place type", m_type);
-		}
-
-		@Override
-		protected StandardGamePlacePrototype model() {
-			return StandardGamePlacePrototype.this;
 		}
 
 		public Editor setType(GameComponentRef<GamePlaceType> type) {

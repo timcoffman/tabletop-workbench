@@ -19,7 +19,6 @@ import static com.tcoffman.ttwb.state.persistence.xml.XmlConstants.STATE_ELEMENT
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.regex.Matcher;
 
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
@@ -153,25 +152,9 @@ class StateParser extends AbstractGameParser {
 			return () -> part.get().findPlace(placeType);
 		}
 
-		public GameComponentRef<GamePlaceType> parsePlaceType(String placePattern, StartElement startElement) throws GameComponentBuilderException,
+		public GameComponentRef<GamePlaceType> parsePlaceType(String placeTypeRef, StartElement startElement) throws GameComponentBuilderException,
 				XMLStreamException {
-			final java.util.regex.Pattern re = java.util.regex.Pattern.compile("([^\\[]+)|\\[([^\\]=]+)(=([^\\]]+))?\\]");
-			final Matcher matcher = re.matcher(placePattern);
-			if (!matcher.find())
-				throw new GameComponentBuilderException(STATE_PARSER_XML, "missing place type");
-			final String placeTypeRef = matcher.group(1);
-			if (null == placeTypeRef || placeTypeRef.isEmpty())
-				throw new GameComponentBuilderException(STATE_PARSER_XML, "missing place type");
-
-			final GameComponentRef<GamePlaceType> placeType = parseRef(placeTypeRef, startElement, (p, n) -> p.getPlaceType(n));
-
-			while (matcher.find()) {
-				final String predicate = matcher.group(2);
-				if (null == predicate || predicate.isEmpty())
-					throw new GameComponentBuilderException(STATE_PARSER_XML, "missing place predicate");
-			}
-
-			return placeType;
+			return parseRef(placeTypeRef, startElement, (p, n) -> p.getPlaceType(n));
 		}
 
 		public GameComponentRef<GamePartRelationshipType> parseRelationshipType(String placeTypeRef, StartElement startElement)

@@ -31,12 +31,12 @@ public abstract class AbstractEditor<T> {
 
 	final protected <U> void requirePresent(PluginName pluginName, String name, U obj) throws GameComponentBuilderException {
 		if (null == obj)
-			throw new GameComponentBuilderException(pluginName, "missing " + name);
+			throw new GameComponentBuilderException(pluginName, "missing " + name + " for " + model());
 	}
 
 	final protected <U> void requireNotEmpty(PluginName pluginName, String name, Collection<U> objs) throws GameComponentBuilderException {
 		if (objs.isEmpty())
-			throw new GameComponentBuilderException(pluginName, "missing " + name);
+			throw new GameComponentBuilderException(pluginName, "missing " + name + " for " + model());
 	}
 
 	protected abstract T model();

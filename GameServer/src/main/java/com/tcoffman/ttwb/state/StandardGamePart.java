@@ -17,7 +17,7 @@ public class StandardGamePart implements GamePart {
 	public StandardGamePart(GameComponentRef<GamePartPrototype> prototype) {
 		m_prototype = prototype;
 		m_prototype.get().effectivePlaces().map((p) -> new StandardGamePlace(() -> p, new WeakReference<StandardGamePart>(StandardGamePart.this)))
-		.forEach(m_places::add);
+				.forEach(m_places::add);
 	}
 
 	@Override
@@ -33,7 +33,12 @@ public class StandardGamePart implements GamePart {
 	@Override
 	public GamePlace findPlace(GameComponentRef<GamePlaceType> placeType) {
 		return m_places.stream().filter((p) -> p.getPrototype().get().getType().get() == placeType.get()).findAny()
-				.orElseThrow(() -> new IllegalArgumentException("part does not have a place of type \"" + placeType.get() + "\""));
+				.orElseThrow(() -> new IllegalArgumentException(StandardGamePart.this + " does not have a place of type \"" + placeType.get() + "\""));
+	}
+
+	@Override
+	public String toString() {
+		return m_prototype.get().toString();
 	}
 
 }

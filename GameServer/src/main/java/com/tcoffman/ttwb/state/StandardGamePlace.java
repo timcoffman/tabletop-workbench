@@ -51,4 +51,9 @@ public class StandardGamePlace implements GamePlace {
 		return m_incomingRelationships.stream();
 	}
 
+	@Override
+	public String toString() {
+		return m_prototype.get().toString();
+	}
+
 }

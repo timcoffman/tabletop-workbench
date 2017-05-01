@@ -17,17 +17,17 @@
 	</prototype>
 	
 	<prototype id="board">
-		<place type="core:top" grid:coords="0,0"/>
-		<place type="core:top" grid:coords="0,1"/>
-		<place type="core:top" grid:coords="0,2"/>
-		
-		<place type="core:top" grid:coords="1,0"/>
-		<place type="core:top" grid:coords="1,1"/>
-		<place type="core:top" grid:coords="1,2"/>
-		
-		<place type="core:top" grid:coords="2,0"/>
-		<place type="core:top" grid:coords="2,1"/>
-		<place type="core:top" grid:coords="2,2"/>
+		<place type="grid:0-0" grid:coords="0,0"/>
+		<place type="grid:0-1" grid:coords="0,1"/>
+		<place type="grid:0-2" grid:coords="0,2"/>
+		                     
+		<place type="grid:1-0" grid:coords="1,0"/>
+		<place type="grid:1-1" grid:coords="1,1"/>
+		<place type="grid:1-2" grid:coords="1,2"/>
+		                    
+		<place type="grid:2-0" grid:coords="2,0"/>
+		<place type="grid:2-1" grid:coords="2,1"/>
+		<place type="grid:2-2" grid:coords="2,2"/>
 	</prototype>
 
 	<prototype id="player-piece" abstract="true" doc="doc:piece">
