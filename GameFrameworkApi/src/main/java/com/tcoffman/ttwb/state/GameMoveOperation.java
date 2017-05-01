@@ -13,8 +13,8 @@ public interface GameMoveOperation extends GameOperation {
 		return visitor.visit(this);
 	}
 
-	GamePlaceInstance getSubject();
+	GamePlace getSubject();
 
-	GamePlaceInstance getTarget();
+	GamePlace getTarget();
 
 }

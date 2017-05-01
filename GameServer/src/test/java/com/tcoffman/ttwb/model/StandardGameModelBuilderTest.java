@@ -16,6 +16,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.plugin.ModelPlugin;
 import com.tcoffman.ttwb.plugin.PluginException;
 import com.tcoffman.ttwb.plugin.PluginFactory;
@@ -47,20 +48,20 @@ public class StandardGameModelBuilderTest {
 	}
 
 	@Test
-	public void cannotBuildWithInvalidModel() throws GameModelBuilderException, PluginException {
+	public void cannotBuildWithInvalidModel() throws GameComponentBuilderException, PluginException {
 		final ModelPlugin modelPlugin = mock(ModelPlugin.class);
 		when(modelPlugin.getName()).thenReturn(PLUGIN_NAME);
 		doReturn(modelPlugin).when(m_pluginFactory).create(PLUGIN_NAME);
 
 		doAnswer(invocation -> {
 			@SuppressWarnings("unchecked")
-			final Consumer<GameModelBuilderException> reporter = (Consumer<GameModelBuilderException>) invocation.getArguments()[1];
-			reporter.accept(new GameModelBuilderException(PLUGIN_NAME));
+			final Consumer<GameComponentBuilderException> reporter = (Consumer<GameComponentBuilderException>) invocation.getArguments()[1];
+			reporter.accept(new GameComponentBuilderException(PLUGIN_NAME));
 			return null;
 		}).when(modelPlugin).validate(any(GameModel.class), any(Consumer.class));
 
 		m_builder.addRequiredPlugin(PLUGIN_NAME);
-		thrown.expect(GameModelBuilderException.class);
+		thrown.expect(GameComponentBuilderException.class);
 		m_builder.build();
 	}
 

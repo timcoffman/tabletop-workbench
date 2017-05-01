@@ -1,7 +1,7 @@
 package com.tcoffman.ttwb.state.pattern;
 
-import com.tcoffman.ttwb.model.AbstractEditor;
-import com.tcoffman.ttwb.model.GameModelBuilderException;
+import com.tcoffman.ttwb.component.AbstractEditor;
+import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.model.pattern.GameAnyRolePattern;
 import com.tcoffman.ttwb.model.pattern.StandardGameRolePattern;
 
@@ -24,7 +24,7 @@ public class StandardGameAnyRolePattern extends StandardGameRolePattern implemen
 	public class Editor extends AbstractEditor<StandardGameAnyRolePattern> {
 
 		@Override
-		protected void validate() throws GameModelBuilderException {
+		protected void validate() throws GameComponentBuilderException {
 		}
 
 		@Override

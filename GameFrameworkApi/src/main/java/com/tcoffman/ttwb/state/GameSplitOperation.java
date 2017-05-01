@@ -1,6 +1,5 @@
 package com.tcoffman.ttwb.state;
 
-import com.tcoffman.ttwb.model.GamePart;
 import com.tcoffman.ttwb.model.GameQuantity;
 
 public interface GameSplitOperation extends GameOperation {

@@ -4,6 +4,10 @@ import static com.tcoffman.ttwb.plugin.CorePlugins.CORE;
 
 import java.util.Optional;
 
+import com.tcoffman.ttwb.component.AbstractEditor;
+import com.tcoffman.ttwb.component.GameComponentBuilderException;
+import com.tcoffman.ttwb.component.GameComponentRef;
+
 public class StandardGamePartInstance implements GamePartInstance {
 
 	private GameComponentRef<GamePartPrototype> m_prototype;
@@ -28,7 +32,7 @@ public class StandardGamePartInstance implements GamePartInstance {
 	public class Editor extends AbstractEditor<StandardGamePartInstance> {
 
 		@Override
-		protected void validate() throws GameModelBuilderException {
+		protected void validate() throws GameComponentBuilderException {
 			requirePresent(CORE, "prototype", m_prototype);
 		}
 

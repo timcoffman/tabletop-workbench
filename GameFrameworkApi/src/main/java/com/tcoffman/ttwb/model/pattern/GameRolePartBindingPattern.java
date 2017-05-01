@@ -9,7 +9,7 @@ public interface GameRolePartBindingPattern extends GameRolePattern {
 
 	@Override
 	default Predicate<GameRole> allows(GameState state) {
-		return (r) -> state.parts().filter(getPartPattern().allows()).anyMatch((p) -> true);
+		return (r) -> state.parts().filter(getPartPattern().matches()).anyMatch((p) -> true);
 	}
 
 	GamePartPattern getPartPattern();

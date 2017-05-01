@@ -8,6 +8,7 @@ import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ATTR_NA
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ATTR_NAME_REF;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ATTR_NAME_RESULT;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ATTR_NAME_TYPE;
+import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_INITIAL_STAGE;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_NAME;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_OP_JOIN;
@@ -29,17 +30,20 @@ import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import javax.xml.namespace.QName;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
-import com.tcoffman.ttwb.model.GameComponentRef;
+import com.tcoffman.ttwb.component.GameComponentRef;
 import com.tcoffman.ttwb.model.GameModel;
 import com.tcoffman.ttwb.model.GameModelProperty;
 import com.tcoffman.ttwb.model.GamePartInstance;
 import com.tcoffman.ttwb.model.GamePartPrototype;
-import com.tcoffman.ttwb.model.GamePlace;
+import com.tcoffman.ttwb.model.GamePlacePrototype;
 import com.tcoffman.ttwb.model.GamePlaceType;
 import com.tcoffman.ttwb.model.GameRole;
 import com.tcoffman.ttwb.model.GameRule;
@@ -49,6 +53,7 @@ import com.tcoffman.ttwb.model.pattern.GamePartPattern;
 import com.tcoffman.ttwb.model.pattern.GamePlacePattern;
 import com.tcoffman.ttwb.model.pattern.GameQuantityPattern;
 import com.tcoffman.ttwb.model.pattern.GameRolePattern;
+import com.tcoffman.ttwb.model.persistance.ModelRefManager;
 import com.tcoffman.ttwb.plugin.PluginName;
 
 public class ModelWriter {
@@ -56,17 +61,19 @@ public class ModelWriter {
 	private final GameModel m_model;
 	private final Map<Integer, Element> m_objectElements = new HashMap<Integer, Element>();
 	private final Map<Integer, String> m_objectIdentifierMap = new HashMap<Integer, String>();
-	private final Map<String, Integer> m_objectIdentifierSequences = new HashMap<String, Integer>();
+	private final ModelRefManager m_externalRefManager;
 
-	public ModelWriter(GameModel model) {
+	public ModelWriter(GameModel model, ModelRefManager externalRefManager) {
 		m_model = model;
+		m_externalRefManager = externalRefManager;
+
 	}
 
-	private Element createAndAppendElement(Element parentElement, Object boundObject, QName name) {
+	private Element createAndAppendElement(Node parentNode, Object boundObject, QName name) {
 		if (m_objectElements.containsKey(boundObject.hashCode()))
 			throw new IllegalStateException("object already bound to an element");
 
-		final Element childElement = createAndAppendElement(parentElement, name);
+		final Element childElement = createAndAppendElement(parentNode, name);
 
 		m_objectElements.put(boundObject.hashCode(), childElement);
 
@@ -77,9 +84,10 @@ public class ModelWriter {
 		return childElement;
 	}
 
-	private Element createAndAppendElement(Element parentElement, QName name) {
-		final Element childElement = parentElement.getOwnerDocument().createElementNS(name.getNamespaceURI(), name.getLocalPart());
-		parentElement.appendChild(childElement);
+	private Element createAndAppendElement(Node parentNode, QName name) {
+		final Document document = parentNode.getNodeType() == Node.DOCUMENT_NODE ? (Document) parentNode : parentNode.getOwnerDocument();
+		final Element childElement = document.createElementNS(name.getNamespaceURI(), name.getLocalPart());
+		parentNode.appendChild(childElement);
 
 		return childElement;
 
@@ -109,7 +117,12 @@ public class ModelWriter {
 		return prefix;
 	}
 
-	public void write(Element modelElement) {
+	public void write(Document modelDocument) {
+		final Element modelElement = createAndAppendElement(modelDocument, MODEL_ELEMENT_QNAME);
+		writeModel(modelElement);
+	}
+
+	public void writeModel(Element modelElement) {
 		for (final PluginName pluginName : m_model.getRequiredPlugins())
 			modelElement.setAttribute("xmlns:" + prefixFor(pluginName), pluginName.toURI().toString());
 
@@ -131,7 +144,7 @@ public class ModelWriter {
 	private void writeInitialStage(Element modelElement) {
 
 		final Element initialStageElement = createAndAppendElement(modelElement, MODEL_ELEMENT_QNAME_INITIAL_STAGE);
-		initialStageElement.setAttribute(MODEL_ATTR_NAME_REF, idFor(m_model.getInitialStage()));
+		initialStageElement.setAttribute(MODEL_ATTR_NAME_REF, idForStage(m_model.getInitialStage()));
 
 	}
 
@@ -157,8 +170,8 @@ public class ModelWriter {
 
 		final Element prototypeElement = createAndAppendElement(modelElement, prototype, MODEL_ELEMENT_QNAME_PROTOTYPE);
 
-		prototype.getRoleBinding().ifPresent((r) -> prototypeElement.setAttribute(MODEL_ATTR_NAME_BINDING, idFor(r)));
-		prototype.getExtends().ifPresent((p) -> prototypeElement.setAttribute(MODEL_ATTR_NAME_EXTENDS, idFor(p)));
+		prototype.getRoleBinding().ifPresent((r) -> prototypeElement.setAttribute(MODEL_ATTR_NAME_BINDING, idForRole(r)));
+		prototype.getExtends().ifPresent((p) -> prototypeElement.setAttribute(MODEL_ATTR_NAME_EXTENDS, idForPrototype(p)));
 
 		writePlaces(prototypeElement, prototype);
 	}
@@ -167,7 +180,7 @@ public class ModelWriter {
 		prototype.places().forEachOrdered((p) -> writePlace(prototypeElement, p));
 	}
 
-	private void writePlace(Element prototypeElement, GamePlace place) {
+	private void writePlace(Element prototypeElement, GamePlacePrototype place) {
 		final Element placeElement = createAndAppendElement(prototypeElement, MODEL_ELEMENT_QNAME_PLACE);
 
 		writePlaceType(placeElement, place.getType().get());
@@ -179,7 +192,7 @@ public class ModelWriter {
 		placeElement.setAttribute(MODEL_ATTR_NAME_TYPE, typeName);
 	}
 
-	private void writeProperties(Element element, GamePlace place) {
+	private void writeProperties(Element element, GamePlacePrototype place) {
 		place.properties().forEachOrdered((p) -> writeProperty(element, p));
 	}
 
@@ -200,7 +213,7 @@ public class ModelWriter {
 	private void writePart(Element modelElement, GamePartInstance part) {
 
 		final Element partElement = createAndAppendElement(modelElement, part, MODEL_ELEMENT_QNAME_PART);
-		partElement.setAttribute(MODEL_ATTR_NAME_PROTOTYPE_REF, idFor(part.getPrototype()));
+		partElement.setAttribute(MODEL_ATTR_NAME_PROTOTYPE_REF, idForPrototype(part.getPrototype()));
 	}
 
 	private void writeStages(Element modelElement) {
@@ -254,7 +267,7 @@ public class ModelWriter {
 	}
 
 	private void writeResult(Element operationPatternElement, GameComponentRef<GameStage> resultRef) {
-		operationPatternElement.setAttribute(MODEL_ATTR_NAME_RESULT, idFor(resultRef));
+		operationPatternElement.setAttribute(MODEL_ATTR_NAME_RESULT, idForStage(resultRef));
 	}
 
 	private void writePattern(Element operationPatternElement, GameQuantityPattern p) {
@@ -281,37 +294,61 @@ public class ModelWriter {
 		createAndAppendElement(operationPatternElement, MODEL_ELEMENT_QNAME_PATTERN_TARGET);
 	}
 
-	private String idFor(GameComponentRef<?> ref) {
+	private String idForPrototype(GameComponentRef<GamePartPrototype> ref) {
 		return idFor(ref.get());
 	}
 
-	private String idFor(Object obj) {
+	private String idForRole(GameComponentRef<GameRole> ref) {
+		return idFor(ref.get());
+	}
+
+	private String idForStage(GameComponentRef<GameStage> ref) {
+		return idFor(ref.get());
+	}
+
+	private String idFor(GamePartPrototype prototype) {
+		return idFor(prototype, () -> newIdFor(prototype));
+	}
+
+	private String idFor(GameStage stage) {
+		return idFor(stage, () -> newIdFor(stage));
+	}
+
+	private String idFor(GameRole role) {
+		return idFor(role, () -> newIdFor(role));
+	}
+
+	private String idFor(Object obj, Supplier<String> idSupplier) {
 		if (null == obj)
-			throw new IllegalArgumentException("cannot provide an id for a missing object");
+			throw new IllegalArgumentException("cannot provide an id for a missing role");
 		String id = m_objectIdentifierMap.get(obj.hashCode());
 		if (null == id)
-			m_objectIdentifierMap.put(obj.hashCode(), id = newIdFor(obj));
+			m_objectIdentifierMap.put(obj.hashCode(), id = idSupplier.get());
 		return id;
 	}
 
-	private String idFormatForType(Class<?> type) {
-		return type.getSimpleName().replaceAll("^(Game|Standard)*", "").toLowerCase();
+	private String newIdFor(GamePartPrototype prototype) {
+		final String id = m_externalRefManager.getPartPrototypeManager().nextId();
+		newIdCreatedFor(id, prototype);
+		return id;
 	}
 
-	private String newIdFor(Object obj) {
-		final String prefix = idFormatForType(obj.getClass());
-		Integer nextSequentialNumber = m_objectIdentifierSequences.get(prefix);
-		if (null == nextSequentialNumber)
-			m_objectIdentifierSequences.put(prefix, nextSequentialNumber = 1);
-		else
-			m_objectIdentifierSequences.put(prefix, ++nextSequentialNumber);
-		final String id = prefix + "-" + nextSequentialNumber;
+	private String newIdFor(GameStage stage) {
+		final String id = m_externalRefManager.getStageManager().nextId();
+		newIdCreatedFor(id, stage);
+		return id;
+	}
 
+	private String newIdFor(GameRole role) {
+		final String id = m_externalRefManager.getRoleManager().nextId();
+		newIdCreatedFor(id, role);
+		return id;
+	}
+
+	private void newIdCreatedFor(String id, Object obj) {
 		final Element existingElement = m_objectElements.get(obj.hashCode());
 		if (null != existingElement)
 			existingElement.setAttribute(MODEL_ATTR_NAME_ID, id);
-
-		return id;
 	}
 
 }

@@ -6,4 +6,6 @@ public interface GamePartRelationshipType {
 
 	PluginName getDeclaringPlugin();
 
+	String getLocalName();
+
 }

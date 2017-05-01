@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Stream;
 
-import com.tcoffman.ttwb.model.GameComponentRef;
+import com.tcoffman.ttwb.component.GameComponentRef;
 import com.tcoffman.ttwb.model.GameStage;
 
 public class StandardGameOperationPatternSet implements GameOperationPatternSet {
@@ -22,7 +22,7 @@ public class StandardGameOperationPatternSet implements GameOperationPatternSet 
 
 	@Override
 	public Stream<? extends GameOperationPattern> operations() {
-		return m_operationPatterns.parallelStream();
+		return m_operationPatterns.stream();
 	}
 
 	@Override

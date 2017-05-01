@@ -1,5 +1,7 @@
 package com.tcoffman.ttwb.model;
 
+import com.tcoffman.ttwb.component.AbstractEditor;
+import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.plugin.PluginName;
 
 public class StandardGameModelProperty implements GameModelProperty {
@@ -39,7 +41,7 @@ public class StandardGameModelProperty implements GameModelProperty {
 	public final class Editor extends AbstractEditor<StandardGameModelProperty> {
 
 		@Override
-		protected void validate() throws GameModelBuilderException {
+		protected void validate() throws GameComponentBuilderException {
 			requirePresent(m_declaringPlugin, "value", m_value);
 		}
 

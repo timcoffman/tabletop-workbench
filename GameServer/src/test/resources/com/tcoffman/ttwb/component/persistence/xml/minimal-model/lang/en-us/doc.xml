@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<documentation
+	xmlns="urn:com.tcoffman.ttwb.doc/v/1.0"
+	lang="en-us"
+	>
+	
+	<model>
+		<name format="short">Minimal</name>
+	</model>
+
+	<role id="only-role">
+			<name format="short">Only</name>
+			<name format="long">Only Role</name>
+	</role>
+	
+	<prototype id="proto-1">
+		<name format="short">P1</name>
+		<name format="long">Prototype 1</name>
+		<description>Prototype 1</description>
+	</prototype>
+	
+	<prototype id="proto-2">
+		<name format="short">P2</name>
+		<name format="long">Prototype 2</name>
+		<description>Prototype 2</description>
+	</prototype>
+		
+	<stage id="prologue">
+		<name format="short">Prologue</name>
+		<name format="long">Prologue</name>
+		<description>Prologue</description>
+	</stage>
+		
+	<stage id="epilogue">
+		<name format="short">Epilogue</name>
+		<name format="long">Epilogue</name>
+		<description>Epilogue</description>
+	</stage>
+	
+</documentation>

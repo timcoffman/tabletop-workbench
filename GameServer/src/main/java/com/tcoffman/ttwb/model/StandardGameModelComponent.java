@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Stream;
 
+import com.tcoffman.ttwb.component.AbstractEditor;
+import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.plugin.PluginName;
 
 public class StandardGameModelComponent implements GameModelComponent {
@@ -25,12 +27,12 @@ public class StandardGameModelComponent implements GameModelComponent {
 
 	@Override
 	public Stream<? extends GameModelProperty> properties() {
-		return m_properties.parallelStream();
+		return m_properties.stream();
 	}
 
 	@Override
 	public Stream<? extends GameModelComponent> components() {
-		return m_components.parallelStream();
+		return m_components.stream();
 	}
 
 	public StandardGameModelComponent(PluginName declaringPlugin, String localName) {
@@ -49,7 +51,7 @@ public class StandardGameModelComponent implements GameModelComponent {
 	public final class Editor extends AbstractEditor<StandardGameModelComponent> {
 
 		@Override
-		protected void validate() throws GameModelBuilderException {
+		protected void validate() throws GameComponentBuilderException {
 		}
 
 		@Override
@@ -58,12 +60,12 @@ public class StandardGameModelComponent implements GameModelComponent {
 		}
 
 		public Editor createProperty(PluginName declaringPlugin, String localName, AbstractEditor.Initializer<StandardGameModelProperty.Editor> initializer)
-				throws GameModelBuilderException {
+				throws GameComponentBuilderException {
 			return configure(StandardGameModelProperty.create(declaringPlugin, localName).completed(m_properties::add), initializer);
 		}
 
 		public Editor createComponent(PluginName declaringPlugin, String localName, AbstractEditor.Initializer<StandardGameModelComponent.Editor> initializer)
-				throws GameModelBuilderException {
+				throws GameComponentBuilderException {
 			return configure(StandardGameModelComponent.create(declaringPlugin, localName).completed(m_components::add), initializer);
 		}
 

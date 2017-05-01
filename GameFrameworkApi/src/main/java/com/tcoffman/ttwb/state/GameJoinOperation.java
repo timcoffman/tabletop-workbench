@@ -1,6 +1,5 @@
 package com.tcoffman.ttwb.state;
 
-import com.tcoffman.ttwb.model.GamePart;
 
 public interface GameJoinOperation extends GameOperation {
 

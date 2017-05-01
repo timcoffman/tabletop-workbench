@@ -8,6 +8,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import com.tcoffman.ttwb.component.GameComponentBuilderException;
+
 public class StandardGameModelTest {
 
 	private static final String MODEL_NAME = "MODEL_NAME";
@@ -16,7 +18,7 @@ public class StandardGameModelTest {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void cannotConfigureFurtherAfterCompletingConfiguration() throws GameModelBuilderException {
+	public void cannotConfigureFurtherAfterCompletingConfiguration() throws GameComponentBuilderException {
 		final StandardGameModel.Editor editor = StandardGameModel.create();
 		editor.setInitialStage(() -> null);
 		editor.done();
@@ -26,7 +28,7 @@ public class StandardGameModelTest {
 	}
 
 	@Test
-	public void canConfigure() throws GameModelBuilderException {
+	public void canConfigure() throws GameComponentBuilderException {
 		final StandardGameModel.Editor editor = StandardGameModel.create();
 		editor.setInitialStage(() -> null);
 		final GameModel model = editor.done();
@@ -35,7 +37,7 @@ public class StandardGameModelTest {
 	}
 
 	@Test
-	public void canConfigureModelName() throws GameModelBuilderException {
+	public void canConfigureModelName() throws GameComponentBuilderException {
 		final StandardGameModel.Editor editor = StandardGameModel.create();
 		editor.setName(MODEL_NAME);
 		editor.setInitialStage(() -> null);

@@ -5,14 +5,18 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import com.tcoffman.ttwb.component.AbstractEditor;
+import com.tcoffman.ttwb.component.GameComponentBuilderException;
+import com.tcoffman.ttwb.component.GameComponentRef;
+import com.tcoffman.ttwb.component.StandardDocumentableComponent;
 import com.tcoffman.ttwb.plugin.PluginName;
 
-public class StandardGamePartPrototype implements GamePartPrototype {
+public class StandardGamePartPrototype extends StandardDocumentableComponent implements GamePartPrototype {
 
 	private final PluginName m_declaringPlugin;
 	private Optional<GameComponentRef<GamePartPrototype>> m_extendsPrototype = Optional.empty();
 	private Optional<GameComponentRef<GameRole>> m_roleBinding = Optional.empty();
-	private final Collection<StandardGamePlace> m_places = new ArrayList<StandardGamePlace>();
+	private final Collection<StandardGamePlacePrototype> m_places = new ArrayList<StandardGamePlacePrototype>();
 
 	protected StandardGamePartPrototype(PluginName declaringPlugin) {
 		m_declaringPlugin = declaringPlugin;
@@ -29,13 +33,26 @@ public class StandardGamePartPrototype implements GamePartPrototype {
 	}
 
 	@Override
+	public Optional<GameComponentRef<GameRole>> effectiveRoleBinding() {
+		if (m_roleBinding.isPresent() || !m_extendsPrototype.isPresent())
+			return m_roleBinding;
+		else
+			return m_extendsPrototype.get().get().getRoleBinding();
+	}
+
+	@Override
 	public Optional<GameComponentRef<GamePartPrototype>> getExtends() {
 		return m_extendsPrototype;
 	}
 
 	@Override
-	public Stream<? extends GamePlace> places() {
-		return m_places.parallelStream();
+	public Stream<? extends GamePlacePrototype> places() {
+		return m_places.stream();
+	}
+
+	@Override
+	public Stream<? extends GamePlacePrototype> effectivePlaces() {
+		return Stream.concat(m_places.stream(), m_extendsPrototype.map(GameComponentRef::get).map(GamePartPrototype::places).orElse(Stream.empty()));
 	}
 
 	public static Editor create(PluginName declaringPlugin) {
@@ -46,15 +63,11 @@ public class StandardGamePartPrototype implements GamePartPrototype {
 		return new Editor();
 	}
 
-	public class Editor extends AbstractEditor<StandardGamePartPrototype> {
+	public class Editor extends StandardDocumentableComponent.Editor<StandardGamePartPrototype> {
 
 		@Override
-		protected void validate() throws GameModelBuilderException {
-		}
-
-		@Override
-		protected StandardGamePartPrototype model() {
-			return StandardGamePartPrototype.this;
+		protected void validate() throws GameComponentBuilderException {
+			super.validate();
 		}
 
 		public Editor setExtends(GameComponentRef<GamePartPrototype> prototypeRef) {
@@ -69,8 +82,8 @@ public class StandardGamePartPrototype implements GamePartPrototype {
 			return this;
 		}
 
-		public Editor createPlace(AbstractEditor.Initializer<StandardGamePlace.Editor> initializer) throws GameModelBuilderException {
-			return configure(StandardGamePlace.create(model()).completed(m_places::add), initializer);
+		public Editor createPlace(AbstractEditor.Initializer<StandardGamePlacePrototype.Editor> initializer) throws GameComponentBuilderException {
+			return configure(StandardGamePlacePrototype.create(model()).completed(m_places::add), initializer);
 		}
 
 		public Editor setAbstract(boolean isAbstract) {

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.stream.Stream;
 
-import com.tcoffman.ttwb.model.GameComponentRef;
+import com.tcoffman.ttwb.component.GameComponentRef;
 import com.tcoffman.ttwb.model.GameStage;
 
 public final class GameStateLogEntry {
@@ -19,6 +19,10 @@ public final class GameStateLogEntry {
 	public GameStateLogEntry(GameComponentRef<GameStage> forward, GameComponentRef<GameStage> rollback) {
 		m_forward = forward;
 		m_rollback = rollback;
+	}
+
+	public void append(GameStateInvertibleMutation forward) {
+		apply(forward, forward.inverted());
 	}
 
 	public void apply(GameStateMutation forward, GameStateMutation rollback) {

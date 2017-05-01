@@ -2,8 +2,8 @@ package com.tcoffman.ttwb.model.pattern;
 
 import java.util.Optional;
 
-import com.tcoffman.ttwb.model.AbstractEditor;
-import com.tcoffman.ttwb.model.GameModelBuilderException;
+import com.tcoffman.ttwb.component.AbstractEditor;
+import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.state.GameOperation;
 import com.tcoffman.ttwb.state.GameOperation.Type;
 import com.tcoffman.ttwb.state.pattern.StandardGameAnyRolePattern;
@@ -72,7 +72,7 @@ public class StandardGameOperationPattern implements GameOperationPattern {
 		}
 
 		@Override
-		protected void validate() throws GameModelBuilderException {
+		protected void validate() throws GameComponentBuilderException {
 			if (null == m_type)
 				throw new IllegalStateException("missing operation type");
 			if (null == m_rolePattern)

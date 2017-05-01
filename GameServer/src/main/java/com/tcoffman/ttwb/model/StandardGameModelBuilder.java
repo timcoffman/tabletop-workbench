@@ -1,6 +1,9 @@
 package com.tcoffman.ttwb.model;
 
-import com.tcoffman.ttwb.model.AbstractEditor.Initializer;
+import com.tcoffman.ttwb.component.AbstractEditor;
+import com.tcoffman.ttwb.component.GameComponentBuilderException;
+import com.tcoffman.ttwb.component.GameComponentRef;
+import com.tcoffman.ttwb.component.AbstractEditor.Initializer;
 import com.tcoffman.ttwb.plugin.PluginException;
 import com.tcoffman.ttwb.plugin.PluginFactory;
 import com.tcoffman.ttwb.plugin.PluginName;
@@ -16,7 +19,7 @@ public class StandardGameModelBuilder {
 		m_plugins = new PluginSet(pluginFactory);
 	}
 
-	public GameModel build() throws GameModelBuilderException {
+	public GameModel build() throws GameComponentBuilderException {
 		return m_editor.done();
 	}
 
@@ -30,7 +33,7 @@ public class StandardGameModelBuilder {
 		return this;
 	}
 
-	public StandardGameModelBuilder createRole(Initializer<StandardGameRole.Editor> initializer) throws GameModelBuilderException {
+	public StandardGameModelBuilder createRole(Initializer<StandardGameRole.Editor> initializer) throws GameComponentBuilderException {
 		m_editor.createRole(initializer);
 		return this;
 	}
@@ -40,14 +43,19 @@ public class StandardGameModelBuilder {
 		return this;
 	}
 
-	public StandardGameModelBuilder createStage(AbstractEditor.Initializer<StandardGameStage.Editor> initializer) throws GameModelBuilderException {
+	public StandardGameModelBuilder createStage(AbstractEditor.Initializer<StandardGameStage.Editor> initializer) throws GameComponentBuilderException {
 		m_editor.createStage(initializer);
 		return this;
 	}
 
 	public StandardGameModelBuilder createPrototype(PluginName declaringPlugin, AbstractEditor.Initializer<StandardGamePartPrototype.Editor> initializer)
-			throws GameModelBuilderException {
+			throws GameComponentBuilderException {
 		m_editor.createPrototype(declaringPlugin, initializer);
+		return this;
+	}
+
+	public StandardGameModelBuilder createPart(AbstractEditor.Initializer<StandardGamePartInstance.Editor> initializer) throws GameComponentBuilderException {
+		m_editor.createPart(initializer);
 		return this;
 	}
 

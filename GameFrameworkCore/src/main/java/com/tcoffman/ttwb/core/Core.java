@@ -2,9 +2,10 @@ package com.tcoffman.ttwb.core;
 
 import java.util.function.Consumer;
 
-import com.tcoffman.ttwb.model.GameComponentRef;
+import com.tcoffman.ttwb.component.GameComponentBuilderException;
+import com.tcoffman.ttwb.component.GameComponentRef;
 import com.tcoffman.ttwb.model.GameModel;
-import com.tcoffman.ttwb.model.GameModelBuilderException;
+import com.tcoffman.ttwb.model.GamePartRelationshipType;
 import com.tcoffman.ttwb.model.GamePlaceType;
 import com.tcoffman.ttwb.plugin.ModelPlugin;
 import com.tcoffman.ttwb.plugin.PluginException;
@@ -17,6 +18,7 @@ public class Core implements ModelPlugin, StatePlugin {
 
 	public static final String PLACE_PHYSICAL_TOP = "top";
 	public static final String PLACE_PHYSICAL_BOTTOM = "bottom";
+	public static final String RELATIONSHIP_PHYSICAL = "location";
 
 	private PluginName m_name;
 
@@ -37,7 +39,7 @@ public class Core implements ModelPlugin, StatePlugin {
 	}
 
 	@Override
-	public void validate(GameModel model, Consumer<GameModelBuilderException> reporter) {
+	public void validate(GameModel model, Consumer<GameComponentBuilderException> reporter) {
 		// TODO Auto-generated method stub
 
 	}
@@ -50,6 +52,45 @@ public class Core implements ModelPlugin, StatePlugin {
 			return getPlaceTypePhysicalBottom();
 		else
 			throw new PluginException(getName(), "no definition for place type \"" + localName + "\"");
+	}
+
+	@Override
+	public GameComponentRef<GamePartRelationshipType> getRelationshipType(String localName) throws PluginException {
+		if (RELATIONSHIP_PHYSICAL.equals(localName))
+			return getRelationshipTypePhysical();
+		else
+			throw new PluginException(getName(), "no definition for relationship type \"" + localName + "\"");
+	}
+
+	private GamePartRelationshipType m_location = null;
+
+	private final class CoreGameRelationshipType implements GamePartRelationshipType {
+		private final String m_localName;
+
+		public CoreGameRelationshipType(String localName) {
+			m_localName = localName;
+		}
+
+		@Override
+		public PluginName getDeclaringPlugin() {
+			return getName();
+		}
+
+		@Override
+		public String getLocalName() {
+			return m_localName;
+		}
+
+		@Override
+		public String toString() {
+			return getDeclaringPlugin().toString() + "/" + getLocalName();
+		}
+	}
+
+	private GameComponentRef<GamePartRelationshipType> getRelationshipTypePhysical() {
+		if (null == m_location)
+			m_location = new CoreGameRelationshipType(RELATIONSHIP_PHYSICAL);
+		return () -> m_location;
 	}
 
 	private GamePlaceType m_physicalTop = null;
@@ -70,6 +111,11 @@ public class Core implements ModelPlugin, StatePlugin {
 		@Override
 		public String getLocalName() {
 			return m_localName;
+		}
+
+		@Override
+		public String toString() {
+			return getDeclaringPlugin().toString() + "/" + getLocalName();
 		}
 	}
 

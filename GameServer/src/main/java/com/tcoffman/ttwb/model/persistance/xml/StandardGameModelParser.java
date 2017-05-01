@@ -1,96 +1,70 @@
 package com.tcoffman.ttwb.model.persistance.xml;
 
-import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME;
-
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
+import com.tcoffman.ttwb.component.GameComponentBuilderException;
+import com.tcoffman.ttwb.component.persistance.xml.StandardGameParser;
+import com.tcoffman.ttwb.doc.persistence.DocumentationRefResolver;
 import com.tcoffman.ttwb.model.GameModel;
-import com.tcoffman.ttwb.model.GameModelBuilderException;
 import com.tcoffman.ttwb.model.StandardGameModel;
+import com.tcoffman.ttwb.model.persistance.ModelRefResolver;
+import com.tcoffman.ttwb.model.persistance.StandardModelRefManager;
+import com.tcoffman.ttwb.persistence.xml.EventDispatcher;
 import com.tcoffman.ttwb.plugin.PluginFactory;
+import com.tcoffman.ttwb.plugin.PluginSet;
 
-public class StandardGameModelParser {
-
-	private static final XMLInputFactory s_xmlInputFactory = XMLInputFactory.newInstance();
-
-	static {
-		s_xmlInputFactory.setProperty(XMLInputFactory.IS_VALIDATING, false);
-		s_xmlInputFactory.setProperty(XMLInputFactory.IS_COALESCING, true);
-		s_xmlInputFactory.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, true);
-		s_xmlInputFactory.setProperty(XMLInputFactory.IS_REPLACING_ENTITY_REFERENCES, true);
-		s_xmlInputFactory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
-	}
-
-	private static final DocumentBuilderFactory s_documentFactory;
-	private static final DocumentBuilder s_documentBuilder;
-	private static final TransformerFactory s_transformerFactory;
-	private static final Transformer s_transformer;
-
-	static {
-		s_documentFactory = DocumentBuilderFactory.newInstance();
-		s_documentFactory.setValidating(false);
-		s_documentFactory.setCoalescing(true);
-		s_documentFactory.setNamespaceAware(true);
-		s_documentFactory.setExpandEntityReferences(true);
-		try {
-			s_documentBuilder = s_documentFactory.newDocumentBuilder();
-		} catch (final ParserConfigurationException ex) {
-			throw new RuntimeException("cannot configure xml document builder", ex);
-		}
-		s_transformerFactory = TransformerFactory.newInstance();
-		try {
-			s_transformer = s_transformerFactory.newTransformer();
-		} catch (final TransformerConfigurationException ex) {
-			throw new RuntimeException("cannot configure xml document transformer", ex);
-		}
-		s_transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-		s_transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-	}
+public class StandardGameModelParser extends StandardGameParser {
 
 	private final PluginFactory m_pluginFactory;
+	private final DocumentationRefResolver m_documentationRefResolver;
 
-	public StandardGameModelParser(PluginFactory pluginFactory) {
+	public StandardGameModelParser(PluginFactory pluginFactory, DocumentationRefResolver documentationRefResolver) {
 		m_pluginFactory = pluginFactory;
+		m_documentationRefResolver = documentationRefResolver;
 	}
 
-	public GameModel parse(InputStream is) throws XMLStreamException, GameModelBuilderException {
+	private final Map<String, StandardModelRefManager> m_resolvers = new HashMap<String, StandardModelRefManager>();
 
-		final XMLEventReader eventReader = s_xmlInputFactory.createXMLEventReader(is);
+	public ModelRefResolver createResolver(String modelId) {
+		final ModelRefResolver modelResolver = m_resolvers.get(modelId);
+		if (null == modelResolver)
+			throw new IllegalStateException("no external reference resolver for model \"" + modelId + "\"");
+		return modelResolver;
+	}
+
+	private StandardModelRefManager requireResolver(String modelId) {
+		StandardModelRefManager standardModelResolver = m_resolvers.get(modelId);
+		if (null == standardModelResolver)
+			m_resolvers.put(modelId, standardModelResolver = new StandardModelRefManager(new PluginSet(m_pluginFactory)));
+		return standardModelResolver;
+	}
+
+	public GameModel parse(InputStream is, String modelId) throws XMLStreamException, GameComponentBuilderException {
+
+		final XMLEventReader eventReader = createXMLEventReader(is);
 
 		final StandardGameModel.Editor editor = StandardGameModel.create();
-		final ModelParser modelParser = new ModelParser(m_pluginFactory, editor);
-		final EventDispatcher<GameModelBuilderException> dispatcher = EventDispatcher.from(eventReader, GameModelBuilderException.class);
-		dispatcher.on(MODEL_ELEMENT_QNAME, modelParser::parse);
-		dispatcher.other((e, d) -> d.skip());
-		return dispatcher.produce(editor::done);
+		final ModelParser modelParser = new ModelParser(editor, m_documentationRefResolver, requireResolver(modelId));
+		modelParser.parse(EventDispatcher.from(eventReader, GameComponentBuilderException.class));
+		return editor.done();
 
 	}
 
-	public void write(GameModel model, OutputStream os) throws TransformerException {
-		final ModelWriter modelWriter = new ModelWriter(model);
-		final Document document = s_documentBuilder.newDocument();
+	public void write(GameModel model, OutputStream os, String modelId) throws TransformerException {
+		final ModelWriter modelWriter = new ModelWriter(model, requireResolver(modelId));
+		final Document document = newDocument();
 
-		final Element modelElement = document.createElementNS(MODEL_ELEMENT_QNAME.getNamespaceURI(), MODEL_ELEMENT_QNAME.getLocalPart());
-		document.appendChild(modelElement);
-		modelWriter.write(modelElement);
-		s_transformer.transform(new DOMSource(document), new StreamResult(os));
+		modelWriter.write(document);
+		transform(document, os);
+
 	}
 }

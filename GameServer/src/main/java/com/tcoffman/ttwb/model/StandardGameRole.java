@@ -1,5 +1,8 @@
 package com.tcoffman.ttwb.model;
 
+import com.tcoffman.ttwb.component.AbstractEditor;
+import com.tcoffman.ttwb.component.GameComponentBuilderException;
+
 public class StandardGameRole implements GameRole {
 
 	private StandardGameRole() {
@@ -21,7 +24,7 @@ public class StandardGameRole implements GameRole {
 		}
 
 		@Override
-		protected void validate() throws GameModelBuilderException {
+		protected void validate() throws GameComponentBuilderException {
 			/* no validation necessary */
 		}
 	}

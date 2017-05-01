@@ -2,10 +2,10 @@ package com.tcoffman.ttwb.state;
 
 import com.tcoffman.ttwb.model.GameRole;
 
-public final class GameStateMutation {
+public abstract class GameStateMutation {
 
-	private final GameRole m_role;
-	private final GameOperation.Type m_type;
+	protected final GameRole m_role;
+	protected final GameOperation.Type m_type;
 
 	public GameStateMutation(GameRole role, GameOperation.Type type) {
 		m_role = role;
@@ -19,5 +19,7 @@ public final class GameStateMutation {
 	public GameOperation.Type getType() {
 		return m_type;
 	}
+
+	public abstract void apply(GameState.Mutator stateMutator);
 
 }

@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Stream;
 
+import com.tcoffman.ttwb.component.AbstractEditor;
+import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.plugin.PluginName;
 
 public class StandardGameStage implements GameStage {
@@ -21,7 +23,7 @@ public class StandardGameStage implements GameStage {
 
 	@Override
 	public Stream<? extends GameStage> stages() {
-		return m_stages.parallelStream();
+		return m_stages.stream();
 	}
 
 	@Override
@@ -40,7 +42,7 @@ public class StandardGameStage implements GameStage {
 	public class Editor extends AbstractEditor<StandardGameStage> {
 
 		@Override
-		protected void validate() throws GameModelBuilderException {
+		protected void validate() throws GameComponentBuilderException {
 			/* everything's ok */
 		}
 
@@ -55,11 +57,11 @@ public class StandardGameStage implements GameStage {
 			return this;
 		}
 
-		public Editor createRule(PluginName plugin, Initializer<StandardGameRule.Editor> initializer) throws GameModelBuilderException {
+		public Editor createRule(PluginName plugin, Initializer<StandardGameRule.Editor> initializer) throws GameComponentBuilderException {
 			return configure(StandardGameRule.create().completed(m_rules::add), initializer);
 		}
 
-		public Editor createStage(Initializer<StandardGameStage.Editor> initializer) throws GameModelBuilderException {
+		public Editor createStage(Initializer<StandardGameStage.Editor> initializer) throws GameComponentBuilderException {
 			return configure(StandardGameStage.create(model()).completed(m_stages::add), initializer);
 		}
 
@@ -72,7 +74,7 @@ public class StandardGameStage implements GameStage {
 
 	@Override
 	public Stream<GameRule> rules() {
-		return m_rules.parallelStream();
+		return m_rules.stream();
 	}
 
 }
