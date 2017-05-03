@@ -10,7 +10,6 @@ import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ATTR_NA
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ATTR_NAME_TYPE;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_INITIAL_STAGE;
-import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_NAME;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_OP_JOIN;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_OP_MOVE;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_OP_ORIENT;
@@ -126,19 +125,11 @@ public class ModelWriter {
 		for (final PluginName pluginName : m_model.getRequiredPlugins())
 			modelElement.setAttribute("xmlns:" + prefixFor(pluginName), pluginName.toURI().toString());
 
-		writeName(modelElement);
 		writeInitialStage(modelElement);
 		writeRoles(modelElement);
 		writePrototypes(modelElement);
 		writeParts(modelElement);
 		writeStages(modelElement);
-	}
-
-	private void writeName(Element modelElement) {
-
-		final Element nameElement = createAndAppendElement(modelElement, MODEL_ELEMENT_QNAME_NAME);
-		nameElement.setTextContent(m_model.getName());
-
 	}
 
 	private void writeInitialStage(Element modelElement) {

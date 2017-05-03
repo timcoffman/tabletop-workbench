@@ -5,7 +5,6 @@ import com.tcoffman.ttwb.model.GamePartRelationshipType;
 import com.tcoffman.ttwb.model.GamePlaceType;
 import com.tcoffman.ttwb.plugin.AbstractGeneralPlugin;
 import com.tcoffman.ttwb.plugin.PluginException;
-import com.tcoffman.ttwb.plugin.PluginName;
 
 public class Core extends AbstractGeneralPlugin {
 
@@ -33,26 +32,15 @@ public class Core extends AbstractGeneralPlugin {
 
 	private GamePartRelationshipType m_location = null;
 
-	private final class CoreGameRelationshipType implements GamePartRelationshipType {
-		private final String m_localName;
-
+	private final class CoreGameRelationshipType extends PluginComponent implements GamePartRelationshipType {
 		public CoreGameRelationshipType(String localName) {
-			m_localName = localName;
+			super(localName);
 		}
+	}
 
-		@Override
-		public PluginName getDeclaringPlugin() {
-			return getName();
-		}
-
-		@Override
-		public String getLocalName() {
-			return m_localName;
-		}
-
-		@Override
-		public String toString() {
-			return getDeclaringPlugin().toString() + "/" + getLocalName();
+	private class CoreGamePlaceType extends PluginComponent implements GamePlaceType {
+		public CoreGamePlaceType(String localName) {
+			super(localName);
 		}
 	}
 
@@ -64,29 +52,6 @@ public class Core extends AbstractGeneralPlugin {
 
 	private GamePlaceType m_physicalTop = null;
 	private GamePlaceType m_physicalBottom = null;
-
-	private final class CoreGamePlaceType implements GamePlaceType {
-		private final String m_localName;
-
-		public CoreGamePlaceType(String localName) {
-			m_localName = localName;
-		}
-
-		@Override
-		public PluginName getDeclaringPlugin() {
-			return getName();
-		}
-
-		@Override
-		public String getLocalName() {
-			return m_localName;
-		}
-
-		@Override
-		public String toString() {
-			return getDeclaringPlugin().toString() + "/" + getLocalName();
-		}
-	}
 
 	private GameComponentRef<GamePlaceType> getPlaceTypePhysicalTop() {
 		if (null == m_physicalTop)

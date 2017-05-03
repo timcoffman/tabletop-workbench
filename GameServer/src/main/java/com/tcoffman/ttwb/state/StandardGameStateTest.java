@@ -96,7 +96,7 @@ public class StandardGameStateTest {
 		public GameComponentRef<GameComponentDocumentation> gen(String shortName, String longName, String description) throws GameComponentBuilderException {
 			final StandardComponentDocumentation doc = StandardComponentDocumentation.create().setName(SHORT, shortName).setName(LONG, longName)
 					.setDescription(description).done();
-			return () -> doc;
+			return doc.self();
 		}
 	}
 
@@ -120,9 +120,10 @@ public class StandardGameStateTest {
 
 		m_model = new StandardGameModelBuilder(m_pluginFactory)
 		.addRequiredPlugin(CORE)
-		.setName(MODEL_NAME)
+		.setDocumentation(doc.gen("MODEL"))
 
 		.createRole((r) -> {
+			r.setDocumentation(doc.gen("ROLE"));
 		})
 		.createPrototype(CORE, (proto) -> {
 
@@ -146,19 +147,21 @@ public class StandardGameStateTest {
 		})
 
 		.createPart((p) -> {
-			p.setPrototype(() -> m_prototype);
+			p.setPrototype(GameComponentRef.deferred(() -> m_prototype));
 		})
 		.createPart((p) -> {
-			p.setPrototype(() -> m_prototype);
+			p.setPrototype(GameComponentRef.deferred(() -> m_prototype));
 		})
 
 		.createStage((s) -> {
 			s.completed(capturePrologue);
+			s.setDocumentation(doc.gen("PROLOGUE"));
 
 			s.setTerminal(false);
 			s.createRule(CORE, (r) -> {
+				r.setDocumentation(doc.gen("RULE"));
 
-				r.setResult(() -> m_sagaStage);
+				r.setResult(GameComponentRef.deferred(() -> m_sagaStage));
 
 				r.createOperationPattern((p) -> {
 
@@ -174,13 +177,15 @@ public class StandardGameStateTest {
 		.createStage(
 				(s) -> {
 					s.completed(captureSaga);
+					s.setDocumentation(doc.gen("SAGA"));
 
 					s.setTerminal(false);
 					s.createRule(
 							CORE,
 							(r) -> {
+								r.setDocumentation(doc.gen("RULE"));
 
-								r.setResult(() -> m_epilogueStage);
+								r.setResult(GameComponentRef.deferred(() -> m_epilogueStage));
 
 								r.createOperationPattern((p) -> {
 
@@ -188,14 +193,14 @@ public class StandardGameStateTest {
 
 									p.setRolePattern(StandardGameAnyRolePattern.create().done());
 
-									final GamePartPattern subjectPartPattern = StandardFilterPartPattern.create().setMatchPrototype(() -> m_prototype)
-											.done();
+									final GamePartPattern subjectPartPattern = StandardFilterPartPattern.create()
+													.setMatchPrototype(GameComponentRef.deferred(() -> m_prototype)).done();
 									final GamePlacePattern subjectPlacePattern = StandardFilterPlacePattern.create().setPartPattern(subjectPartPattern)
 											.setMatchPlaceType(placeTypeBottom).done();
 									p.setSubjectPlacePattern(subjectPlacePattern);
 
-									final GamePartPattern targetPartPattern = StandardFilterPartPattern.create().setMatchPrototype(() -> m_prototype)
-											.done();
+									final GamePartPattern targetPartPattern = StandardFilterPartPattern.create()
+													.setMatchPrototype(GameComponentRef.deferred(() -> m_prototype)).done();
 									final GamePlacePattern targetPlacePattern = StandardFilterPlacePattern.create().setPartPattern(targetPartPattern)
 											.setMatchPlaceType(placeTypeTop).done();
 									p.setTargetPlacePattern(targetPlacePattern);
@@ -208,11 +213,12 @@ public class StandardGameStateTest {
 
 				.createStage((s) -> {
 					s.completed(captureEpilogue);
+					s.setDocumentation(doc.gen("EPILOGUE"));
 
 					s.setTerminal(true);
 				})
 
-				.setInitialStage(() -> m_prologueStage)
+				.setInitialStage(GameComponentRef.deferred(() -> m_prologueStage))
 
 				.build();
 	}
@@ -238,13 +244,13 @@ public class StandardGameStateTest {
 
 		final StandardGameState state = new StandardGameState(m_model, m_pluginFactory);
 
-		final List<StandardGameParticipant> participants = m_model.roles().map(state::assignRole).collect(Collectors.toList());
+		final List<? extends GameParticipant> participants = m_model.roles().map(state::createParticipant).collect(Collectors.toList());
 
 		final GameRunner runner = new GameRunner(state);
 		while (!state.getCurrentStage().get().isTerminal()) {
 			final GameOperationPatternSet opPatternSet = state.allowedOperations().findAny().orElseThrow(state::makeDeadEndException);
 			final StandardGameOperationSet opSet = fulfill(state, opPatternSet, participants);
-			runner.mutate(opSet);
+			runner.advance(opSet);
 		}
 
 		assertThat(state.getCurrentStage().get(), equalTo(m_epilogueStage));
@@ -252,7 +258,7 @@ public class StandardGameStateTest {
 	}
 
 	private StandardGameOperationSet fulfill(final StandardGameState state, GameOperationPatternSet opPatternSet,
-			final List<StandardGameParticipant> participants) throws GameStateException {
+			final List<? extends GameParticipant> participants) throws GameStateException {
 		final GameRole opRole = participants.stream().map(GameParticipant::getRole).findFirst().orElseThrow(state::makeDeadEndException);
 
 		final StandardGameOperationSet opSet = new StandardGameOperationSet(opPatternSet.getResult());

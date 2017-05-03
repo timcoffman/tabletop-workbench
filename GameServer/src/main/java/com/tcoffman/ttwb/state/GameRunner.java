@@ -24,7 +24,7 @@ public class GameRunner {
 
 	}
 
-	public void mutate(GameOperationSet ops) {
+	public void advance(GameOperationSet ops) {
 		final GameStateLogEntry log = new GameStateLogEntry(ops.getResult(), m_state.getCurrentStage());
 		ops.operations().forEach((op) -> {
 			op.visit(new GameOperation.Visitor<Void>() {
@@ -50,7 +50,7 @@ public class GameRunner {
 					subject.outgoingRelationships().filter((r) -> r.getType() == m_location).forEach((r) -> {
 						log.append(new GameStateRemoveRelationship(op.getRole(), op.getType(), r.getType(), r.getSource().get(), r.getDestination().get()));
 					});
-					log.append(new GameStateAddRelationship(op.getRole(), op.getType(), () -> m_location, subject, target));
+					log.append(new GameStateAddRelationship(op.getRole(), op.getType(), m_location.self(), subject, target));
 					return null;
 				}
 

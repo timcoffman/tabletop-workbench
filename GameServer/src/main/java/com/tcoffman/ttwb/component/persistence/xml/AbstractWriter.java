@@ -13,6 +13,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import com.tcoffman.ttwb.component.GameComponent;
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.component.GameComponentRef;
 import com.tcoffman.ttwb.plugin.PluginName;
@@ -26,15 +27,15 @@ public abstract class AbstractWriter {
 	protected Element createAndAppendElement(Node parentNode, Object boundObject, QName name) {
 		if (m_objectElements.containsKey(boundObject.hashCode()))
 			throw new IllegalStateException("object already bound to an element");
-	
+
 		final Element childElement = createAndAppendElement(parentNode, name);
-	
+
 		m_objectElements.put(boundObject.hashCode(), childElement);
-	
+
 		final String id = m_objectIdentifierMap.get(boundObject.hashCode());
 		if (null != id)
 			childElement.setAttribute(STATE_ATTR_NAME_ID, id);
-	
+
 		return childElement;
 	}
 
@@ -42,9 +43,9 @@ public abstract class AbstractWriter {
 		final Document document = parentNode.getNodeType() == Node.DOCUMENT_NODE ? (Document) parentNode : parentNode.getOwnerDocument();
 		final Element childElement = document.createElementNS(name.getNamespaceURI(), name.getLocalPart());
 		parentNode.appendChild(childElement);
-	
+
 		return childElement;
-	
+
 	}
 
 	private final Map<PluginName, String> m_namespaces = new HashMap<PluginName, String>();
@@ -63,17 +64,21 @@ public abstract class AbstractWriter {
 		String prefix = m_namespaces.get(pluginName);
 		if (null != prefix)
 			return prefix;
-	
+
 		prefix = nextAvailablePrefix(pluginName.getQualifiedName().replaceAll(".*[^a-zA-Z]", "").toLowerCase());
-	
+
 		m_namespacePrefixes.put(prefix, pluginName);
 		m_namespaces.put(pluginName, prefix);
-	
+
 		return prefix;
 	}
 
-	protected Supplier<IllegalArgumentException> missingComponent(GameComponentRef<?> componentRef) {
+	protected Supplier<IllegalArgumentException> missingComponent(GameComponentRef<? extends GameComponent> componentRef) {
 		return () -> new IllegalArgumentException("missing reference to component " + componentRef);
+	}
+
+	protected Supplier<IllegalArgumentException> missingComponent(GameComponent component) {
+		return () -> new IllegalArgumentException("missing reference to component " + component);
 	}
 
 	protected String idFor(Object obj, Supplier<String> idSupplier) {

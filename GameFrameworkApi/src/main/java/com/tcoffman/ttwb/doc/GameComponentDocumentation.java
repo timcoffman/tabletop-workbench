@@ -1,7 +1,8 @@
 package com.tcoffman.ttwb.doc;
 
+import com.tcoffman.ttwb.component.GameComponent;
 
-public interface GameComponentDocumentation {
+public interface GameComponentDocumentation extends GameComponent {
 
 	public enum Format {
 		SHORT, LONG

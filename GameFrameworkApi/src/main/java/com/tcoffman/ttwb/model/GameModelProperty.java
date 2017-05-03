@@ -1,12 +1,8 @@
 package com.tcoffman.ttwb.model;
 
-import com.tcoffman.ttwb.plugin.PluginName;
+import com.tcoffman.ttwb.component.GamePluginComponent;
 
-public interface GameModelProperty {
-
-	PluginName getDeclaringPlugin();
-
-	String getLocalName();
+public interface GameModelProperty extends GamePluginComponent {
 
 	String getValue();
 }

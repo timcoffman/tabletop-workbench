@@ -1,7 +1,18 @@
 package com.tcoffman.ttwb.component;
 
+public abstract class StandardComponent implements GameComponent {
 
-public abstract class StandardComponent {
+	@Override
+	public <T extends GameComponent> GameComponentRef<T> self() {
+		return new ComponentSelfRef<T>();
+	}
+
+	private final class ComponentSelfRef<T extends GameComponent> extends GameComponentRef<T> {
+		@Override
+		public T get() {
+			return (T) StandardComponent.this;
+		}
+	}
 
 	public abstract class Editor<T extends StandardComponent> extends AbstractEditor<T> {
 

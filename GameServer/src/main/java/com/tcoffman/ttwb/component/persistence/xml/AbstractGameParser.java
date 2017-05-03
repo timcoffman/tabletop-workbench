@@ -10,6 +10,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.StartElement;
 
 import com.tcoffman.ttwb.component.AbstractEditor;
+import com.tcoffman.ttwb.component.GameComponent;
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.component.GameComponentRef;
 import com.tcoffman.ttwb.persistence.xml.EventDispatcher;
@@ -76,7 +77,7 @@ public abstract class AbstractGameParser {
 	}
 
 	protected final <E extends AbstractEditor<?>> void createAndInitialize(Creator<E> creator, XmlInitializer<E> initializer) throws XMLStreamException,
-	GameComponentBuilderException {
+			GameComponentBuilderException {
 		try {
 
 			creator.create((e) -> {
@@ -97,15 +98,16 @@ public abstract class AbstractGameParser {
 		}
 	}
 
-	protected interface ModelPluginLookup<T> {
+	protected interface ModelPluginLookup<T extends GameComponent> {
 		GameComponentRef<T> apply(ModelPlugin plugin, String localName) throws PluginException;
 	}
 
-	protected <T> GameComponentRef<T> parseRef(String ref, StartElement startElement, ModelPluginLookup<T> pluginLookup) throws GameComponentBuilderException {
+	protected <T extends GameComponent> GameComponentRef<T> parseRef(String ref, StartElement startElement, ModelPluginLookup<T> pluginLookup)
+			throws GameComponentBuilderException {
 		return parseRef(ref, startElement.getName(), startElement.getNamespaceContext(), pluginLookup);
 	}
 
-	protected <T> GameComponentRef<T> parseRef(String ref, QName qname, NamespaceContext nsCtx, ModelPluginLookup<T> pluginLookup)
+	protected <T extends GameComponent> GameComponentRef<T> parseRef(String ref, QName qname, NamespaceContext nsCtx, ModelPluginLookup<T> pluginLookup)
 			throws GameComponentBuilderException {
 		final String[] refParts = ref.split(":", 2);
 		if (refParts.length == 0)

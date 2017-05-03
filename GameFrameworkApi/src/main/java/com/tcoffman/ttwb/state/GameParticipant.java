@@ -4,6 +4,8 @@ import com.tcoffman.ttwb.model.GameRole;
 
 public interface GameParticipant {
 
+	GameState getOwner();
+
 	GameRole getRole();
 
 }

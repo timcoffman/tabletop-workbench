@@ -6,9 +6,10 @@ import java.util.Collection;
 import java.util.stream.Stream;
 
 import com.tcoffman.ttwb.component.GameComponentRef;
+import com.tcoffman.ttwb.component.StandardComponent;
 import com.tcoffman.ttwb.model.GamePlacePrototype;
 
-public class StandardGamePlace implements GamePlace {
+public class StandardGamePlace extends StandardComponent implements GamePlace {
 
 	private final Reference<StandardGamePart> m_owner;
 	private final GameComponentRef<GamePlacePrototype> m_prototype;

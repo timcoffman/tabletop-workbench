@@ -2,7 +2,9 @@ package com.tcoffman.ttwb.model;
 
 import java.util.stream.Stream;
 
-public interface GameStage extends GameStageContainer {
+import com.tcoffman.ttwb.component.GameDocumentableComponent;
+
+public interface GameStage extends GameStageContainer, GameDocumentableComponent {
 
 	boolean isTerminal();
 

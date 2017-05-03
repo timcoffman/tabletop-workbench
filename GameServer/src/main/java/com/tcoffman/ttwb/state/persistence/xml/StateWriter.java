@@ -1,6 +1,7 @@
 package com.tcoffman.ttwb.state.persistence.xml;
 
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_NS;
+import static com.tcoffman.ttwb.state.persistence.xml.XmlConstants.STATE_ATTR_NAME_BINDING;
 import static com.tcoffman.ttwb.state.persistence.xml.XmlConstants.STATE_ATTR_NAME_DST;
 import static com.tcoffman.ttwb.state.persistence.xml.XmlConstants.STATE_ATTR_NAME_MODEL;
 import static com.tcoffman.ttwb.state.persistence.xml.XmlConstants.STATE_ATTR_NAME_PROTOTYPE_REF;
@@ -10,10 +11,10 @@ import static com.tcoffman.ttwb.state.persistence.xml.XmlConstants.STATE_ATTR_NA
 import static com.tcoffman.ttwb.state.persistence.xml.XmlConstants.STATE_ELEMENT_QNAME;
 import static com.tcoffman.ttwb.state.persistence.xml.XmlConstants.STATE_ELEMENT_QNAME_CURRENT_STAGE;
 import static com.tcoffman.ttwb.state.persistence.xml.XmlConstants.STATE_ELEMENT_QNAME_PART;
+import static com.tcoffman.ttwb.state.persistence.xml.XmlConstants.STATE_ELEMENT_QNAME_PARTICIPANT;
 import static com.tcoffman.ttwb.state.persistence.xml.XmlConstants.STATE_ELEMENT_QNAME_PARTS;
 import static com.tcoffman.ttwb.state.persistence.xml.XmlConstants.STATE_ELEMENT_QNAME_RELATIONSHIP;
 import static com.tcoffman.ttwb.state.persistence.xml.XmlConstants.STATE_ELEMENT_QNAME_RELATIONSHIPS;
-import static com.tcoffman.ttwb.state.persistence.xml.XmlConstants.STATE_ELEMENT_QNAME_ROLE;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -33,6 +34,7 @@ import com.tcoffman.ttwb.model.persistance.ModelRefResolver;
 import com.tcoffman.ttwb.plugin.PluginName;
 import com.tcoffman.ttwb.state.GamePart;
 import com.tcoffman.ttwb.state.GamePartRelationship;
+import com.tcoffman.ttwb.state.GameParticipant;
 import com.tcoffman.ttwb.state.GamePlace;
 import com.tcoffman.ttwb.state.GameState;
 
@@ -65,7 +67,7 @@ public class StateWriter extends AbstractWriter {
 		stateElement.setAttribute("xmlns:" + PREFIX_MODEL, MODEL_NS);
 
 		writeCurrentStage(stateElement);
-		writeRoles(stateElement);
+		writeParticipants(stateElement);
 		writeParts(stateElement);
 		writeRelationships(stateElement);
 	}
@@ -77,16 +79,16 @@ public class StateWriter extends AbstractWriter {
 
 	}
 
-	private void writeRoles(Element stateElement) {
+	private void writeParticipants(Element stateElement) {
 
-		m_state.roles().forEachOrdered((r) -> writeRole(stateElement, r));
+		m_state.participants().forEachOrdered((p) -> writeParticipant(stateElement, p));
 
 	}
 
-	private void writeRole(Element stateElement, GameRole role) {
+	private void writeParticipant(Element stateElement, GameParticipant participant) {
 
-		createAndAppendElement(stateElement, role, STATE_ELEMENT_QNAME_ROLE);
-
+		final Element participantElement = createAndAppendElement(stateElement, participant, STATE_ELEMENT_QNAME_PARTICIPANT);
+		participantElement.setAttribute(STATE_ATTR_NAME_BINDING, externalIdForRole(participant.getRole()));
 	}
 
 	private void writeProperties(Element element, GamePlacePrototype place) {
@@ -134,6 +136,14 @@ public class StateWriter extends AbstractWriter {
 		final GamePart dstPart = dstPlace.getOwner();
 		final GamePlaceType dstPlaceType = dstPlace.getPrototype().get().getType().get();
 		partElement.setAttribute(STATE_ATTR_NAME_DST, idFor(dstPart) + "/" + prefixFor(dstPlaceType.getDeclaringPlugin()) + ":" + dstPlaceType.getLocalName());
+	}
+
+	private String externalIdForRole(GameRole role) {
+		return PREFIX_MODEL + ":" + m_modelResolver.getRoleResolver().lookupId(role).orElseThrow(missingComponent(role));
+	}
+
+	private String externalIdForRole(GameComponentRef<GameRole> componentRef) {
+		return PREFIX_MODEL + ":" + m_modelResolver.getRoleResolver().lookupId(componentRef).orElseThrow(missingComponent(componentRef));
 	}
 
 	private String externalIdForPartPrototype(GameComponentRef<GamePartPrototype> componentRef) {

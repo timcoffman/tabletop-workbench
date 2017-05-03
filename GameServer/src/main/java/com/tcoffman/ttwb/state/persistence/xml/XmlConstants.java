@@ -5,7 +5,7 @@ import javax.xml.namespace.QName;
 public final class XmlConstants {
 	public static final String STATE_NS = "urn:com.tcoffman.ttwb.state/v/1.0";
 	public static final QName STATE_ELEMENT_QNAME = new QName(STATE_NS, "state");
-	public static final QName STATE_ELEMENT_QNAME_ROLE = new QName(STATE_NS, "role");
+	public static final QName STATE_ELEMENT_QNAME_PARTICIPANT = new QName(STATE_NS, "participant");
 	public static final QName STATE_ELEMENT_QNAME_PARTS = new QName(STATE_NS, "parts");
 	public static final QName STATE_ELEMENT_QNAME_PART = new QName(STATE_NS, "part");
 	public static final QName STATE_ELEMENT_QNAME_RELATIONSHIPS = new QName(STATE_NS, "relationships");

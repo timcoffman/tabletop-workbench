@@ -46,13 +46,20 @@ public class StandardGameStateParserTest {
 	private GameModel m_minimalModel;
 	private static final String COMPLETE_MODEL_ID = "complete-model";
 	private static final String MINIMAL_MODEL_ID = "minimal-model";
-	private static final String DOC_NAME = "COMPONENT-NAME";
-	private static final String DOC_DESC = "COMPONENT-DESC";
 	private StandardGameStateParser m_standardGameStateCompleteParser;
 	private StandardGameStateParser m_standardGameStateMinimalParser;
 
 	private interface CombinedPlugin extends ModelPlugin, StatePlugin {
 
+	}
+
+	private GameComponentRef<GameComponentDocumentation> mockDocumentationForId(final String id) {
+		final GameComponentDocumentation documentation = mock(GameComponentDocumentation.class);
+		when(documentation.getName(any(GameComponentDocumentation.Format.class))).thenReturn(id);
+		when(documentation.getDescription()).thenReturn(id);
+		when(documentation.toString()).thenReturn(id);
+		final GameComponentRef<GameComponentDocumentation> docRef = GameComponentRef.wrap(documentation);
+		return docRef;
 	}
 
 	@Before
@@ -77,19 +84,21 @@ public class StandardGameStateParserTest {
 		});
 
 		@SuppressWarnings("unchecked")
-		final GameComponentRefResolver<GameComponentDocumentation> prototypeDocumentationResolver = mock(GameComponentRefResolver.class);
-		when(prototypeDocumentationResolver.lookup(anyString())).thenAnswer(invocation -> {
+		final GameComponentRefResolver<GameComponentDocumentation> genericDocumentationResolver = mock(GameComponentRefResolver.class);
+		when(genericDocumentationResolver.lookup(anyString())).thenAnswer(invocation -> {
 			final String id = (String) invocation.getArguments()[0];
-			final GameComponentDocumentation documentation = mock(GameComponentDocumentation.class);
-			when(documentation.getName(any(GameComponentDocumentation.Format.class))).thenReturn(id);
-			when(documentation.getDescription()).thenReturn(id);
-			when(documentation.toString()).thenReturn(id);
-			final GameComponentRef<GameComponentDocumentation> docRef = () -> documentation;
+			final GameComponentRef<GameComponentDocumentation> docRef = mockDocumentationForId(id);
 			return Optional.of(docRef);
 		});
 
 		final DocumentationRefResolver documentationRefResolver = mock(DocumentationRefResolver.class);
-		when(documentationRefResolver.getPrototypeResolver()).thenReturn(prototypeDocumentationResolver);
+		when(documentationRefResolver.getModel()).thenAnswer(invocation -> {
+			return mockDocumentationForId("model");
+		});
+		when(documentationRefResolver.getPrototypeResolver()).thenReturn(genericDocumentationResolver);
+		when(documentationRefResolver.getStageResolver()).thenReturn(genericDocumentationResolver);
+		when(documentationRefResolver.getRoleResolver()).thenReturn(genericDocumentationResolver);
+		when(documentationRefResolver.getRuleResolver()).thenReturn(genericDocumentationResolver);
 
 		final StandardGameModelParser modelParser = new StandardGameModelParser(m_pluginFactory, documentationRefResolver);
 
@@ -106,7 +115,8 @@ public class StandardGameStateParserTest {
 		assertThat(state, notNullValue());
 		assertThat(state.getModel(), equalTo(m_completeModel));
 
-		m_standardGameStateCompleteParser.write(state, System.out, COMPLETE_MODEL_ID);
+		// m_standardGameStateCompleteParser.write(state, System.out,
+		// COMPLETE_MODEL_ID);
 	}
 
 	@Test
@@ -115,7 +125,8 @@ public class StandardGameStateParserTest {
 		assertThat(state, notNullValue());
 		assertThat(state.getModel(), equalTo(m_minimalModel));
 
-		m_standardGameStateMinimalParser.write(state, System.out, MINIMAL_MODEL_ID);
+		// m_standardGameStateMinimalParser.write(state, System.out,
+		// MINIMAL_MODEL_ID);
 	}
 
 	@Test

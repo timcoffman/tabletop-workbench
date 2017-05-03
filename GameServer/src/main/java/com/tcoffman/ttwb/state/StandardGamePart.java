@@ -6,17 +6,18 @@ import java.util.Collection;
 import java.util.stream.Stream;
 
 import com.tcoffman.ttwb.component.GameComponentRef;
+import com.tcoffman.ttwb.component.StandardComponent;
 import com.tcoffman.ttwb.model.GamePartPrototype;
 import com.tcoffman.ttwb.model.GamePlaceType;
 
-public class StandardGamePart implements GamePart {
+public class StandardGamePart extends StandardComponent implements GamePart {
 
 	private final GameComponentRef<GamePartPrototype> m_prototype;
 	private final Collection<GamePlace> m_places = new ArrayList<GamePlace>();
 
 	public StandardGamePart(GameComponentRef<GamePartPrototype> prototype) {
 		m_prototype = prototype;
-		m_prototype.get().effectivePlaces().map((p) -> new StandardGamePlace(() -> p, new WeakReference<StandardGamePart>(StandardGamePart.this)))
+		m_prototype.get().effectivePlaces().map((p) -> new StandardGamePlace(p.self(), new WeakReference<StandardGamePart>(StandardGamePart.this)))
 				.forEach(m_places::add);
 	}
 

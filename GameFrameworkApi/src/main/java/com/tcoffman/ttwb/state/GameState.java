@@ -15,15 +15,13 @@ public interface GameState extends StateView {
 
 	GameModel getModel();
 
-	Stream<? extends GameRole> roles();
+	Stream<? extends GameParticipant> participants();
 
-	StateView roleView(GameRole role);
+	GameParticipant createParticipant(GameRole role);
 
-	GameRole addRole();
+	StateView participantView(GameParticipant participant);
 
 	Stream<? extends GameOperationPatternSet> allowedOperations();
-
-	GameParticipant assignRole(GameRole role);
 
 	void mutate(GameStateLogEntry log);
 

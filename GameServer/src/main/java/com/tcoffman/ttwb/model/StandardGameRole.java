@@ -1,9 +1,9 @@
 package com.tcoffman.ttwb.model;
 
-import com.tcoffman.ttwb.component.AbstractEditor;
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
+import com.tcoffman.ttwb.component.StandardDocumentableComponent;
 
-public class StandardGameRole implements GameRole {
+public class StandardGameRole extends StandardDocumentableComponent implements GameRole {
 
 	private StandardGameRole() {
 	}
@@ -16,16 +16,11 @@ public class StandardGameRole implements GameRole {
 		return new Editor();
 	}
 
-	public final class Editor extends AbstractEditor<StandardGameRole> {
-
-		@Override
-		protected StandardGameRole model() {
-			return StandardGameRole.this;
-		}
+	public final class Editor extends StandardDocumentableComponent.Editor<StandardGameRole> {
 
 		@Override
 		protected void validate() throws GameComponentBuilderException {
-			/* no validation necessary */
+			super.validate();
 		}
 	}
 }

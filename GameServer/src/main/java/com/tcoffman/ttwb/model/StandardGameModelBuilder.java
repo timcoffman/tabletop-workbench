@@ -1,9 +1,10 @@
 package com.tcoffman.ttwb.model;
 
 import com.tcoffman.ttwb.component.AbstractEditor;
+import com.tcoffman.ttwb.component.AbstractEditor.Initializer;
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.component.GameComponentRef;
-import com.tcoffman.ttwb.component.AbstractEditor.Initializer;
+import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 import com.tcoffman.ttwb.plugin.PluginException;
 import com.tcoffman.ttwb.plugin.PluginFactory;
 import com.tcoffman.ttwb.plugin.PluginName;
@@ -23,13 +24,13 @@ public class StandardGameModelBuilder {
 		return m_editor.done();
 	}
 
-	public StandardGameModelBuilder setName(String name) {
-		m_editor.setName(name);
+	public StandardGameModelBuilder addRequiredPlugin(PluginName name) throws PluginException {
+		m_editor.addRequiredPlugin(m_plugins.requirePlugin(name));
 		return this;
 	}
 
-	public StandardGameModelBuilder addRequiredPlugin(PluginName name) throws PluginException {
-		m_editor.addRequiredPlugin(m_plugins.requirePlugin(name));
+	public StandardGameModelBuilder setDocumentation(GameComponentRef<GameComponentDocumentation> documentation) throws PluginException {
+		m_editor.setDocumentation(documentation);
 		return this;
 	}
 

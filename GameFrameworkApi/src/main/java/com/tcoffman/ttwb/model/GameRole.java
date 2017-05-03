@@ -1,5 +1,7 @@
 package com.tcoffman.ttwb.model;
 
-public interface GameRole {
+import com.tcoffman.ttwb.component.GameDocumentableComponent;
+
+public interface GameRole extends GameDocumentableComponent {
 
 }

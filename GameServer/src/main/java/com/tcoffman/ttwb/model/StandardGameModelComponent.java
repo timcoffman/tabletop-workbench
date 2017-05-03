@@ -6,24 +6,13 @@ import java.util.stream.Stream;
 
 import com.tcoffman.ttwb.component.AbstractEditor;
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
+import com.tcoffman.ttwb.component.StandardPluginComponent;
 import com.tcoffman.ttwb.plugin.PluginName;
 
-public class StandardGameModelComponent implements GameModelComponent {
+public class StandardGameModelComponent extends StandardPluginComponent implements GameModelComponent {
 
-	private final PluginName m_declaringPlugin;
-	private final String m_localName;
 	private final Collection<GameModelProperty> m_properties = new ArrayList<GameModelProperty>();
 	private final Collection<GameModelComponent> m_components = new ArrayList<GameModelComponent>();
-
-	@Override
-	public PluginName getDeclaringPlugin() {
-		return m_declaringPlugin;
-	}
-
-	@Override
-	public String getLocalName() {
-		return m_localName;
-	}
 
 	@Override
 	public Stream<? extends GameModelProperty> properties() {
@@ -36,8 +25,7 @@ public class StandardGameModelComponent implements GameModelComponent {
 	}
 
 	public StandardGameModelComponent(PluginName declaringPlugin, String localName) {
-		m_declaringPlugin = declaringPlugin;
-		m_localName = localName;
+		super(declaringPlugin, localName);
 	}
 
 	public static Editor create(PluginName declaringPlugin, String localName) {

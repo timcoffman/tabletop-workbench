@@ -26,6 +26,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 
+import com.tcoffman.ttwb.component.GameComponent;
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.component.GameComponentRef;
 import com.tcoffman.ttwb.component.persistence.StandardComponentRefManager;
@@ -149,7 +150,7 @@ class StateParser extends AbstractGameParser {
 			final GameComponentRef<GamePart> part = m_partManager.createRef(placeRefParts[0]);
 
 			final GameComponentRef<GamePlaceType> placeType = parsePlaceType(placeRefParts[1], startElement);
-			return () -> part.get().findPlace(placeType);
+			return GameComponentRef.deferred(() -> part.get().findPlace(placeType));
 		}
 
 		public GameComponentRef<GamePlaceType> parsePlaceType(String placeTypeRef, StartElement startElement) throws GameComponentBuilderException,
@@ -175,8 +176,8 @@ class StateParser extends AbstractGameParser {
 		return lookupComponent(externalId, m_modelRefResolver.getRoleResolver()::lookup, nsCtx);
 	}
 
-	private <T> GameComponentRef<T> lookupComponent(String externalId, Function<String, Optional<GameComponentRef<T>>> lookup, NamespaceContext nsCtx)
-			throws GameComponentBuilderException {
+	private <T extends GameComponent> GameComponentRef<T> lookupComponent(String externalId, Function<String, Optional<GameComponentRef<T>>> lookup,
+			NamespaceContext nsCtx) throws GameComponentBuilderException {
 		final String[] idParts = externalId.split(":");
 		if (idParts.length == 0)
 			throw new GameComponentBuilderException(STATE_PARSER_XML, "missing component id");

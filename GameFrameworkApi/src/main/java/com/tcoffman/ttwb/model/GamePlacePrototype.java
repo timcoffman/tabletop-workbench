@@ -4,8 +4,9 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import com.tcoffman.ttwb.component.GameComponentRef;
+import com.tcoffman.ttwb.component.GameDocumentableComponent;
 
-public interface GamePlacePrototype {
+public interface GamePlacePrototype extends GameDocumentableComponent {
 
 	GamePartPrototype getOwner();
 

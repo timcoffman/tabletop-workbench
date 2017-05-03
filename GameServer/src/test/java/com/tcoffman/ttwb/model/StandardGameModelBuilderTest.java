@@ -1,5 +1,6 @@
 package com.tcoffman.ttwb.model;
 
+import static com.tcoffman.ttwb.component.TestComponentRef.emptyRef;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
@@ -17,6 +18,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
+import com.tcoffman.ttwb.component.GameComponentRef;
+import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 import com.tcoffman.ttwb.plugin.ModelPlugin;
 import com.tcoffman.ttwb.plugin.PluginException;
 import com.tcoffman.ttwb.plugin.PluginFactory;
@@ -67,10 +70,9 @@ public class StandardGameModelBuilderTest {
 
 	@Test
 	public void canBuild() throws PluginException {
-		m_builder.setName(MODEL_NAME);
-		m_builder.setInitialStage(() -> null);
+		m_builder.setInitialStage(emptyRef());
 
-		final GameModel model = m_builder.build();
+		final GameModel model = m_builder.setDocumentation(GameComponentRef.wrap(mock(GameComponentDocumentation.class))).build();
 		assertThat(model, notNullValue());
 	}
 

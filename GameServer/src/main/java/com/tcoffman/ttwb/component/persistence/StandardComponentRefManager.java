@@ -4,9 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import com.tcoffman.ttwb.component.GameComponent;
 import com.tcoffman.ttwb.component.GameComponentRef;
 
-public class StandardComponentRefManager<T> implements GameComponentRefManager<T> {
+public class StandardComponentRefManager<T extends GameComponent> implements GameComponentRefManager<T> {
 
 	private final String m_idPrefix;
 	private int m_nextId = 1;
@@ -60,7 +61,7 @@ public class StandardComponentRefManager<T> implements GameComponentRefManager<T
 		return Optional.ofNullable(id);
 	}
 
-	private static class GameComponentManagedRef<T> implements GameComponentRef<T> {
+	private static class GameComponentManagedRef<T extends GameComponent> extends GameComponentRef<T> {
 
 		private T m_component;
 

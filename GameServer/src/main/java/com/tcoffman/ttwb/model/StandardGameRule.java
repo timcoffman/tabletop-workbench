@@ -6,13 +6,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Stream;
 
-import com.tcoffman.ttwb.component.AbstractEditor;
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.component.GameComponentRef;
+import com.tcoffman.ttwb.component.StandardDocumentableComponent;
 import com.tcoffman.ttwb.model.pattern.GameOperationPattern;
 import com.tcoffman.ttwb.model.pattern.StandardGameOperationPattern;
 
-public class StandardGameRule implements GameRule {
+public class StandardGameRule extends StandardDocumentableComponent implements GameRule {
 
 	public Collection<GameOperationPattern> m_operationPatterns = new ArrayList<GameOperationPattern>();
 	private GameComponentRef<GameStage> m_result;
@@ -38,17 +38,13 @@ public class StandardGameRule implements GameRule {
 		return new Editor();
 	}
 
-	public final class Editor extends AbstractEditor<StandardGameRule> {
+	public final class Editor extends StandardDocumentableComponent.Editor<StandardGameRule> {
 
 		@Override
 		protected void validate() throws GameComponentBuilderException {
+			super.validate();
 			requireNotEmpty(CORE, "operation patterns", m_operationPatterns);
 			requirePresent(CORE, "result", m_result);
-		}
-
-		@Override
-		protected StandardGameRule model() {
-			return StandardGameRule.this;
 		}
 
 		public Editor createOperationPattern(Initializer<StandardGameOperationPattern.Editor> initializer) throws GameComponentBuilderException {

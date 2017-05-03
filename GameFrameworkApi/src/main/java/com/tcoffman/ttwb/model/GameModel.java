@@ -4,11 +4,10 @@ import java.util.Collection;
 import java.util.stream.Stream;
 
 import com.tcoffman.ttwb.component.GameComponentRef;
+import com.tcoffman.ttwb.component.GameDocumentableComponent;
 import com.tcoffman.ttwb.plugin.PluginName;
 
-public interface GameModel extends GameStageContainer {
-
-	String getName();
+public interface GameModel extends GameStageContainer, GameDocumentableComponent {
 
 	Collection<PluginName> getRequiredPlugins();
 

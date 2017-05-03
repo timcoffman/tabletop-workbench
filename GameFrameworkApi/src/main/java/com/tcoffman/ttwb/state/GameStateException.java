@@ -13,9 +13,9 @@ public class GameStateException extends PluginException {
 		if (null == gameState)
 			return message;
 		else if (null == message)
-			return "game \"" + gameState.getModel().getName() + "\"";
+			return "game \"" + gameState.getModel() + "\"";
 		else
-			return "game \"" + gameState.getModel().getName() + "\": " + message;
+			return "game \"" + gameState.getModel() + "\": " + message;
 	}
 
 	public GameStateException(PluginName pluginName, GameState gameState) {

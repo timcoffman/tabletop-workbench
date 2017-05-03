@@ -1,18 +1,19 @@
 package com.tcoffman.ttwb.model;
 
-import static org.hamcrest.CoreMatchers.equalTo;
+import static com.tcoffman.ttwb.component.TestComponentRef.emptyRef;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
+import com.tcoffman.ttwb.component.GameComponentRef;
+import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 
 public class StandardGameModelTest {
-
-	private static final String MODEL_NAME = "MODEL_NAME";
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -20,7 +21,8 @@ public class StandardGameModelTest {
 	@Test
 	public void cannotConfigureFurtherAfterCompletingConfiguration() throws GameComponentBuilderException {
 		final StandardGameModel.Editor editor = StandardGameModel.create();
-		editor.setInitialStage(() -> null);
+		editor.setDocumentation(GameComponentRef.wrap(mock(GameComponentDocumentation.class)));
+		editor.setInitialStage(emptyRef());
 		editor.done();
 
 		thrown.expect(IllegalStateException.class);
@@ -30,7 +32,8 @@ public class StandardGameModelTest {
 	@Test
 	public void canConfigure() throws GameComponentBuilderException {
 		final StandardGameModel.Editor editor = StandardGameModel.create();
-		editor.setInitialStage(() -> null);
+		editor.setDocumentation(GameComponentRef.wrap(mock(GameComponentDocumentation.class)));
+		editor.setInitialStage(emptyRef());
 		final GameModel model = editor.done();
 
 		assertThat(model, notNullValue());
@@ -39,10 +42,9 @@ public class StandardGameModelTest {
 	@Test
 	public void canConfigureModelName() throws GameComponentBuilderException {
 		final StandardGameModel.Editor editor = StandardGameModel.create();
-		editor.setName(MODEL_NAME);
-		editor.setInitialStage(() -> null);
-		final GameModel model = editor.done();
+		editor.setDocumentation(GameComponentRef.wrap(mock(GameComponentDocumentation.class)));
+		editor.setInitialStage(emptyRef());
+		editor.done();
 
-		assertThat(model.getName(), equalTo(MODEL_NAME));
 	}
 }

@@ -4,9 +4,10 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import com.tcoffman.ttwb.component.GameComponentRef;
+import com.tcoffman.ttwb.component.GameDocumentableComponent;
 import com.tcoffman.ttwb.plugin.PluginName;
 
-public interface GamePartPrototype {
+public interface GamePartPrototype extends GameDocumentableComponent {
 
 	PluginName getDeclaringPlugin();
 

@@ -47,7 +47,7 @@ public class DocumentationParser extends AbstractGameParser {
 	}
 
 	private void parseDocs(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher) throws XMLStreamException,
-			GameComponentBuilderException {
+	GameComponentBuilderException {
 		dispatcher.attr(DOC_ATTR_NAME_LANGUAGE, (v) -> System.out.println("lang=" + v));
 		dispatcher.on(DOC_ELEMENT_QNAME_MODEL, this::parseModel);
 		dispatcher.on(DOC_ELEMENT_QNAME_ROLE, this::parseRole);
@@ -58,33 +58,36 @@ public class DocumentationParser extends AbstractGameParser {
 	}
 
 	private void parseModel(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher) throws XMLStreamException,
-			GameComponentBuilderException {
-		createAndInitialize(m_editor::createModel, (d) -> new DocParser(d).parse(startElement, dispatcher));
+	GameComponentBuilderException {
+		createAndInitialize(m_editor::createModel, (d) -> {
+			d.completed(m_documentationRefManager::setModel);
+			new DocParser(d).parse(startElement, dispatcher);
+		});
 	}
 
 	private void parseRole(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher) throws XMLStreamException,
-			GameComponentBuilderException {
+	GameComponentBuilderException {
 		parseDoc(startElement, dispatcher, m_editor::createRole, m_documentationRefManager.getRoleManager());
 	}
 
 	private void parseRule(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher) throws XMLStreamException,
-			GameComponentBuilderException {
+	GameComponentBuilderException {
 		parseDoc(startElement, dispatcher, m_editor::createRule, m_documentationRefManager.getRuleManager());
 	}
 
 	private void parsePrototype(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher) throws XMLStreamException,
-			GameComponentBuilderException {
+	GameComponentBuilderException {
 		parseDoc(startElement, dispatcher, m_editor::createPrototype, m_documentationRefManager.getPrototypeManager());
 	}
 
 	private void parseStage(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher) throws XMLStreamException,
-			GameComponentBuilderException {
+	GameComponentBuilderException {
 		parseDoc(startElement, dispatcher, m_editor::createStage, m_documentationRefManager.getStageManager());
 	}
 
 	private void parseDoc(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher,
 			Creator<StandardComponentDocumentation.Editor> creator, GameComponentRefManager<GameComponentDocumentation> componentManager)
-					throws XMLStreamException, GameComponentBuilderException {
+			throws XMLStreamException, GameComponentBuilderException {
 
 		createAndInitialize(creator, (d) -> {
 			dispatcher.attr(DOC_ATTR_NAME_ID, (id) -> d.completed((doc) -> componentManager.register(doc, id)));
@@ -100,7 +103,7 @@ public class DocumentationParser extends AbstractGameParser {
 		}
 
 		public void parse(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher) throws GameComponentBuilderException,
-				XMLStreamException {
+		XMLStreamException {
 
 			dispatcher.on(DOC_ELEMENT_QNAME_NAME, this::parseName);
 			dispatcher.on(DOC_ELEMENT_QNAME_DESCRIPTION, this::parseDescription);
@@ -109,7 +112,7 @@ public class DocumentationParser extends AbstractGameParser {
 		}
 
 		private void parseName(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher) throws XMLStreamException,
-		GameComponentBuilderException {
+				GameComponentBuilderException {
 			GameComponentDocumentation.Format format;
 			final Attribute formatAttribute = startElement.getAttributeByName(new QName(DOC_ATTR_NAME_FORMAT));
 			if (null == formatAttribute)
@@ -120,7 +123,7 @@ public class DocumentationParser extends AbstractGameParser {
 		}
 
 		private void parseDescription(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher) throws XMLStreamException,
-		GameComponentBuilderException {
+				GameComponentBuilderException {
 			m_editor.setDescription(dispatcher.contents());
 		}
 

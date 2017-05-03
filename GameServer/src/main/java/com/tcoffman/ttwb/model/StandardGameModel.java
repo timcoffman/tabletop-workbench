@@ -9,21 +9,20 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import com.tcoffman.ttwb.component.AbstractEditor;
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.component.GameComponentRef;
+import com.tcoffman.ttwb.component.StandardDocumentableComponent;
 import com.tcoffman.ttwb.plugin.ModelPlugin;
 import com.tcoffman.ttwb.plugin.Plugin;
 import com.tcoffman.ttwb.plugin.PluginName;
 
-public class StandardGameModel implements GameModel {
+public class StandardGameModel extends StandardDocumentableComponent implements GameModel {
 
 	private final Set<PluginName> m_requiredPlugins = new HashSet<PluginName>();
 	private final Collection<StandardGamePartPrototype> m_prototypes = new ArrayList<StandardGamePartPrototype>();
 	private final Collection<StandardGamePartInstance> m_parts = new ArrayList<StandardGamePartInstance>();
 	private final Collection<StandardGameRole> m_roles = new ArrayList<StandardGameRole>();
 	private final Collection<GameStage> m_stages = new ArrayList<GameStage>();
-	private String m_name;
 	private GameComponentRef<GameStage> m_initialStage;
 
 	private StandardGameModel() {
@@ -35,11 +34,6 @@ public class StandardGameModel implements GameModel {
 
 	private Editor edit() {
 		return new Editor();
-	}
-
-	@Override
-	public String getName() {
-		return m_name;
 	}
 
 	@Override
@@ -77,27 +71,18 @@ public class StandardGameModel implements GameModel {
 		return m_roles.stream();
 	}
 
-	public final class Editor extends AbstractEditor<GameModel> {
+	public final class Editor extends StandardDocumentableComponent.Editor<StandardGameModel> {
 
 		private final Set<ModelPlugin> m_modelPlugins = new HashSet<ModelPlugin>();
 
 		@Override
-		protected GameModel model() {
-			return StandardGameModel.this;
-		}
-
-		@Override
 		protected void validate() throws GameComponentBuilderException {
+			super.validate();
 			final Collection<GameComponentBuilderException> errors = new ArrayList<GameComponentBuilderException>();
 			m_modelPlugins.stream().forEach((mp) -> mp.validate(StandardGameModel.this, errors::add));
 			if (!errors.isEmpty())
 				throw errors.iterator().next();
 			requirePresent(CORE, "initial stage", m_initialStage);
-		}
-
-		public void setName(String name) {
-			requireNotDone();
-			m_name = name;
 		}
 
 		public void addRequiredPlugin(Plugin plugin) {
@@ -126,10 +111,11 @@ public class StandardGameModel implements GameModel {
 
 		private void autoAssignInitialStage(StandardGameStage stage) {
 			if (null == m_initialStage)
-				setInitialStage(() -> stage);
+				setInitialStage(stage.self());
 		}
 
-		public Editor createPrototype(PluginName declaringPlugin, Initializer<StandardGamePartPrototype.Editor> initializer) throws GameComponentBuilderException {
+		public Editor createPrototype(PluginName declaringPlugin, Initializer<StandardGamePartPrototype.Editor> initializer)
+				throws GameComponentBuilderException {
 			return configure(StandardGamePartPrototype.create(declaringPlugin).completed(m_prototypes::add), initializer);
 		}
 

@@ -2,23 +2,12 @@ package com.tcoffman.ttwb.model;
 
 import com.tcoffman.ttwb.component.AbstractEditor;
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
+import com.tcoffman.ttwb.component.StandardPluginComponent;
 import com.tcoffman.ttwb.plugin.PluginName;
 
-public class StandardGameModelProperty implements GameModelProperty {
+public class StandardGameModelProperty extends StandardPluginComponent implements GameModelProperty {
 
-	private final PluginName m_declaringPlugin;
-	private final String m_localName;
 	private String m_value;
-
-	@Override
-	public PluginName getDeclaringPlugin() {
-		return m_declaringPlugin;
-	}
-
-	@Override
-	public String getLocalName() {
-		return m_localName;
-	}
 
 	@Override
 	public String getValue() {
@@ -26,8 +15,7 @@ public class StandardGameModelProperty implements GameModelProperty {
 	}
 
 	public StandardGameModelProperty(PluginName declaringPlugin, String localName) {
-		m_declaringPlugin = declaringPlugin;
-		m_localName = localName;
+		super(declaringPlugin, localName);
 	}
 
 	public static Editor create(PluginName declaringPlugin, String localName) {
@@ -42,7 +30,7 @@ public class StandardGameModelProperty implements GameModelProperty {
 
 		@Override
 		protected void validate() throws GameComponentBuilderException {
-			requirePresent(m_declaringPlugin, "value", m_value);
+			requirePresent(getDeclaringPlugin(), "value", m_value);
 		}
 
 		@Override

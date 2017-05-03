@@ -5,6 +5,8 @@ import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 
 public interface DocumentationRefManager extends DocumentationRefResolver {
 
+	void setModel(GameComponentDocumentation documentation);
+
 	GameComponentRefManager<GameComponentDocumentation> getPrototypeManager();
 
 	GameComponentRefManager<GameComponentDocumentation> getRuleManager();

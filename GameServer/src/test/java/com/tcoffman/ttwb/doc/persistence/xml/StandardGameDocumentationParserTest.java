@@ -39,7 +39,8 @@ public class StandardGameDocumentationParserTest {
 
 		assertThat(docs.prototypes().collect(Collectors.counting()), equalTo(5L));
 
-		m_standardGameDocumentationParser.write(docs, System.out, "complete-model");
+		// m_standardGameDocumentationParser.write(docs, System.out,
+		// "complete-model");
 	}
 
 	@Test

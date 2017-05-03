@@ -6,19 +6,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Stream;
 
-import com.tcoffman.ttwb.component.AbstractEditor;
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
+import com.tcoffman.ttwb.component.StandardDocumentableComponent;
 import com.tcoffman.ttwb.plugin.PluginName;
 
-public class StandardGameStage implements GameStage {
+public class StandardGameStage extends StandardDocumentableComponent implements GameStage {
 
 	private final Collection<GameRule> m_rules = new ArrayList<GameRule>();
-	private final Reference<GameStageContainer> m_container;
+	private final Reference<GameStageContainer> m_owner;
 	private final Collection<GameStage> m_stages = new ArrayList<GameStage>();
 	public boolean m_terminal = false;
 
-	private StandardGameStage(GameStageContainer container) {
-		m_container = new WeakReference<GameStageContainer>(container);
+	private StandardGameStage(GameStageContainer owner) {
+		m_owner = new WeakReference<GameStageContainer>(owner);
 	}
 
 	@Override
@@ -27,28 +27,33 @@ public class StandardGameStage implements GameStage {
 	}
 
 	@Override
-	public GameStageContainer container() {
-		return m_container.get();
+	public boolean isTerminal() {
+		return m_terminal;
 	}
 
-	public static Editor create(GameStageContainer container) {
-		return new StandardGameStage(container).edit();
+	@Override
+	public Stream<GameRule> rules() {
+		return m_rules.stream();
+	}
+
+	@Override
+	public GameStageContainer container() {
+		return m_owner.get();
+	}
+
+	public static Editor create(GameStageContainer owner) {
+		return new StandardGameStage(owner).edit();
 	}
 
 	private Editor edit() {
 		return new Editor();
 	}
 
-	public class Editor extends AbstractEditor<StandardGameStage> {
+	public class Editor extends StandardDocumentableComponent.Editor<StandardGameStage> {
 
 		@Override
 		protected void validate() throws GameComponentBuilderException {
-			/* everything's ok */
-		}
-
-		@Override
-		protected StandardGameStage model() {
-			return StandardGameStage.this;
+			super.validate();
 		}
 
 		public Editor setTerminal(boolean isTerminal) {
@@ -65,16 +70,6 @@ public class StandardGameStage implements GameStage {
 			return configure(StandardGameStage.create(model()).completed(m_stages::add), initializer);
 		}
 
-	}
-
-	@Override
-	public boolean isTerminal() {
-		return m_terminal;
-	}
-
-	@Override
-	public Stream<GameRule> rules() {
-		return m_rules.stream();
 	}
 
 }

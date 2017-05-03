@@ -1,8 +1,9 @@
 package com.tcoffman.ttwb.component.persistence;
 
+import com.tcoffman.ttwb.component.GameComponent;
 import com.tcoffman.ttwb.component.GameComponentRef;
 
-public interface GameComponentRefManager<T> extends GameComponentRefResolver<T> {
+public interface GameComponentRefManager<T extends GameComponent> extends GameComponentRefResolver<T> {
 
 	public abstract String nextId();
 

@@ -34,6 +34,7 @@ public class StandardGameState implements GameState {
 
 	private final GameModel m_model;
 	private final PluginSet m_pluginSet;
+	private final Collection<StandardGameParticipant> m_participants = new ArrayList<StandardGameParticipant>();
 	private final Collection<StandardGamePart> m_parts = new ArrayList<StandardGamePart>();
 	private final Collection<GamePartRelationship> m_relationships = new ArrayList<GamePartRelationship>();
 	private GameComponentRef<GameStage> m_currentStage;
@@ -92,8 +93,8 @@ public class StandardGameState implements GameState {
 	}
 
 	@Override
-	public StandardGameParticipant assignRole(GameRole role) {
-		return new StandardGameParticipant(role);
+	public StandardGameParticipant createParticipant(GameRole role) {
+		return new StandardGameParticipant(this, role);
 	}
 
 	@Override
@@ -121,19 +122,13 @@ public class StandardGameState implements GameState {
 	}
 
 	@Override
-	public Stream<? extends GameRole> roles() {
-		return Stream.empty();
+	public Stream<? extends GameParticipant> participants() {
+		return m_participants.stream();
 	}
 
 	@Override
-	public StateView roleView(GameRole role) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public GameRole addRole() {
-		return null;
+	public StateView participantView(GameParticipant participant) {
+		return this;
 	}
 
 	@Override

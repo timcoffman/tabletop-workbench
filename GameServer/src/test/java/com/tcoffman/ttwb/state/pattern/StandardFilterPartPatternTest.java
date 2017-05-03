@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
+import com.tcoffman.ttwb.component.GameComponentRef;
 import com.tcoffman.ttwb.model.GamePartPrototype;
 import com.tcoffman.ttwb.model.GameRole;
 import com.tcoffman.ttwb.state.GamePart;
@@ -32,14 +33,14 @@ public class StandardFilterPartPatternTest {
 		m_prototypeA = mock(GamePartPrototype.class);
 		m_prototypeB = mock(GamePartPrototype.class);
 
-		when(m_prototypeA.getRoleBinding()).thenReturn(Optional.of(() -> m_roleA));
-		when(m_prototypeB.getRoleBinding()).thenReturn(Optional.of(() -> m_roleB));
+		when(m_prototypeA.getRoleBinding()).thenReturn(Optional.of(GameComponentRef.wrap(m_roleA)));
+		when(m_prototypeB.getRoleBinding()).thenReturn(Optional.of(GameComponentRef.wrap(m_roleB)));
 
 		m_partA = mock(GamePart.class);
 		m_partB = mock(GamePart.class);
 
-		when(m_partA.getPrototype()).thenReturn(() -> m_prototypeA);
-		when(m_partB.getPrototype()).thenReturn(() -> m_prototypeB);
+		when(m_partA.getPrototype()).thenReturn(GameComponentRef.wrap(m_prototypeA));
+		when(m_partB.getPrototype()).thenReturn(GameComponentRef.wrap(m_prototypeB));
 	}
 
 	@Rule
@@ -56,7 +57,7 @@ public class StandardFilterPartPatternTest {
 
 	@Test
 	public void restrictedPatternCannotCheckDegenerateArguments() throws GameComponentBuilderException {
-		final StandardFilterPartPattern pattern = StandardFilterPartPattern.create().setMatchPrototype(() -> m_prototypeA).done();
+		final StandardFilterPartPattern pattern = StandardFilterPartPattern.create().setMatchPrototype(GameComponentRef.wrap(m_prototypeA)).done();
 		thrown.expect(NullPointerException.class);
 		assertThat(pattern.matches().test(null), equalTo(true));
 		thrown.expect(NullPointerException.class);
@@ -66,22 +67,22 @@ public class StandardFilterPartPatternTest {
 	@Test
 	public void patternFilteringOnPrototypeCanIdentifiyPrototype() throws GameComponentBuilderException {
 
-		final StandardFilterPartPattern pattern = StandardFilterPartPattern.create().setMatchPrototype(() -> m_prototypeA).done();
+		final StandardFilterPartPattern pattern = StandardFilterPartPattern.create().setMatchPrototype(GameComponentRef.wrap(m_prototypeA)).done();
 		assertThat(pattern.matches().test(m_partA), equalTo(true));
 		assertThat(pattern.matches().test(m_partB), equalTo(false));
 	}
 
 	@Test
 	public void patternFilteringOnBindingCanIdentifiyBinding() throws GameComponentBuilderException {
-		final StandardFilterPartPattern pattern = StandardFilterPartPattern.create().setMatchBinding(() -> m_roleA).done();
+		final StandardFilterPartPattern pattern = StandardFilterPartPattern.create().setMatchBinding(GameComponentRef.wrap(m_roleA)).done();
 		assertThat(pattern.matches().test(m_partA), equalTo(true));
 		assertThat(pattern.matches().test(m_partB), equalTo(false));
 	}
 
 	@Test
 	public void patternFilteringOnPrototypeAndBindingCanIdentifiyPrototypeAndBinding() throws GameComponentBuilderException {
-		final StandardFilterPartPattern pattern = StandardFilterPartPattern.create().setMatchPrototype(() -> m_prototypeA).setMatchBinding(() -> m_roleA)
-				.done();
+		final StandardFilterPartPattern pattern = StandardFilterPartPattern.create().setMatchPrototype(GameComponentRef.wrap(m_prototypeA))
+				.setMatchBinding(GameComponentRef.wrap(m_roleA)).done();
 		assertThat(pattern.matches().test(m_partA), equalTo(true));
 		assertThat(pattern.matches().test(m_partB), equalTo(false));
 	}

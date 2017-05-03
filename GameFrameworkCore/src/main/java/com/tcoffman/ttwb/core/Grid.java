@@ -7,7 +7,6 @@ import com.tcoffman.ttwb.component.GameComponentRef;
 import com.tcoffman.ttwb.model.GamePlaceType;
 import com.tcoffman.ttwb.plugin.AbstractGeneralPlugin;
 import com.tcoffman.ttwb.plugin.PluginException;
-import com.tcoffman.ttwb.plugin.PluginName;
 
 public class Grid extends AbstractGeneralPlugin {
 
@@ -26,26 +25,9 @@ public class Grid extends AbstractGeneralPlugin {
 
 	private final Map<String, GameComponentRef<GamePlaceType>> m_places = new HashMap<String, GameComponentRef<GamePlaceType>>();
 
-	private final class GridGamePlaceType implements GamePlaceType {
-		private final String m_localName;
-
+	private class GridGamePlaceType extends PluginComponent implements GamePlaceType {
 		public GridGamePlaceType(String localName) {
-			m_localName = localName;
-		}
-
-		@Override
-		public PluginName getDeclaringPlugin() {
-			return getName();
-		}
-
-		@Override
-		public String getLocalName() {
-			return m_localName;
-		}
-
-		@Override
-		public String toString() {
-			return getDeclaringPlugin().toString() + "/" + getLocalName();
+			super(localName);
 		}
 	}
 
