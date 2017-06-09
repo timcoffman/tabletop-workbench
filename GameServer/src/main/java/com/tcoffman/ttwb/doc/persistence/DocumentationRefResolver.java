@@ -12,6 +12,8 @@ public interface DocumentationRefResolver {
 
 	GameComponentRefResolver<GameComponentDocumentation> getRuleResolver();
 
+	GameComponentRefResolver<GameComponentDocumentation> getOperationResolver();
+
 	GameComponentRefResolver<GameComponentDocumentation> getRoleResolver();
 
 	GameComponentRefResolver<GameComponentDocumentation> getStageResolver();

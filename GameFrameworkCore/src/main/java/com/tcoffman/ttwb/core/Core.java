@@ -12,6 +12,11 @@ public class Core extends AbstractGeneralPlugin {
 	public static final String PLACE_PHYSICAL_BOTTOM = "bottom";
 	public static final String RELATIONSHIP_PHYSICAL = "location";
 
+	public static final String TOKEN_ROOT = "root";
+	public static final String TOKEN_SUBJECT = "subject";
+	public static final String TOKEN_TARGET = "target";
+	public static final String TOKEN_SYSTEM = "system";
+
 	@Override
 	public GameComponentRef<GamePlaceType> getPlaceType(String localName) throws PluginException {
 		if (PLACE_PHYSICAL_TOP.equals(localName))

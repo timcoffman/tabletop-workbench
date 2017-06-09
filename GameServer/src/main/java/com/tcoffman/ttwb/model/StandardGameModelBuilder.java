@@ -6,7 +6,6 @@ import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.component.GameComponentRef;
 import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 import com.tcoffman.ttwb.plugin.PluginException;
-import com.tcoffman.ttwb.plugin.PluginFactory;
 import com.tcoffman.ttwb.plugin.PluginName;
 import com.tcoffman.ttwb.plugin.PluginSet;
 
@@ -15,9 +14,9 @@ public class StandardGameModelBuilder {
 	private final StandardGameModel.Editor m_editor;
 	private final PluginSet m_plugins;
 
-	public StandardGameModelBuilder(PluginFactory pluginFactory) {
+	public StandardGameModelBuilder(PluginSet pluginSet) {
 		m_editor = StandardGameModel.create();
-		m_plugins = new PluginSet(pluginFactory);
+		m_plugins = pluginSet;
 	}
 
 	public GameModel build() throws GameComponentBuilderException {

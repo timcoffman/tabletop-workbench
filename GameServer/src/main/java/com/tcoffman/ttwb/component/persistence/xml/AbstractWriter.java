@@ -83,7 +83,7 @@ public abstract class AbstractWriter {
 
 	protected String idFor(Object obj, Supplier<String> idSupplier) {
 		if (null == obj)
-			throw new IllegalArgumentException("cannot provide an id for a missing role");
+			throw new IllegalArgumentException("cannot provide an id for a missing component");
 		String id = m_objectIdentifierMap.get(obj.hashCode());
 		if (null == id)
 			m_objectIdentifierMap.put(obj.hashCode(), id = idSupplier.get());

@@ -42,6 +42,16 @@ public class StandardGamePlace extends StandardComponent implements GamePlace {
 
 	}
 
+	public void removeOutgoingRelationship(GamePartRelationship relationship) {
+		m_outgoingRelationships.remove(relationship);
+
+	}
+
+	public void removeIncomingRelationship(GamePartRelationship relationship) {
+		m_incomingRelationships.remove(relationship);
+
+	}
+
 	@Override
 	public Stream<? extends GamePartRelationship> outgoingRelationships() {
 		return m_outgoingRelationships.stream();
@@ -54,7 +64,7 @@ public class StandardGamePlace extends StandardComponent implements GamePlace {
 
 	@Override
 	public String toString() {
-		return m_prototype.get().toString();
+		return m_owner.get().toString() + "|" + m_prototype.get().toString();
 	}
 
 }

@@ -1,12 +1,11 @@
 package com.tcoffman.ttwb.state;
 
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import com.tcoffman.ttwb.component.GameComponentRef;
 import com.tcoffman.ttwb.model.GameStage;
-import com.tcoffman.ttwb.model.pattern.GamePartPattern;
-import com.tcoffman.ttwb.model.pattern.GamePlacePattern;
+import com.tcoffman.ttwb.model.pattern.part.GamePartPattern;
+import com.tcoffman.ttwb.model.pattern.place.GamePlacePattern;
 
 public interface StateView {
 
@@ -20,12 +19,6 @@ public interface StateView {
 
 	Stream<? extends GamePlace> find(GamePlacePattern pattern);
 
-	Optional<? extends GamePlace> findOneOrZero(GamePlacePattern pattern);
-
-	Optional<? extends GamePart> findOneOrZero(GamePartPattern pattern);
-
-	GamePlace findOne(GamePlacePattern pattern);
-
-	GamePart findOne(GamePartPattern pattern);
+	QueryExecutor queryExecutor();
 
 }

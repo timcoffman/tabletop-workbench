@@ -11,6 +11,8 @@ public class StandardDocumentationRefManager implements DocumentationRefManager 
 	private final StandardComponentRefManager<GameComponentDocumentation> m_prototypeRefManager = new StandardComponentRefManager<GameComponentDocumentation>(
 			"prototype");
 	private final StandardComponentRefManager<GameComponentDocumentation> m_ruleRefManager = new StandardComponentRefManager<GameComponentDocumentation>("rule");
+	private final StandardComponentRefManager<GameComponentDocumentation> m_operationRefManager = new StandardComponentRefManager<GameComponentDocumentation>(
+			"operation");
 	private final StandardComponentRefManager<GameComponentDocumentation> m_roleRefManager = new StandardComponentRefManager<GameComponentDocumentation>("role");
 	private final StandardComponentRefManager<GameComponentDocumentation> m_stageRefManager = new StandardComponentRefManager<GameComponentDocumentation>(
 			"stage");
@@ -43,6 +45,16 @@ public class StandardDocumentationRefManager implements DocumentationRefManager 
 	@Override
 	public GameComponentRefManager<GameComponentDocumentation> getRuleManager() {
 		return m_ruleRefManager;
+	}
+
+	@Override
+	public GameComponentRefResolver<GameComponentDocumentation> getOperationResolver() {
+		return m_operationRefManager;
+	}
+
+	@Override
+	public GameComponentRefManager<GameComponentDocumentation> getOperationManager() {
+		return m_operationRefManager;
 	}
 
 	@Override

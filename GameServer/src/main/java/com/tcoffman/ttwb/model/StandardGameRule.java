@@ -9,8 +9,8 @@ import java.util.stream.Stream;
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.component.GameComponentRef;
 import com.tcoffman.ttwb.component.StandardDocumentableComponent;
-import com.tcoffman.ttwb.model.pattern.GameOperationPattern;
-import com.tcoffman.ttwb.model.pattern.StandardGameOperationPattern;
+import com.tcoffman.ttwb.model.pattern.operation.GameOperationPattern;
+import com.tcoffman.ttwb.model.pattern.operation.StandardGameOperationPattern;
 
 public class StandardGameRule extends StandardDocumentableComponent implements GameRule {
 

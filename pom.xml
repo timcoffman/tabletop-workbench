@@ -12,5 +12,6 @@
     <module>GameFrameworkApi</module>
     <module>GameFrameworkCore</module>
     <module>GameServer</module>
+    <module>GameWebApplication</module>
   </modules>
 </project>

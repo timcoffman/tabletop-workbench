@@ -9,6 +9,12 @@ import com.tcoffman.ttwb.plugin.PluginName;
 
 public interface GameModel extends GameStageContainer, GameDocumentableComponent {
 
+	Stream<? extends GameModel> importedModels();
+
+	Stream<? extends GameModel> effectiveImportedModels();
+
+	GameRole getSystemRole();
+
 	Collection<PluginName> getRequiredPlugins();
 
 	Stream<? extends GamePartPrototype> prototypes();
@@ -18,5 +24,7 @@ public interface GameModel extends GameStageContainer, GameDocumentableComponent
 	Stream<? extends GameRole> roles();
 
 	GameComponentRef<GameStage> getInitialStage();
+
+	boolean isAbstract();
 
 }

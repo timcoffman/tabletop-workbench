@@ -1,25 +1,27 @@
 package com.tcoffman.ttwb.state;
 
 import com.tcoffman.ttwb.model.GameRole;
+import com.tcoffman.ttwb.model.pattern.place.GamePlacePattern;
+import com.tcoffman.ttwb.state.mutation.GameMoveOperation;
 
 public class StandardGameMoveOperation extends StandardGameOperation implements GameMoveOperation {
 
-	private final GamePlace m_subject;
-	private final GamePlace m_target;
+	private final GamePlacePattern m_subject;
+	private final GamePlacePattern m_target;
 
-	public StandardGameMoveOperation(GameRole role, GamePlace subject, GamePlace target) {
+	public StandardGameMoveOperation(GameRole role, GamePlacePattern subject, GamePlacePattern target) {
 		super(role);
 		m_subject = subject;
 		m_target = target;
 	}
 
 	@Override
-	public GamePlace getSubject() {
+	public GamePlacePattern getSubject() {
 		return m_subject;
 	}
 
 	@Override
-	public GamePlace getTarget() {
+	public GamePlacePattern getTarget() {
 		return m_target;
 	}
 

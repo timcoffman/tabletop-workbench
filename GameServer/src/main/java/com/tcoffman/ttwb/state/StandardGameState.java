@@ -4,31 +4,31 @@ import static com.tcoffman.ttwb.plugin.CorePlugins.CORE;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.tcoffman.ttwb.component.AbstractEditor;
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.component.GameComponentRef;
+import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 import com.tcoffman.ttwb.model.GameModel;
 import com.tcoffman.ttwb.model.GamePartRelationshipType;
 import com.tcoffman.ttwb.model.GameRole;
 import com.tcoffman.ttwb.model.GameRule;
 import com.tcoffman.ttwb.model.GameStage;
-import com.tcoffman.ttwb.model.pattern.GameOperationPattern;
-import com.tcoffman.ttwb.model.pattern.GameOperationPatternSet;
-import com.tcoffman.ttwb.model.pattern.GamePartPattern;
-import com.tcoffman.ttwb.model.pattern.GamePlacePattern;
-import com.tcoffman.ttwb.model.pattern.StandardGameOperationPattern;
-import com.tcoffman.ttwb.model.pattern.StandardGameOperationPatternSet;
+import com.tcoffman.ttwb.model.pattern.operation.GameOperationPattern;
+import com.tcoffman.ttwb.model.pattern.operation.GameOperationPatternSet;
+import com.tcoffman.ttwb.model.pattern.operation.StandardGameOperationPattern;
+import com.tcoffman.ttwb.model.pattern.operation.StandardGameOperationPatternSet;
+import com.tcoffman.ttwb.model.pattern.part.GamePartPattern;
+import com.tcoffman.ttwb.model.pattern.place.GamePlacePattern;
 import com.tcoffman.ttwb.plugin.ModelPlugin;
 import com.tcoffman.ttwb.plugin.PluginException;
-import com.tcoffman.ttwb.plugin.PluginFactory;
 import com.tcoffman.ttwb.plugin.PluginName;
 import com.tcoffman.ttwb.plugin.PluginSet;
+import com.tcoffman.ttwb.state.mutation.GameStateLogEntry;
 
 public class StandardGameState implements GameState {
 
@@ -40,9 +40,9 @@ public class StandardGameState implements GameState {
 	private GameComponentRef<GameStage> m_currentStage;
 	private final List<GameStateLogEntry> m_log = new ArrayList<GameStateLogEntry>();
 
-	public StandardGameState(GameModel model, PluginFactory pluginFactory) {
+	public StandardGameState(GameModel model, PluginSet pluginSet) {
 		m_model = model;
-		m_pluginSet = new PluginSet(pluginFactory);
+		m_pluginSet = pluginSet;
 		m_currentStage = m_model.getInitialStage();
 
 		m_model.parts().map((i) -> {
@@ -52,7 +52,24 @@ public class StandardGameState implements GameState {
 		}).forEach(m_parts::add);
 	}
 
-	public final class Resetter {
+	private void createRelationship(AbstractEditor.Initializer<StandardPartRelationship.Editor> initializer) throws GameComponentBuilderException {
+		final StandardPartRelationship.Editor editor = StandardPartRelationship.create();
+		editor.completed(m_relationships::add);
+		editor.completed((r) -> ((StandardGamePlace) r.getSource().get()).addOutgoingRelationship(r));
+		editor.completed((r) -> ((StandardGamePlace) r.getDestination().get()).addIncomingRelationship(r));
+		initializer.configure(editor);
+		editor.done();
+	}
+
+	public void destroyRelationship(GamePartRelationship relationship) {
+		m_relationships.remove(relationship);
+		((StandardGamePlace) relationship.getSource().get()).removeOutgoingRelationship(relationship);
+		((StandardGamePlace) relationship.getDestination().get()).removeIncomingRelationship(relationship);
+	}
+
+	public final class Resetter implements AutoCloseable {
+		private final List<StandardPartRelationship> m_relationshipsToResolve = new ArrayList<StandardPartRelationship>();
+
 		public Resetter appendLogEntry(GameStateLogEntry logEntry) {
 			m_log.add(logEntry);
 			return this;
@@ -64,9 +81,11 @@ public class StandardGameState implements GameState {
 		}
 
 		public Resetter createRelationship(AbstractEditor.Initializer<StandardPartRelationship.Editor> initializer) throws GameComponentBuilderException {
-			final StandardPartRelationship.Editor r = StandardPartRelationship.create().completed(m_relationships::add);
-			initializer.configure(r);
-			r.done();
+			final StandardPartRelationship.Editor editor = StandardPartRelationship.create();
+			editor.completed(m_relationships::add);
+			editor.completed(m_relationshipsToResolve::add);
+			initializer.configure(editor);
+			editor.done();
 			return this;
 		}
 
@@ -74,10 +93,21 @@ public class StandardGameState implements GameState {
 		public final Predicate<GamePart> m_notTaken = (p) -> !m_takenParts.contains(p);
 
 		public GamePart takePart(GamePartPattern pattern) {
-			final GamePart part = find(pattern).filter(m_notTaken).findAny()
-					.orElseThrow(() -> new IllegalArgumentException("no un-taken parts match the pattern \"" + pattern + "\""));
+			final GamePart part = find(pattern).filter(m_notTaken).findAny().orElseThrow(() -> missingPartPattern(pattern));
 			m_takenParts.add(part);
 			return part;
+		}
+
+		private IllegalArgumentException missingPartPattern(GamePartPattern pattern) {
+			return new IllegalArgumentException("no un-taken parts match the pattern \"" + pattern + "\"");
+		}
+
+		@Override
+		public void close() throws Exception {
+			m_relationshipsToResolve.forEach((r) -> {
+				((StandardGamePlace) r.getSource().get()).addOutgoingRelationship(r);
+				((StandardGamePlace) r.getDestination().get()).addIncomingRelationship(r);
+			});
 		}
 	}
 
@@ -93,8 +123,16 @@ public class StandardGameState implements GameState {
 	}
 
 	@Override
-	public StandardGameParticipant createParticipant(GameRole role) {
-		return new StandardGameParticipant(this, role);
+	public StandardGameParticipant createParticipant(GameRole role, Object authorization) {
+		StandardGameParticipant participant = m_participants.stream().filter((s) -> s.getRole() == role).findAny().orElse(null);
+		if (null != participant) {
+			if (!participant.getAuthorization().equals(authorization))
+				throw new IllegalArgumentException("participant already exists for role \"" + role + "\", but authorization does not match");
+		} else {
+			participant = new StandardGameParticipant(this, role, authorization);
+			m_participants.add(participant);
+		}
+		return participant;
 	}
 
 	@Override
@@ -145,6 +183,8 @@ public class StandardGameState implements GameState {
 	private StandardGameOperationPattern createOperationPattern(GameOperationPattern operationPattern) {
 		final StandardGameOperationPattern.Editor editor = StandardGameOperationPattern.create();
 		editor.setType(operationPattern.getType());
+		editor.setRolePattern(operationPattern.getRolePattern());
+		editor.setDocumentation(operationPattern.getDocumentation().self(GameComponentDocumentation.class));
 		operationPattern.getQuantityPattern().ifPresent(editor::setQuantityPattern);
 		operationPattern.getSubjectPlacePattern().ifPresent(editor::setSubjectPlacePattern);
 		operationPattern.getSubjectPattern().ifPresent(editor::setSubjectPattern);
@@ -164,16 +204,27 @@ public class StandardGameState implements GameState {
 
 	@Override
 	public void mutate(GameStateLogEntry log) {
+		m_log.add(log);
 		final Mutator mutator = new Mutator() {
 
 			@Override
-			public void createRelationship(GameComponentRef<GamePartRelationshipType> relationshipType, GamePlace subject, GamePlace target) {
-				System.err.println("creating relationship " + relationshipType + ":" + subject + "->" + target);
+			public void createRelationship(GameComponentRef<GamePartRelationshipType> relationshipType, GamePlace source, GamePlace destination) {
+				try {
+					StandardGameState.this.createRelationship((r) -> {
+						r.setType(relationshipType).setSource(source.self(GamePlace.class)).setDestination(destination.self(GamePlace.class));
+					});
+				} catch (final GameComponentBuilderException ex) {
+					ex.printStackTrace();
+					throw new IllegalStateException("failed to create relationship", ex);
+				}
 			}
 
 			@Override
-			public void destroyRelationship(GameComponentRef<GamePartRelationshipType> relationshipType, GamePlace subject, GamePlace target) {
-				System.err.println("destroying relationship " + relationshipType + ":" + subject + "->" + target);
+			public void destroyRelationship(GameComponentRef<GamePartRelationshipType> relationshipType, GamePlace source, GamePlace destination) {
+				final List<? extends GamePartRelationship> relationshipsToDestroy = source.outgoingRelationships()
+						.filter((r) -> r.getType().get() == relationshipType.get()).filter((r) -> r.getDestination().get() == destination)
+						.collect(Collectors.toList());
+				relationshipsToDestroy.forEach(StandardGameState.this::destroyRelationship);
 			}
 
 		};
@@ -181,57 +232,19 @@ public class StandardGameState implements GameState {
 		m_currentStage = log.getForward();
 	}
 
-	@Override
-	public Stream<? extends GamePart> find(GamePartPattern pattern) {
-		return m_parts.stream().filter(pattern.matches());
-	}
+	private final QueryExecutor m_executor = new QueryExecutor(() -> m_parts.stream());
 
 	@Override
-	public Stream<? extends GamePlace> find(GamePlacePattern pattern) {
-		return find(pattern.getPartPattern()).flatMap(GamePart::places).filter(pattern.matches());
+	public QueryExecutor queryExecutor() {
+		return m_executor;
 	}
 
-	@Override
-	public GamePart findOne(GamePartPattern pattern) {
-		return findOneOrZero(pattern).orElseThrow(() -> new IllegalArgumentException("no places match the pattern \"" + pattern + "\""));
+	public @Override Stream<? extends GamePart> find(GamePartPattern pattern) {
+		return m_executor.find(pattern);
 	}
 
-	@Override
-	public GamePlace findOne(GamePlacePattern pattern) {
-		return findOneOrZero(pattern).orElseThrow(() -> new IllegalArgumentException("no places match the pattern \"" + pattern + "\""));
+	public @Override Stream<? extends GamePlace> find(GamePlacePattern pattern) {
+		return m_executor.find(pattern);
 	}
 
-	@Override
-	public Optional<? extends GamePart> findOneOrZero(GamePartPattern pattern) {
-		final Iterator<? extends GamePart> i = find(pattern).iterator();
-		if (!i.hasNext())
-			return Optional.empty();
-		else {
-			final GamePart p = i.next();
-			if (i.hasNext())
-				throw new IllegalArgumentException("too many parts match the pattern \"" + pattern + "\"");
-			else
-				return Optional.of(p);
-		}
-
-	}
-
-	@Override
-	public Optional<? extends GamePlace> findOneOrZero(GamePlacePattern pattern) {
-		find(pattern.getPartPattern()).forEach((p) -> {
-			System.err.println("*** " + p);
-			p.places().forEach(System.err::println);
-		});
-		final Iterator<? extends GamePlace> i = find(pattern).iterator();
-		if (!i.hasNext())
-			return Optional.empty();
-		else {
-			final GamePlace p = i.next();
-			if (i.hasNext())
-				throw new IllegalArgumentException("too many places match the pattern \"" + pattern + "\"");
-			else
-				return Optional.of(p);
-		}
-
-	}
 }

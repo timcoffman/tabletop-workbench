@@ -96,7 +96,11 @@ public class StandardComponentRefManager<T extends GameComponent> implements Gam
 
 	@Override
 	public String nextId() {
-		return m_idPrefix + "-" + m_nextId++;
+		String nextId;
+		do
+			nextId = m_idPrefix + "-" + m_nextId++;
+		while (m_managedComponents.containsKey(nextId));
+		return nextId;
 	}
 
 }

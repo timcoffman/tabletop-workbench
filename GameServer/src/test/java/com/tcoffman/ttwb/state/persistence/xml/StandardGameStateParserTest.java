@@ -13,6 +13,8 @@ import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.xml.stream.XMLStreamException;
@@ -30,24 +32,29 @@ import com.tcoffman.ttwb.core.Grid;
 import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 import com.tcoffman.ttwb.doc.persistence.DocumentationRefResolver;
 import com.tcoffman.ttwb.model.GameModel;
+import com.tcoffman.ttwb.model.StandardRootGameModel;
+import com.tcoffman.ttwb.model.persistance.ModelRefResolver;
 import com.tcoffman.ttwb.model.persistance.xml.StandardGameModelParser;
 import com.tcoffman.ttwb.plugin.ModelPlugin;
 import com.tcoffman.ttwb.plugin.PluginException;
-import com.tcoffman.ttwb.plugin.PluginFactory;
 import com.tcoffman.ttwb.plugin.PluginName;
+import com.tcoffman.ttwb.plugin.PluginSet;
 import com.tcoffman.ttwb.plugin.StatePlugin;
+import com.tcoffman.ttwb.state.GameAuthorizationManager;
 import com.tcoffman.ttwb.state.GameState;
 import com.tcoffman.ttwb.state.StandardGameState;
 
 public class StandardGameStateParserTest {
 
-	private PluginFactory m_pluginFactory;
+	private PluginSet m_pluginSet;
+	private GameAuthorizationManager m_authMgr;
 	private GameModel m_completeModel;
 	private GameModel m_minimalModel;
 	private static final String COMPLETE_MODEL_ID = "complete-model";
 	private static final String MINIMAL_MODEL_ID = "minimal-model";
 	private StandardGameStateParser m_standardGameStateCompleteParser;
 	private StandardGameStateParser m_standardGameStateMinimalParser;
+	private static final String STATE_ID = "state";
 
 	private interface CombinedPlugin extends ModelPlugin, StatePlugin {
 
@@ -64,24 +71,36 @@ public class StandardGameStateParserTest {
 
 	@Before
 	public void setup() throws PluginException, XMLStreamException {
-		m_pluginFactory = mock(PluginFactory.class);
+		m_pluginSet = mock(PluginSet.class);
 
-		when(m_pluginFactory.create(any(PluginName.class))).thenAnswer(invocation -> {
+		final Core corePlugin = new Core();
+		corePlugin.setName(CORE);
+
+		final Grid gridPlugin = new Grid();
+		gridPlugin.setName(GRID);
+
+		final Map<PluginName, StatePlugin> mockPlugins = new HashMap<PluginName, StatePlugin>();
+
+		when(m_pluginSet.requirePlugin(any(PluginName.class))).thenAnswer(invocation -> {
 			final PluginName pluginName = (PluginName) invocation.getArguments()[0];
-			if (CORE.equals(pluginName)) {
-				final Core corePlugin = new Core();
-				corePlugin.setName(CORE);
+			if (CORE.equals(pluginName))
 				return corePlugin;
-			} else if (GRID.equals(pluginName)) {
-				final Grid gridPlugin = new Grid();
-				gridPlugin.setName(GRID);
+			else if (GRID.equals(pluginName))
 				return gridPlugin;
-			} else {
-				final StatePlugin genericPlugin = mock(CombinedPlugin.class);
-				when(genericPlugin.getName()).thenReturn(pluginName);
+			else {
+				StatePlugin genericPlugin = mockPlugins.get(pluginName);
+				if (null == genericPlugin) {
+					genericPlugin = mock(CombinedPlugin.class);
+					when(genericPlugin.getName()).thenReturn(pluginName);
+					mockPlugins.put(pluginName, genericPlugin);
+				}
 				return genericPlugin;
 			}
 		});
+
+		m_authMgr = mock(GameAuthorizationManager.class);
+		when(m_authMgr.deserializeAuthorization(anyString())).thenReturn("AUTHORIZATION");
+		when(m_authMgr.serializeAuthorization(any())).thenReturn("AUTHORIZATION");
 
 		@SuppressWarnings("unchecked")
 		final GameComponentRefResolver<GameComponentDocumentation> genericDocumentationResolver = mock(GameComponentRefResolver.class);
@@ -99,19 +118,61 @@ public class StandardGameStateParserTest {
 		when(documentationRefResolver.getStageResolver()).thenReturn(genericDocumentationResolver);
 		when(documentationRefResolver.getRoleResolver()).thenReturn(genericDocumentationResolver);
 		when(documentationRefResolver.getRuleResolver()).thenReturn(genericDocumentationResolver);
+		when(documentationRefResolver.getOperationResolver()).thenReturn(genericDocumentationResolver);
 
-		final StandardGameModelParser modelParser = new StandardGameModelParser(m_pluginFactory, documentationRefResolver);
+		final StandardRootGameModel rootModel = StandardRootGameModel.create().setDocumentation(mockDocumentationForId("root")).done();
+
+		@SuppressWarnings("unchecked")
+		final GameComponentRefResolver<GameModel> importedModelResolver = mock(GameComponentRefResolver.class);
+		when(importedModelResolver.lookup("root")).thenAnswer(invocation -> Optional.of(GameComponentRef.wrap(rootModel)));
+		when(importedModelResolver.lookupId(rootModel)).thenAnswer(invocation -> Optional.of("root"));
+
+		final StandardGameModelParser modelParser = new StandardGameModelParser(m_pluginSet, importedModelResolver, documentationRefResolver);
 
 		m_completeModel = modelParser.parse(BundleHelper.getResourceAsStream(COMPLETE_MODEL_ID + "/model.xml"), COMPLETE_MODEL_ID);
-		m_standardGameStateCompleteParser = new StandardGameStateParser(m_completeModel, m_pluginFactory, modelParser.createResolver(COMPLETE_MODEL_ID));
+		m_standardGameStateCompleteParser = new StandardGameStateParser(m_authMgr, (modelId) -> new StandardGameStateParser.ModelProvider() {
+
+			@Override
+			public GameModel getModel() throws GameComponentBuilderException, XMLStreamException {
+				return m_completeModel;
+			}
+
+			@Override
+			public PluginSet getPluginSet() throws GameComponentBuilderException, XMLStreamException {
+				return m_pluginSet;
+			}
+
+			@Override
+			public ModelRefResolver getModelRefResolver() throws GameComponentBuilderException, XMLStreamException {
+				return modelParser.createResolver(modelId);
+			}
+
+		});
 
 		m_minimalModel = modelParser.parse(BundleHelper.getResourceAsStream(MINIMAL_MODEL_ID + "/model.xml"), MINIMAL_MODEL_ID);
-		m_standardGameStateMinimalParser = new StandardGameStateParser(m_minimalModel, m_pluginFactory, modelParser.createResolver(MINIMAL_MODEL_ID));
+		m_standardGameStateMinimalParser = new StandardGameStateParser(m_authMgr, (modelId) -> new StandardGameStateParser.ModelProvider() {
+
+			@Override
+			public GameModel getModel() throws GameComponentBuilderException, XMLStreamException {
+				return m_minimalModel;
+			}
+
+			@Override
+			public PluginSet getPluginSet() throws GameComponentBuilderException, XMLStreamException {
+				return m_pluginSet;
+			}
+
+			@Override
+			public ModelRefResolver getModelRefResolver() throws GameComponentBuilderException, XMLStreamException {
+				return modelParser.createResolver(modelId);
+			}
+
+		});
 	}
 
 	@Test
 	public void canParseCompleteState() throws GameComponentBuilderException, XMLStreamException, TransformerException {
-		final GameState state = m_standardGameStateCompleteParser.parse(StandardGameStateParserTest.class.getResourceAsStream("complete-state.xml"));
+		final GameState state = m_standardGameStateCompleteParser.parse(BundleHelper.class.getResourceAsStream("complete-state.xml"), STATE_ID);
 		assertThat(state, notNullValue());
 		assertThat(state.getModel(), equalTo(m_completeModel));
 
@@ -121,7 +182,7 @@ public class StandardGameStateParserTest {
 
 	@Test
 	public void canParseMinimalState() throws GameComponentBuilderException, XMLStreamException, TransformerException {
-		final GameState state = m_standardGameStateMinimalParser.parse(StandardGameStateParserTest.class.getResourceAsStream("minimal-state.xml"));
+		final GameState state = m_standardGameStateMinimalParser.parse(BundleHelper.getResourceAsStream("minimal-state.xml"), STATE_ID);
 		assertThat(state, notNullValue());
 		assertThat(state.getModel(), equalTo(m_minimalModel));
 
@@ -130,8 +191,8 @@ public class StandardGameStateParserTest {
 	}
 
 	@Test
-	public void canWriteMinimalState() throws TransformerException, PluginException, UnsupportedEncodingException {
-		final StandardGameState state = new StandardGameState(m_completeModel, m_pluginFactory);
+	public void canWriteMinimalState() throws TransformerException, PluginException, UnsupportedEncodingException, XMLStreamException {
+		final StandardGameState state = new StandardGameState(m_minimalModel, m_pluginSet);
 
 		final ByteArrayOutputStream os = new ByteArrayOutputStream();
 		m_standardGameStateCompleteParser.write(state, os, MINIMAL_MODEL_ID);

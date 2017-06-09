@@ -22,26 +22,25 @@ import com.tcoffman.ttwb.component.GameComponentRef;
 import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 import com.tcoffman.ttwb.plugin.ModelPlugin;
 import com.tcoffman.ttwb.plugin.PluginException;
-import com.tcoffman.ttwb.plugin.PluginFactory;
 import com.tcoffman.ttwb.plugin.PluginName;
+import com.tcoffman.ttwb.plugin.PluginSet;
 
 public class StandardGameModelBuilderTest {
 
-	private static final String MODEL_NAME = "MODEL_NAME";
 	private static final PluginName PLUGIN_NAME = new PluginName("a.b.c", "1.0");
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	private PluginFactory m_pluginFactory;
+	private PluginSet m_pluginSet;
 	private StandardGameModelBuilder m_builder;
 
 	@Before
 	public void setupStandardGameModelBuilder() throws PluginException {
-		m_pluginFactory = mock(PluginFactory.class);
-		doThrow(PluginException.class).when(m_pluginFactory).create(any(PluginName.class));
+		m_pluginSet = mock(PluginSet.class);
+		doThrow(PluginException.class).when(m_pluginSet).requirePlugin(any(PluginName.class));
 
-		m_builder = new StandardGameModelBuilder(m_pluginFactory);
+		m_builder = new StandardGameModelBuilder(m_pluginSet);
 	}
 
 	@Test
@@ -54,7 +53,7 @@ public class StandardGameModelBuilderTest {
 	public void cannotBuildWithInvalidModel() throws GameComponentBuilderException, PluginException {
 		final ModelPlugin modelPlugin = mock(ModelPlugin.class);
 		when(modelPlugin.getName()).thenReturn(PLUGIN_NAME);
-		doReturn(modelPlugin).when(m_pluginFactory).create(PLUGIN_NAME);
+		doReturn(modelPlugin).when(m_pluginSet).requirePlugin(PLUGIN_NAME);
 
 		doAnswer(invocation -> {
 			@SuppressWarnings("unchecked")

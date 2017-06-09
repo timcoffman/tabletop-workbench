@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<model xmlns="urn:com.tcoffman.ttwb.model/v/1.0" xmlns:core="urn:com.tcoffman.ttwb.core/v/1.0">
+  <name>MODEL_NAME</name>
+  <initial-stage ref="stage-1"/>
+  <role/>
+  <stage id="stage-1" terminal="no">
+    <rule to-stage="stage-2">
+      <signal>
+        <role/>
+      </signal>
+    </rule>
+  </stage>
+  <stage id="stage-2" terminal="yes"/>
+</model>

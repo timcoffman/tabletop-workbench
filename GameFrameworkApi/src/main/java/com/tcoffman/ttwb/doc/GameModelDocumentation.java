@@ -14,4 +14,6 @@ public interface GameModelDocumentation {
 
 	Stream<? extends GameComponentDocumentation> rules();
 
+	Stream<? extends GameComponentDocumentation> operations();
+
 }

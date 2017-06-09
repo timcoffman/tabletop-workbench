@@ -1,0 +1,116 @@
+<?xml version="1.0"?>
+<documentation
+	xmlns="urn:com.tcoffman.ttwb.doc/v/1.0"
+	lang="en-us"
+	>
+
+	<model>
+		<name format="long">Tic-Tac-Toe</name>
+		<name format="short">Tic-Tac-Toe</name>
+	</model>
+
+	<role id="x">
+			<name format="short">X</name>
+			<name format="long">X Player</name>
+	</role>
+	<role id="o">
+			<name format="short">O</name>
+			<name format="long">O Player</name>
+	</role>
+
+	
+	<prototype id="piece">
+		<name format="short">X/O</name>
+		<name format="long">Piece</name>
+		<description>Marker for playing X or O</description>
+	</prototype>
+
+	<prototype id="x-piece">
+		<name format="short">X</name>
+		<name format="long">X Piece</name>
+		<description>Marker for playing X</description>
+	</prototype>
+
+	<prototype id="o-piece">
+		<name format="short">O</name>
+		<name format="long">O Piece</name>
+		<description>Marker for playing O</description>
+	</prototype>
+
+	<prototype id="supply">
+		<name format="short">Supply</name>
+		<name format="long">Supply of player's pieces</name>
+		<description>Place to hold a player's unused <a href="prototype#piece">pieces</a>.</description>
+	</prototype>
+		
+	<prototype id="board">
+		<name format="short">Board</name>
+		<name format="long">Playing Board</name>
+		<description>Board with spaces for placing <a href="prototype#piece">the pieces</a>.</description>
+	</prototype>
+		
+	<rule id="setup">
+		<name format="short">Setup</name>
+		<name format="long">Setting Up</name>
+		<description>
+			Start <a href="stage#turn">the first turn</a>.
+		</description>
+	</rule>
+	
+	<operation id="place-the-board">
+		<name format="short">place the board</name>
+		<name format="long">Place the board.</name>
+		<description>
+			Put <a href="prototype#board">the board</a> on the <a href="prototype#root">table</a>.
+		</description>
+	</operation>
+	
+	<operation id="place-the-supplies">
+		<name format="short">place the supplies</name>
+		<name format="long">Place the supplies.</name>
+		<description>
+			Put <a href="prototype#supply">the supplies</a> on the <a href="prototype#root">table</a>.
+		</description>
+	</operation>
+	
+	<operation id="place-the-pieces">
+		<name format="short">place the pieces</name>
+		<name format="long">Place the pieces.</name>
+		<description>
+			Put all the <a href="prototype#piece">the pieces</a> on the <a href="prototype#supply">supplies</a> corresponding to each player.
+		</description>
+	</operation>
+	
+	<stage id="prologue">
+		<name format="short">Setup</name>
+		<name format="long">Setting Up</name>
+		<description>
+			Put <a href="stage#board">the board</a> on the table.
+			Put all the supply areas on the table.
+			Put all the pieces on the supply area corresponding to the player.
+			Next, start <a href="stage#turn">the first turn</a>.
+		</description>
+	</stage>
+	
+	<stage id="turn">
+		<name format="short">Turn</name>
+		<name format="long">Player Turn</name>
+		<description>
+			Put <a href="stage#piece">a piece</a> from <a href="prototype#supply">the supply</a> onto an empty space on <a href="stage#board">the board</a> that does not finish a row of three.
+			Next, start <a href="stage#turn">the next turn</a>.
+			Or
+			Put <a href="stage#piece">a piece</a> from <a href="prototype#supply">the supply</a> onto an empty space on <a href="stage#board">the board</a> that finishes a row of three.
+			Next, the game is <a href="stage#epilogue">finished</a>.
+		</description>
+		
+	</stage>
+	
+	<stage id="epilogue">
+		<name format="short">Game Over</name>
+		<name format="long">Game Over</name>
+		<description>
+			A player has won the game!
+		</description>
+	</stage>
+
+</documentation>

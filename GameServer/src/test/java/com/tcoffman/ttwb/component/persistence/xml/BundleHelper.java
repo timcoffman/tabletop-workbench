@@ -4,10 +4,13 @@ import static com.tcoffman.ttwb.plugin.CorePlugins.CORE;
 import static com.tcoffman.ttwb.plugin.CorePlugins.GRID;
 
 import java.io.InputStream;
+import java.util.Optional;
 
 import javax.xml.stream.XMLStreamException;
 
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
+import com.tcoffman.ttwb.component.GameComponentRef;
+import com.tcoffman.ttwb.component.persistence.GameComponentRefResolver;
 import com.tcoffman.ttwb.doc.StandardModelDocumentation;
 import com.tcoffman.ttwb.doc.persistence.DocumentationRefResolver;
 import com.tcoffman.ttwb.doc.persistence.xml.StandardGameDocumentationParser;
@@ -16,6 +19,7 @@ import com.tcoffman.ttwb.model.persistance.ModelRefResolver;
 import com.tcoffman.ttwb.model.persistance.xml.StandardGameModelParser;
 import com.tcoffman.ttwb.plugin.DefaultPluginFactory;
 import com.tcoffman.ttwb.plugin.PluginFactory;
+import com.tcoffman.ttwb.plugin.PluginSet;
 
 public final class BundleHelper {
 
@@ -40,6 +44,31 @@ public final class BundleHelper {
 		m_documentationParser = new StandardGameDocumentationParser();
 	}
 
+	private class ImportedModelRefResolver implements GameComponentRefResolver<GameModel> {
+
+		private final String m_documentationLang;
+
+		public ImportedModelRefResolver(String documentationLang) {
+			m_documentationLang = documentationLang;
+		}
+
+		@Override
+		public Optional<GameComponentRef<GameModel>> lookup(String id) {
+			try {
+				return Optional.of(getBundle(id, m_documentationLang)).map(Bundle::getModel).map(GameComponentRef::wrap);
+			} catch (GameComponentBuilderException | XMLStreamException ex) {
+				ex.printStackTrace();
+				return Optional.empty();
+			}
+		}
+
+		@Override
+		public Optional<String> lookupId(GameModel component) {
+			return Optional.empty();
+		}
+
+	}
+
 	public PluginFactory getPluginFactory() {
 		return m_pluginFactory;
 	}
@@ -54,7 +83,7 @@ public final class BundleHelper {
 
 	public interface Bundle {
 
-		PluginFactory getPluginFactory();
+		PluginSet getPluginSet();
 
 		StandardModelDocumentation getDocumentation();
 
@@ -69,6 +98,7 @@ public final class BundleHelper {
 	private class BundleImpl implements Bundle {
 		private final String m_name;
 		private final String m_documentationLang;
+		private final PluginSet m_pluginSet;
 		private final StandardModelDocumentation m_documentation;
 		private final DocumentationRefResolver m_documentationRefResolver;
 		private final GameModel m_model;
@@ -77,9 +107,11 @@ public final class BundleHelper {
 		public BundleImpl(String name, String documentationLang) throws GameComponentBuilderException, XMLStreamException {
 			m_name = name;
 			m_documentationLang = documentationLang;
+			m_pluginSet = new PluginSet(m_pluginFactory);
 			m_documentation = m_documentationParser.parse(getResourceAsStream(m_name + "-model/lang/" + m_documentationLang + "/doc.xml"), m_name);
 			m_documentationRefResolver = m_documentationParser.createResolver(m_name);
-			final StandardGameModelParser modelParser = new StandardGameModelParser(m_pluginFactory, m_documentationRefResolver);
+			final StandardGameModelParser modelParser = new StandardGameModelParser(m_pluginSet, new ImportedModelRefResolver(documentationLang),
+					m_documentationRefResolver);
 			m_model = modelParser.parse(getResourceAsStream(m_name + "-model/model.xml"), m_name);
 			m_modelRefResolver = modelParser.createResolver(m_name);
 		}
@@ -105,8 +137,8 @@ public final class BundleHelper {
 		}
 
 		@Override
-		public PluginFactory getPluginFactory() {
-			return m_pluginFactory;
+		public PluginSet getPluginSet() {
+			return m_pluginSet;
 		}
 	}
 

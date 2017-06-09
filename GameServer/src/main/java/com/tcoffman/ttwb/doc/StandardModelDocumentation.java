@@ -15,6 +15,7 @@ public class StandardModelDocumentation extends StandardComponent implements Gam
 	private final Collection<GameComponentDocumentation> m_stages = new ArrayList<GameComponentDocumentation>();
 	private final Collection<GameComponentDocumentation> m_roles = new ArrayList<GameComponentDocumentation>();
 	private final Collection<GameComponentDocumentation> m_rules = new ArrayList<GameComponentDocumentation>();
+	private final Collection<GameComponentDocumentation> m_operations = new ArrayList<GameComponentDocumentation>();
 
 	@Override
 	public GameComponentDocumentation model() {
@@ -39,6 +40,11 @@ public class StandardModelDocumentation extends StandardComponent implements Gam
 	@Override
 	public Stream<? extends GameComponentDocumentation> rules() {
 		return m_rules.stream();
+	}
+
+	@Override
+	public Stream<? extends GameComponentDocumentation> operations() {
+		return m_operations.stream();
 	}
 
 	public static Editor create() {
@@ -70,6 +76,10 @@ public class StandardModelDocumentation extends StandardComponent implements Gam
 
 		public Editor createRule(AbstractEditor.Initializer<StandardComponentDocumentation.Editor> initializer) throws GameComponentBuilderException {
 			return configure(StandardComponentDocumentation.create().completed(m_rules::add), initializer);
+		}
+
+		public Editor createOperation(AbstractEditor.Initializer<StandardComponentDocumentation.Editor> initializer) throws GameComponentBuilderException {
+			return configure(StandardComponentDocumentation.create().completed(m_operations::add), initializer);
 		}
 
 		public Editor createRole(AbstractEditor.Initializer<StandardComponentDocumentation.Editor> initializer) throws GameComponentBuilderException {

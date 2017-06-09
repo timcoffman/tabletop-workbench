@@ -19,6 +19,7 @@ import com.tcoffman.ttwb.plugin.PluginName;
 public class StandardGameModel extends StandardDocumentableComponent implements GameModel {
 
 	private final Set<PluginName> m_requiredPlugins = new HashSet<PluginName>();
+	private final Collection<GameModel> m_imports = new ArrayList<GameModel>();
 	private final Collection<StandardGamePartPrototype> m_prototypes = new ArrayList<StandardGamePartPrototype>();
 	private final Collection<StandardGamePartInstance> m_parts = new ArrayList<StandardGamePartInstance>();
 	private final Collection<StandardGameRole> m_roles = new ArrayList<StandardGameRole>();
@@ -37,8 +38,28 @@ public class StandardGameModel extends StandardDocumentableComponent implements 
 	}
 
 	@Override
+	public boolean isAbstract() {
+		return false;
+	}
+
+	@Override
 	public GameComponentRef<GameStage> getInitialStage() {
 		return m_initialStage;
+	}
+
+	@Override
+	public Stream<? extends GameModel> importedModels() {
+		return m_imports.stream();
+	}
+
+	@Override
+	public Stream<? extends GameModel> effectiveImportedModels() {
+		return Stream.concat(m_imports.stream(), m_imports.stream().flatMap(GameModel::effectiveImportedModels)).distinct();
+	}
+
+	@Override
+	public GameRole getSystemRole() {
+		return effectiveImportedModels().map(GameModel::getSystemRole).findFirst().orElseThrow(() -> new IllegalStateException("missing system role"));
 	}
 
 	@Override
@@ -101,6 +122,12 @@ public class StandardGameModel extends StandardDocumentableComponent implements 
 			return this;
 		}
 
+		public Editor addImportedModel(GameModel importedModel) {
+			requireNotDone();
+			m_imports.add(importedModel);
+			return this;
+		}
+
 		public Editor createRole(Initializer<StandardGameRole.Editor> initializer) throws GameComponentBuilderException {
 			return configure(StandardGameRole.create().completed(m_roles::add), initializer);
 		}
@@ -111,7 +138,7 @@ public class StandardGameModel extends StandardDocumentableComponent implements 
 
 		private void autoAssignInitialStage(StandardGameStage stage) {
 			if (null == m_initialStage)
-				setInitialStage(stage.self());
+				setInitialStage(stage.self(GameStage.class));
 		}
 
 		public Editor createPrototype(PluginName declaringPlugin, Initializer<StandardGamePartPrototype.Editor> initializer)

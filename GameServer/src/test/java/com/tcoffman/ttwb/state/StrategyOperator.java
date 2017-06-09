@@ -3,8 +3,9 @@ package com.tcoffman.ttwb.state;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import com.tcoffman.ttwb.model.pattern.GameOperationPattern;
-import com.tcoffman.ttwb.model.pattern.GameOperationPatternSet;
+import com.tcoffman.ttwb.model.pattern.operation.GameOperationPattern;
+import com.tcoffman.ttwb.model.pattern.operation.GameOperationPatternSet;
+import com.tcoffman.ttwb.state.mutation.GameOperationSet;
 
 public class StrategyOperator {
 

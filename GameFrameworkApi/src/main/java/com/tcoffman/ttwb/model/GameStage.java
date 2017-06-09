@@ -8,7 +8,7 @@ public interface GameStage extends GameStageContainer, GameDocumentableComponent
 
 	boolean isTerminal();
 
-	Stream<GameRule> rules();
+	Stream<? extends GameRule> rules();
 
 	@Override
 	default GameModel model() {

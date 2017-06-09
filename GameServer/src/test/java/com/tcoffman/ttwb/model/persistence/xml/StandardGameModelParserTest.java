@@ -34,15 +34,16 @@ import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 import com.tcoffman.ttwb.doc.persistence.DocumentationRefResolver;
 import com.tcoffman.ttwb.model.GameModel;
 import com.tcoffman.ttwb.model.StandardGameModelBuilder;
+import com.tcoffman.ttwb.model.StandardRootGameModel;
 import com.tcoffman.ttwb.model.persistance.xml.StandardGameModelParser;
 import com.tcoffman.ttwb.plugin.ModelPlugin;
 import com.tcoffman.ttwb.plugin.PluginException;
-import com.tcoffman.ttwb.plugin.PluginFactory;
 import com.tcoffman.ttwb.plugin.PluginName;
+import com.tcoffman.ttwb.plugin.PluginSet;
 
 public class StandardGameModelParserTest {
 
-	private PluginFactory m_pluginFactory;
+	private PluginSet m_pluginSet;
 	private StandardGameModelParser m_standardGameModelParser;
 
 	private GameComponentRef<GameComponentDocumentation> mockDocumentationForId(final String id) {
@@ -56,9 +57,9 @@ public class StandardGameModelParserTest {
 
 	@Before
 	public void setup() throws PluginException {
-		m_pluginFactory = mock(PluginFactory.class);
+		m_pluginSet = mock(PluginSet.class);
 
-		when(m_pluginFactory.create(any(PluginName.class))).thenAnswer(invocation -> {
+		when(m_pluginSet.requirePlugin(any(PluginName.class))).thenAnswer(invocation -> {
 			final PluginName pluginName = (PluginName) invocation.getArguments()[0];
 			if (CORE.equals(pluginName)) {
 				final Core corePlugin = new Core();
@@ -91,8 +92,16 @@ public class StandardGameModelParserTest {
 		when(documentationRefResolver.getStageResolver()).thenReturn(genericDocumentationResolver);
 		when(documentationRefResolver.getRoleResolver()).thenReturn(genericDocumentationResolver);
 		when(documentationRefResolver.getRuleResolver()).thenReturn(genericDocumentationResolver);
+		when(documentationRefResolver.getOperationResolver()).thenReturn(genericDocumentationResolver);
 
-		m_standardGameModelParser = new StandardGameModelParser(m_pluginFactory, documentationRefResolver);
+		final StandardRootGameModel rootModel = StandardRootGameModel.create().setDocumentation(mockDocumentationForId("root")).done();
+
+		@SuppressWarnings("unchecked")
+		final GameComponentRefResolver<GameModel> importedModelResolver = mock(GameComponentRefResolver.class);
+		when(importedModelResolver.lookup("root")).thenAnswer(invocation -> Optional.of(GameComponentRef.wrap(rootModel)));
+		when(importedModelResolver.lookupId(rootModel)).thenAnswer(invocation -> Optional.of("root"));
+
+		m_standardGameModelParser = new StandardGameModelParser(m_pluginSet, importedModelResolver, documentationRefResolver);
 	}
 
 	@Test
@@ -103,7 +112,7 @@ public class StandardGameModelParserTest {
 
 		assertThat(model.prototypes().collect(Collectors.counting()), equalTo(5L));
 
-		// m_standardGameModelParser.write(model, System.out, "complete-model");
+		m_standardGameModelParser.write(model, System.out, "complete-model");
 	}
 
 	@Test
@@ -116,7 +125,7 @@ public class StandardGameModelParserTest {
 
 	@Test
 	public void canWriteMinimalModel() throws TransformerException, PluginException, UnsupportedEncodingException {
-		final StandardGameModelBuilder builder = new StandardGameModelBuilder(m_pluginFactory);
+		final StandardGameModelBuilder builder = new StandardGameModelBuilder(m_pluginSet);
 		builder.setDocumentation(GameComponentRef.wrap(mock(GameComponentDocumentation.class))).createStage((s) -> {
 			s.setDocumentation(GameComponentRef.wrap(mock(GameComponentDocumentation.class)));
 		});

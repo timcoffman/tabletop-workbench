@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 import com.tcoffman.ttwb.component.GameComponentRef;
 import com.tcoffman.ttwb.component.StandardComponent;
 import com.tcoffman.ttwb.model.GamePartPrototype;
+import com.tcoffman.ttwb.model.GamePlacePrototype;
 import com.tcoffman.ttwb.model.GamePlaceType;
 
 public class StandardGamePart extends StandardComponent implements GamePart {
@@ -17,8 +18,9 @@ public class StandardGamePart extends StandardComponent implements GamePart {
 
 	public StandardGamePart(GameComponentRef<GamePartPrototype> prototype) {
 		m_prototype = prototype;
-		m_prototype.get().effectivePlaces().map((p) -> new StandardGamePlace(p.self(), new WeakReference<StandardGamePart>(StandardGamePart.this)))
-				.forEach(m_places::add);
+		m_prototype.get().effectivePlaces()
+				.map((p) -> new StandardGamePlace(p.self(GamePlacePrototype.class), new WeakReference<StandardGamePart>(StandardGamePart.this)))
+		.forEach(m_places::add);
 	}
 
 	@Override

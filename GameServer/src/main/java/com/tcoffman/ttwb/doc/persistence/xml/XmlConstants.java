@@ -11,6 +11,7 @@ public final class XmlConstants {
 	public static final QName DOC_ELEMENT_QNAME_DESCRIPTION = new QName(DOC_NS, "description");
 	public static final QName DOC_ELEMENT_QNAME_STAGE = new QName(DOC_NS, "stage");
 	public static final QName DOC_ELEMENT_QNAME_RULE = new QName(DOC_NS, "rule");
+	public static final QName DOC_ELEMENT_QNAME_OPERATION = new QName(DOC_NS, "operation");
 	public static final QName DOC_ELEMENT_QNAME_PROTOTYPE = new QName(DOC_NS, "prototype");
 	public static final QName DOC_ELEMENT_QNAME_ROLE = new QName(DOC_NS, "role");
 

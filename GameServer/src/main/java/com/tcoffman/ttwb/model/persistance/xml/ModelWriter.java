@@ -4,11 +4,13 @@ import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ATTR_NA
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ATTR_NAME_EXTENDS;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ATTR_NAME_ID;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ATTR_NAME_IS_TERMINAL;
+import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ATTR_NAME_MODEL;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ATTR_NAME_PROTOTYPE_REF;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ATTR_NAME_REF;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ATTR_NAME_RESULT;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ATTR_NAME_TYPE;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME;
+import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_IMPORT;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_INITIAL_STAGE;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_OP_JOIN;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_OP_MOVE;
@@ -17,8 +19,14 @@ import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_OP_SPLIT;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_PART;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_PARTS;
+import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_PATTERN_ANY;
+import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_PATTERN_FILTER;
+import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_PATTERN_INTERSECTION;
+import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_PATTERN_INVERSION;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_PATTERN_QUANTITY;
+import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_PATTERN_RELATIONHIP;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_PATTERN_ROLE;
+import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_PATTERN_ROOT;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_PATTERN_SUBJECT;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_PATTERN_TARGET;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_PLACE;
@@ -29,6 +37,7 @@ import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import javax.xml.namespace.QName;
@@ -37,7 +46,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import com.tcoffman.ttwb.component.GameComponent;
 import com.tcoffman.ttwb.component.GameComponentRef;
+import com.tcoffman.ttwb.component.persistence.GameComponentRefManager;
 import com.tcoffman.ttwb.model.GameModel;
 import com.tcoffman.ttwb.model.GameModelProperty;
 import com.tcoffman.ttwb.model.GamePartInstance;
@@ -47,11 +58,21 @@ import com.tcoffman.ttwb.model.GamePlaceType;
 import com.tcoffman.ttwb.model.GameRole;
 import com.tcoffman.ttwb.model.GameRule;
 import com.tcoffman.ttwb.model.GameStage;
-import com.tcoffman.ttwb.model.pattern.GameOperationPattern;
-import com.tcoffman.ttwb.model.pattern.GamePartPattern;
-import com.tcoffman.ttwb.model.pattern.GamePlacePattern;
-import com.tcoffman.ttwb.model.pattern.GameQuantityPattern;
-import com.tcoffman.ttwb.model.pattern.GameRolePattern;
+import com.tcoffman.ttwb.model.pattern.operation.GameOperationPattern;
+import com.tcoffman.ttwb.model.pattern.part.GameAnyPartPattern;
+import com.tcoffman.ttwb.model.pattern.part.GameFilterPartPattern;
+import com.tcoffman.ttwb.model.pattern.part.GameIntersectionPartPattern;
+import com.tcoffman.ttwb.model.pattern.part.GameInversionPartPattern;
+import com.tcoffman.ttwb.model.pattern.part.GamePartPattern;
+import com.tcoffman.ttwb.model.pattern.part.GameVariablePartPattern;
+import com.tcoffman.ttwb.model.pattern.place.GameAnyPlacePattern;
+import com.tcoffman.ttwb.model.pattern.place.GameFilterPlacePattern;
+import com.tcoffman.ttwb.model.pattern.place.GameIntersectionPlacePattern;
+import com.tcoffman.ttwb.model.pattern.place.GameInversionPlacePattern;
+import com.tcoffman.ttwb.model.pattern.place.GamePlacePattern;
+import com.tcoffman.ttwb.model.pattern.place.GameRelationshipPlacePattern;
+import com.tcoffman.ttwb.model.pattern.quantity.GameQuantityPattern;
+import com.tcoffman.ttwb.model.pattern.role.GameRolePattern;
 import com.tcoffman.ttwb.model.persistance.ModelRefManager;
 import com.tcoffman.ttwb.plugin.PluginName;
 
@@ -127,6 +148,7 @@ public class ModelWriter {
 
 		writeInitialStage(modelElement);
 		writeRoles(modelElement);
+		writeImportedModels(modelElement);
 		writePrototypes(modelElement);
 		writeParts(modelElement);
 		writeStages(modelElement);
@@ -136,6 +158,19 @@ public class ModelWriter {
 
 		final Element initialStageElement = createAndAppendElement(modelElement, MODEL_ELEMENT_QNAME_INITIAL_STAGE);
 		initialStageElement.setAttribute(MODEL_ATTR_NAME_REF, idForStage(m_model.getInitialStage()));
+
+	}
+
+	private void writeImportedModels(Element modelElement) {
+
+		m_model.importedModels().forEachOrdered((r) -> writeImportedModel(modelElement, r));
+
+	}
+
+	private void writeImportedModel(Element modelElement, GameModel importedModel) {
+
+		final Element importedModelElement = createAndAppendElement(modelElement, importedModel, MODEL_ELEMENT_QNAME_IMPORT);
+		importedModelElement.setAttribute(MODEL_ATTR_NAME_MODEL, m_externalRefManager.getImportedModelResolver().lookupId(importedModel).get());
 
 	}
 
@@ -274,7 +309,8 @@ public class ModelWriter {
 	}
 
 	private void writeSubjectPattern(Element operationPatternElement, GamePlacePattern p) {
-		createAndAppendElement(operationPatternElement, MODEL_ELEMENT_QNAME_PATTERN_SUBJECT);
+		final Element subjectElement = createAndAppendElement(operationPatternElement, MODEL_ELEMENT_QNAME_PATTERN_SUBJECT);
+		writePattern(subjectElement, p);
 	}
 
 	private void writeTargetPattern(Element operationPatternElement, GamePartPattern p) {
@@ -282,7 +318,112 @@ public class ModelWriter {
 	}
 
 	private void writeTargetPattern(Element operationPatternElement, GamePlacePattern p) {
-		createAndAppendElement(operationPatternElement, MODEL_ELEMENT_QNAME_PATTERN_TARGET);
+		final Element targetElement = createAndAppendElement(operationPatternElement, MODEL_ELEMENT_QNAME_PATTERN_TARGET);
+		writePattern(targetElement, p);
+	}
+
+	private void writePattern(Element parentElement, GamePlacePattern pattern) {
+		pattern.visit(new GamePlacePattern.Visitor<Element, RuntimeException>() {
+
+			@Override
+			public Element visit(GameAnyPlacePattern pattern) throws RuntimeException {
+				final Element anyElement = createAndAppendElement(parentElement, MODEL_ELEMENT_QNAME_PATTERN_ANY);
+				writePattern(createAndAppendElement(anyElement, MODEL_ELEMENT_QNAME_PART), pattern.getPartPattern());
+				return anyElement;
+			}
+
+			@Override
+			public Element visit(GameFilterPlacePattern pattern) throws RuntimeException {
+				final Element filterElement = createAndAppendElement(parentElement, MODEL_ELEMENT_QNAME_PATTERN_FILTER);
+
+				final Optional<GameComponentRef<GamePlaceType>> matchPlaceType = pattern.getMatchesType();
+				if (matchPlaceType.isPresent()) {
+					final GamePlaceType placeType = matchPlaceType.get().get();
+					filterElement.setAttribute(MODEL_ATTR_NAME_TYPE, prefixFor(placeType.getDeclaringPlugin()) + ":" + placeType.getLocalName());
+				}
+
+				final Optional<GameComponentRef<GameRole>> matchRoleBinding = pattern.getMatchesRoleBinding();
+				if (matchRoleBinding.isPresent()) {
+					final GameRole placeType = matchRoleBinding.get().get();
+					filterElement.setAttribute(MODEL_ATTR_NAME_TYPE, idFor(placeType));
+				}
+
+				writePattern(createAndAppendElement(filterElement, MODEL_ELEMENT_QNAME_PART), pattern.getPartPattern());
+
+				return filterElement;
+			}
+
+			@Override
+			public Element visit(GameIntersectionPlacePattern pattern) throws RuntimeException {
+				final Element intersectionElement = createAndAppendElement(parentElement, MODEL_ELEMENT_QNAME_PATTERN_INTERSECTION);
+				pattern.patterns().forEach((p) -> writePattern(intersectionElement, p));
+				return intersectionElement;
+			}
+
+			@Override
+			public Element visit(GameInversionPlacePattern pattern) throws RuntimeException {
+				final Element inversionElement = createAndAppendElement(parentElement, MODEL_ELEMENT_QNAME_PATTERN_INVERSION);
+				writePattern(inversionElement, pattern.getPattern());
+				return inversionElement;
+			}
+
+			@Override
+			public Element visit(GameRelationshipPlacePattern pattern) throws RuntimeException {
+				final Element relElement = createAndAppendElement(parentElement, MODEL_ELEMENT_QNAME_PATTERN_RELATIONHIP);
+				writePattern(createAndAppendElement(relElement, MODEL_ELEMENT_QNAME_PART), pattern.getPartPattern());
+				return relElement;
+			}
+
+		});
+	}
+
+	private Element writePattern(Element parentElement, GamePartPattern pattern) {
+		return pattern.visit(new GamePartPattern.Visitor<Element, RuntimeException>() {
+
+			@Override
+			public Element visit(GameAnyPartPattern pattern) throws RuntimeException {
+				return createAndAppendElement(parentElement, MODEL_ELEMENT_QNAME_PATTERN_ANY);
+			}
+
+			@Override
+			public Element visit(GameVariablePartPattern pattern) throws RuntimeException {
+				return createAndAppendElement(parentElement, MODEL_ELEMENT_QNAME_PATTERN_ROOT);
+			}
+
+			@Override
+			public Element visit(GameFilterPartPattern pattern) throws RuntimeException {
+				final Element filterElement = createAndAppendElement(parentElement, MODEL_ELEMENT_QNAME_PATTERN_FILTER);
+
+				final Optional<GameComponentRef<GamePartPrototype>> matchPrototype = pattern.getMatchesPrototype();
+				if (matchPrototype.isPresent()) {
+					final GamePartPrototype prototype = matchPrototype.get().get();
+					filterElement.setAttribute(MODEL_ATTR_NAME_PROTOTYPE_REF, idFor(prototype));
+				}
+
+				final Optional<GameComponentRef<GameRole>> matchRoleBinding = pattern.getMatchesRoleBinding();
+				if (matchRoleBinding.isPresent()) {
+					final GameRole placeType = matchRoleBinding.get().get();
+					filterElement.setAttribute(MODEL_ATTR_NAME_TYPE, idFor(placeType));
+				}
+
+				return filterElement;
+			}
+
+			@Override
+			public Element visit(GameIntersectionPartPattern pattern) throws RuntimeException {
+				final Element intersectionElement = createAndAppendElement(parentElement, MODEL_ELEMENT_QNAME_PATTERN_INTERSECTION);
+				pattern.patterns().forEach((p) -> writePattern(intersectionElement, p));
+				return intersectionElement;
+			}
+
+			@Override
+			public Element visit(GameInversionPartPattern pattern) throws RuntimeException {
+				final Element inversionElement = createAndAppendElement(parentElement, MODEL_ELEMENT_QNAME_PATTERN_INVERSION);
+				writePattern(inversionElement, pattern.getPattern());
+				return inversionElement;
+			}
+
+		});
 	}
 
 	private String idForPrototype(GameComponentRef<GamePartPrototype> ref) {
@@ -298,41 +439,35 @@ public class ModelWriter {
 	}
 
 	private String idFor(GamePartPrototype prototype) {
-		return idFor(prototype, () -> newIdFor(prototype));
+		return idFor(prototype, m_externalRefManager.getPartPrototypeManager());
 	}
 
 	private String idFor(GameStage stage) {
-		return idFor(stage, () -> newIdFor(stage));
+		return idFor(stage, m_externalRefManager.getStageManager());
 	}
 
 	private String idFor(GameRole role) {
-		return idFor(role, () -> newIdFor(role));
+		return idFor(role, m_externalRefManager.getRoleManager());
+	}
+
+	private <T extends GameComponent> String idFor(T component, GameComponentRefManager<T> componentRefManager) {
+		final String id = componentRefManager.lookupId(component).orElseGet(() -> newIdFor(component, componentRefManager));
+		return id;
+	}
+
+	private <T extends GameComponent> String newIdFor(T component, GameComponentRefManager<T> componentRefManager) {
+		return idFor(component, componentRefManager::nextId);
 	}
 
 	private String idFor(Object obj, Supplier<String> idSupplier) {
 		if (null == obj)
 			throw new IllegalArgumentException("cannot provide an id for a missing role");
 		String id = m_objectIdentifierMap.get(obj.hashCode());
-		if (null == id)
-			m_objectIdentifierMap.put(obj.hashCode(), id = idSupplier.get());
-		return id;
-	}
-
-	private String newIdFor(GamePartPrototype prototype) {
-		final String id = m_externalRefManager.getPartPrototypeManager().nextId();
-		newIdCreatedFor(id, prototype);
-		return id;
-	}
-
-	private String newIdFor(GameStage stage) {
-		final String id = m_externalRefManager.getStageManager().nextId();
-		newIdCreatedFor(id, stage);
-		return id;
-	}
-
-	private String newIdFor(GameRole role) {
-		final String id = m_externalRefManager.getRoleManager().nextId();
-		newIdCreatedFor(id, role);
+		if (null == id) {
+			id = idSupplier.get();
+			newIdCreatedFor(id, obj);
+			m_objectIdentifierMap.put(obj.hashCode(), id);
+		}
 		return id;
 	}
 

@@ -58,8 +58,8 @@ public class AbstractPlugin implements Plugin {
 		}
 
 		@Override
-		public <T extends GameComponent> GameComponentRef<T> self() {
-			return new PluginComponentRef<T>((T) this);
+		public <T extends GameComponent> GameComponentRef<T> self(Class<T> asType) {
+			return new PluginComponentRef<T>(asType.cast(this));
 		}
 
 		@Override

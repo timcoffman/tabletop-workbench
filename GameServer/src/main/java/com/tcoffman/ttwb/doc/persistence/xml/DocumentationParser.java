@@ -7,6 +7,7 @@ import static com.tcoffman.ttwb.doc.persistence.xml.XmlConstants.DOC_ELEMENT_QNA
 import static com.tcoffman.ttwb.doc.persistence.xml.XmlConstants.DOC_ELEMENT_QNAME_DESCRIPTION;
 import static com.tcoffman.ttwb.doc.persistence.xml.XmlConstants.DOC_ELEMENT_QNAME_MODEL;
 import static com.tcoffman.ttwb.doc.persistence.xml.XmlConstants.DOC_ELEMENT_QNAME_NAME;
+import static com.tcoffman.ttwb.doc.persistence.xml.XmlConstants.DOC_ELEMENT_QNAME_OPERATION;
 import static com.tcoffman.ttwb.doc.persistence.xml.XmlConstants.DOC_ELEMENT_QNAME_PROTOTYPE;
 import static com.tcoffman.ttwb.doc.persistence.xml.XmlConstants.DOC_ELEMENT_QNAME_ROLE;
 import static com.tcoffman.ttwb.doc.persistence.xml.XmlConstants.DOC_ELEMENT_QNAME_RULE;
@@ -52,6 +53,7 @@ public class DocumentationParser extends AbstractGameParser {
 		dispatcher.on(DOC_ELEMENT_QNAME_MODEL, this::parseModel);
 		dispatcher.on(DOC_ELEMENT_QNAME_ROLE, this::parseRole);
 		dispatcher.on(DOC_ELEMENT_QNAME_RULE, this::parseRule);
+		dispatcher.on(DOC_ELEMENT_QNAME_OPERATION, this::parseOperation);
 		dispatcher.on(DOC_ELEMENT_QNAME_PROTOTYPE, this::parsePrototype);
 		dispatcher.on(DOC_ELEMENT_QNAME_STAGE, this::parseStage);
 		dispatcher.read();
@@ -73,6 +75,11 @@ public class DocumentationParser extends AbstractGameParser {
 	private void parseRule(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher) throws XMLStreamException,
 	GameComponentBuilderException {
 		parseDoc(startElement, dispatcher, m_editor::createRule, m_documentationRefManager.getRuleManager());
+	}
+
+	private void parseOperation(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher) throws XMLStreamException,
+	GameComponentBuilderException {
+		parseDoc(startElement, dispatcher, m_editor::createOperation, m_documentationRefManager.getOperationManager());
 	}
 
 	private void parsePrototype(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher) throws XMLStreamException,

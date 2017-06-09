@@ -3,13 +3,10 @@ package com.tcoffman.ttwb.state;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.model.GameRole;
-import com.tcoffman.ttwb.model.pattern.GameOperationPattern;
-import com.tcoffman.ttwb.model.pattern.GameOperationPatternSet;
-import com.tcoffman.ttwb.model.pattern.GamePlacePattern;
-import com.tcoffman.ttwb.state.pattern.StandardAnyPlacePattern;
-import com.tcoffman.ttwb.state.pattern.StandardIntersectionPlacePattern;
+import com.tcoffman.ttwb.model.pattern.operation.GameOperationPattern;
+import com.tcoffman.ttwb.model.pattern.operation.GameOperationPatternSet;
+import com.tcoffman.ttwb.model.pattern.place.GamePlacePattern;
 
 public class RandomOperatorStrategy implements StrategyOperator.Strategy {
 
@@ -40,20 +37,11 @@ public class RandomOperatorStrategy implements StrategyOperator.Strategy {
 	}
 
 	private StandardGameOperation fulfillMove(StateView view, GameOperationPattern opPattern, final GameRole opRole) {
-		final GamePlace subject = view.find(opPattern.getSubjectPlacePattern().get()).findFirst()
-				.orElseThrow(() -> new IllegalStateException("move op cannot be fulfilled: no subject"));
+		final GamePlacePattern subjectPlacePattern = opPattern.getSubjectPlacePattern().orElseThrow(
+				() -> new IllegalArgumentException("missing subject place pattern"));
+		final GamePlacePattern targetPlacePattern = opPattern.getTargetPlacePattern().orElseThrow(
+				() -> new IllegalArgumentException("missing target place pattern"));
 
-		GamePlacePattern targetPattern;
-		try {
-			final GamePlacePattern excludingSubjectPattern = StandardAnyPlacePattern.create().setPartPattern(() -> (part) -> part != subject.getOwner()).done();
-			targetPattern = StandardIntersectionPlacePattern.create().addPattern(opPattern.getTargetPlacePattern().get()).addPattern(excludingSubjectPattern)
-					.done();
-		} catch (final GameComponentBuilderException ex) {
-			throw new RuntimeException("move op cannot be fulfilled: failed to build target pattern", ex);
-		}
-
-		final GamePlace target = view.find(targetPattern).findFirst().orElseThrow(() -> new IllegalStateException("move op cannot be fulfilled: no target"));
-
-		return new StandardGameMoveOperation(opRole, subject, target);
+		return new StandardGameMoveOperation(opRole, subjectPlacePattern, targetPlacePattern);
 	}
 }

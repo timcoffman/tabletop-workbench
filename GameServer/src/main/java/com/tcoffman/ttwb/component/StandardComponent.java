@@ -3,14 +3,20 @@ package com.tcoffman.ttwb.component;
 public abstract class StandardComponent implements GameComponent {
 
 	@Override
-	public <T extends GameComponent> GameComponentRef<T> self() {
-		return new ComponentSelfRef<T>();
+	public <T extends GameComponent> GameComponentRef<T> self(Class<T> asType) {
+		return new ComponentSelfRef<T>(asType);
 	}
 
 	private final class ComponentSelfRef<T extends GameComponent> extends GameComponentRef<T> {
+		public ComponentSelfRef(Class<T> asType) {
+			asType.cast(StandardComponent.this);
+		}
+
 		@Override
 		public T get() {
-			return (T) StandardComponent.this;
+			@SuppressWarnings("unchecked")
+			final T self = (T) StandardComponent.this;
+			return self;
 		}
 	}
 

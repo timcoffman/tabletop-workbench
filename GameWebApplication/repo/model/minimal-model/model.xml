@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<model
+	xmlns="urn:com.tcoffman.ttwb.model/v/1.0"
+	xmlns:doc="urn:com.tcoffman.ttwb.doc/v/1.0"
+	xmlns:core="urn:com.tcoffman.ttwb.core/v/1.0"
+	xmlns:grid="urn:com.tcoffman.ttwb.grid/v/1.0"
+	>
+
+	<name>Minimal</name>
+
+	<role id="only-role" doc="doc:only-role"/>
+
+	<prototype id="proto-1" doc="doc:proto-1">
+		<place type="core:bottom"/>
+	</prototype>
+	
+	<prototype id="proto-2" doc="doc:proto-2">
+		<place type="core:top"/>
+	</prototype>
+	
+	<parts>
+		<part prototype-ref="proto-1"/>
+		<part prototype-ref="proto-2"/>
+	</parts>
+	
+	<initialStage ref="prologue"/>
+
+	<stage id="prologue" doc="doc:prologue">
+		<rule to-stage="epilogue">
+			<signal xmlns="urn:com.tcoffman.ttwb.model/v/1.0">
+				<role> <filter role-ref="only-role"/> </role>
+			</signal>
+		</rule>		
+	</stage>
+	
+	<stage id="epilogue" terminal="yes" doc="doc:epilogue">
+		
+	</stage>
+
+</model>

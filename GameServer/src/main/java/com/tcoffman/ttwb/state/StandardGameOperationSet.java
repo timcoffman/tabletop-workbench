@@ -6,6 +6,8 @@ import java.util.stream.Stream;
 
 import com.tcoffman.ttwb.component.GameComponentRef;
 import com.tcoffman.ttwb.model.GameStage;
+import com.tcoffman.ttwb.state.mutation.GameOperation;
+import com.tcoffman.ttwb.state.mutation.GameOperationSet;
 
 public class StandardGameOperationSet implements GameOperationSet {
 
@@ -28,6 +30,11 @@ public class StandardGameOperationSet implements GameOperationSet {
 	@Override
 	public GameComponentRef<GameStage> getResult() {
 		return m_result;
+	}
+
+	@Override
+	public String toString() {
+		return m_result.get() + " <- " + m_operations;
 	}
 
 }

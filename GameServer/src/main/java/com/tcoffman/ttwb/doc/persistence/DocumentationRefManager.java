@@ -11,6 +11,8 @@ public interface DocumentationRefManager extends DocumentationRefResolver {
 
 	GameComponentRefManager<GameComponentDocumentation> getRuleManager();
 
+	GameComponentRefManager<GameComponentDocumentation> getOperationManager();
+
 	GameComponentRefManager<GameComponentDocumentation> getRoleManager();
 
 	GameComponentRefManager<GameComponentDocumentation> getStageManager();

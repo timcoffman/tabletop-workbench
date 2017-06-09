@@ -3,6 +3,7 @@ package com.tcoffman.ttwb.model.persistance;
 import com.tcoffman.ttwb.component.persistence.GameComponentRefManager;
 import com.tcoffman.ttwb.component.persistence.GameComponentRefResolver;
 import com.tcoffman.ttwb.component.persistence.StandardComponentRefManager;
+import com.tcoffman.ttwb.model.GameModel;
 import com.tcoffman.ttwb.model.GamePartPrototype;
 import com.tcoffman.ttwb.model.GameRole;
 import com.tcoffman.ttwb.model.GameStage;
@@ -16,9 +17,16 @@ public class StandardModelRefManager implements ModelRefManager {
 	private final StandardComponentRefManager<GameStage> m_stageRefManager = new StandardComponentRefManager<GameStage>("stage");
 	private final StandardComponentRefManager<GamePartPrototype> m_prototypeRefManager = new StandardComponentRefManager<GamePartPrototype>("prototype");
 	private final StandardComponentRefManager<GameRole> m_roleRefManager = new StandardComponentRefManager<GameRole>("role");
+	private final GameComponentRefResolver<GameModel> m_importedModelRefResolver;
 
-	public StandardModelRefManager(PluginSet pluginSet) {
+	public StandardModelRefManager(PluginSet pluginSet, GameComponentRefResolver<GameModel> importedModelRefResolver) {
 		m_pluginSet = pluginSet;
+		m_importedModelRefResolver = importedModelRefResolver;
+	}
+
+	@Override
+	public GameComponentRefResolver<GameModel> getImportedModelResolver() {
+		return m_importedModelRefResolver;
 	}
 
 	@Override
