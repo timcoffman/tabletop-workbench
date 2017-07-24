@@ -7,15 +7,16 @@ import javax.ws.rs.Path;
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 import com.tcoffman.ttwb.state.GamePart;
-import com.tcoffman.ttwb.web.GameStateRepository;
+import com.tcoffman.ttwb.web.GameStateFileRepository;
 import com.tcoffman.ttwb.web.resource.model.PartPrototypesResource;
+import com.tcoffman.ttwb.web.resource.model.RolesResource;
 
 public class PartResource extends AbstractStateSubresource {
 
 	private final String m_partId;
 	private final GamePart m_part;
 
-	public PartResource(GameStateRepository.Bundle stateBundle, String partId, GamePart part) {
+	public PartResource(GameStateFileRepository.Bundle stateBundle, String partId, GamePart part) {
 		super(stateBundle);
 		m_partId = partId;
 		m_part = part;
@@ -24,6 +25,18 @@ public class PartResource extends AbstractStateSubresource {
 	public URI getPrototypeResource() {
 		try {
 			return PartPrototypesResource.pathTo(baseUriBuilder()).build(stateBundle().getModelId(), lookupPartPrototypeId(m_part.getPrototype()));
+		} catch (final GameComponentBuilderException ex) {
+			ex.printStackTrace();
+			return null;
+		}
+	}
+
+	public URI getRole() {
+		if (!m_part.getRoleBinding().isPresent())
+			return null;
+
+		try {
+			return RolesResource.pathTo(baseUriBuilder()).build(modelBundle().getModelId(), lookupRoleId(m_part.getRoleBinding().get()));
 		} catch (final GameComponentBuilderException ex) {
 			ex.printStackTrace();
 			return null;

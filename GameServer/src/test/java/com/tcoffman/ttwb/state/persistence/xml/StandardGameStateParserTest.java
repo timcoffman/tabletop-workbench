@@ -32,9 +32,6 @@ import com.tcoffman.ttwb.core.Grid;
 import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 import com.tcoffman.ttwb.doc.persistence.DocumentationRefResolver;
 import com.tcoffman.ttwb.model.GameModel;
-import com.tcoffman.ttwb.model.StandardRootGameModel;
-import com.tcoffman.ttwb.model.persistance.ModelRefResolver;
-import com.tcoffman.ttwb.model.persistance.xml.StandardGameModelParser;
 import com.tcoffman.ttwb.plugin.ModelPlugin;
 import com.tcoffman.ttwb.plugin.PluginException;
 import com.tcoffman.ttwb.plugin.PluginName;
@@ -50,8 +47,8 @@ public class StandardGameStateParserTest {
 	private GameAuthorizationManager m_authMgr;
 	private GameModel m_completeModel;
 	private GameModel m_minimalModel;
-	private static final String COMPLETE_MODEL_ID = "complete-model";
-	private static final String MINIMAL_MODEL_ID = "minimal-model";
+	private static final String COMPLETE_MODEL_ID = "complete";
+	private static final String MINIMAL_MODEL_ID = "minimal";
 	private StandardGameStateParser m_standardGameStateCompleteParser;
 	private StandardGameStateParser m_standardGameStateMinimalParser;
 	private static final String STATE_ID = "state";
@@ -79,7 +76,7 @@ public class StandardGameStateParserTest {
 		final Grid gridPlugin = new Grid();
 		gridPlugin.setName(GRID);
 
-		final Map<PluginName, StatePlugin> mockPlugins = new HashMap<PluginName, StatePlugin>();
+		final Map<PluginName, StatePlugin> mockPlugins = new HashMap<>();
 
 		when(m_pluginSet.requirePlugin(any(PluginName.class))).thenAnswer(invocation -> {
 			final PluginName pluginName = (PluginName) invocation.getArguments()[0];
@@ -120,54 +117,11 @@ public class StandardGameStateParserTest {
 		when(documentationRefResolver.getRuleResolver()).thenReturn(genericDocumentationResolver);
 		when(documentationRefResolver.getOperationResolver()).thenReturn(genericDocumentationResolver);
 
-		final StandardRootGameModel rootModel = StandardRootGameModel.create().setDocumentation(mockDocumentationForId("root")).done();
+		m_completeModel = BundleHelper.instance().getBundle(COMPLETE_MODEL_ID).getModel();
+		m_standardGameStateCompleteParser = new StandardGameStateParser(m_authMgr, (modelId) -> BundleHelper.instance().createModelProvider(modelId, "en-us"));
 
-		@SuppressWarnings("unchecked")
-		final GameComponentRefResolver<GameModel> importedModelResolver = mock(GameComponentRefResolver.class);
-		when(importedModelResolver.lookup("root")).thenAnswer(invocation -> Optional.of(GameComponentRef.wrap(rootModel)));
-		when(importedModelResolver.lookupId(rootModel)).thenAnswer(invocation -> Optional.of("root"));
-
-		final StandardGameModelParser modelParser = new StandardGameModelParser(m_pluginSet, importedModelResolver, documentationRefResolver);
-
-		m_completeModel = modelParser.parse(BundleHelper.getResourceAsStream(COMPLETE_MODEL_ID + "/model.xml"), COMPLETE_MODEL_ID);
-		m_standardGameStateCompleteParser = new StandardGameStateParser(m_authMgr, (modelId) -> new StandardGameStateParser.ModelProvider() {
-
-			@Override
-			public GameModel getModel() throws GameComponentBuilderException, XMLStreamException {
-				return m_completeModel;
-			}
-
-			@Override
-			public PluginSet getPluginSet() throws GameComponentBuilderException, XMLStreamException {
-				return m_pluginSet;
-			}
-
-			@Override
-			public ModelRefResolver getModelRefResolver() throws GameComponentBuilderException, XMLStreamException {
-				return modelParser.createResolver(modelId);
-			}
-
-		});
-
-		m_minimalModel = modelParser.parse(BundleHelper.getResourceAsStream(MINIMAL_MODEL_ID + "/model.xml"), MINIMAL_MODEL_ID);
-		m_standardGameStateMinimalParser = new StandardGameStateParser(m_authMgr, (modelId) -> new StandardGameStateParser.ModelProvider() {
-
-			@Override
-			public GameModel getModel() throws GameComponentBuilderException, XMLStreamException {
-				return m_minimalModel;
-			}
-
-			@Override
-			public PluginSet getPluginSet() throws GameComponentBuilderException, XMLStreamException {
-				return m_pluginSet;
-			}
-
-			@Override
-			public ModelRefResolver getModelRefResolver() throws GameComponentBuilderException, XMLStreamException {
-				return modelParser.createResolver(modelId);
-			}
-
-		});
+		m_minimalModel = BundleHelper.instance().getBundle(MINIMAL_MODEL_ID).getModel();
+		m_standardGameStateMinimalParser = new StandardGameStateParser(m_authMgr, (modelId) -> BundleHelper.instance().createModelProvider(modelId, "en-us"));
 	}
 
 	@Test
@@ -195,7 +149,7 @@ public class StandardGameStateParserTest {
 		final StandardGameState state = new StandardGameState(m_minimalModel, m_pluginSet);
 
 		final ByteArrayOutputStream os = new ByteArrayOutputStream();
-		m_standardGameStateCompleteParser.write(state, os, MINIMAL_MODEL_ID);
+		m_standardGameStateMinimalParser.write(state, os, MINIMAL_MODEL_ID);
 		final String xml = os.toString("UTF-8");
 		assertThat(xml, containsString("minimal"));
 

@@ -14,7 +14,7 @@ import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 import com.tcoffman.ttwb.model.GameRule;
 import com.tcoffman.ttwb.model.GameStage;
 import com.tcoffman.ttwb.model.pattern.operation.GameOperationPattern;
-import com.tcoffman.ttwb.web.GameModelRepository;
+import com.tcoffman.ttwb.web.GameModelFileRepository;
 import com.tcoffman.ttwb.web.resource.model.pattern.OperationPatternResource;
 
 public class RuleResource extends AbstractModelSubresource {
@@ -24,7 +24,7 @@ public class RuleResource extends AbstractModelSubresource {
 	private final long m_ruleIndex;
 	private final GameRule m_rule;
 
-	public RuleResource(GameModelRepository.Bundle modelBundle, String stageId, GameStage stage, long ruleIndex, GameRule rule) {
+	public RuleResource(GameModelFileRepository.Bundle modelBundle, String stageId, GameStage stage, long ruleIndex, GameRule rule) {
 		super(modelBundle);
 		m_stageId = stageId;
 		m_stage = stage;

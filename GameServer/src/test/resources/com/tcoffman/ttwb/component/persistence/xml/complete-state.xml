@@ -4,7 +4,7 @@
 	xmlns:core="urn:com.tcoffman.ttwb.core/v/1.0"
 	xmlns:grid="urn:com.tcoffman.ttwb.grid/v/1.0"
 	xmlns:m="urn:com.tcoffman.ttwb.model/v/1.0"
-	model="m:complete-model"
+	model="m:complete"
 	>
 	<current-stage ref="m:turn"/>
 	<parts>

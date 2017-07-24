@@ -4,13 +4,13 @@ import java.net.URI;
 
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.model.pattern.part.GameFilterPartPattern;
-import com.tcoffman.ttwb.web.GameModelRepository;
+import com.tcoffman.ttwb.web.GameModelFileRepository;
 import com.tcoffman.ttwb.web.resource.model.PartPrototypesResource;
 import com.tcoffman.ttwb.web.resource.model.RolesResource;
 
 public class FilterPartPatternResource extends PartPatternResource<GameFilterPartPattern> {
 
-	public FilterPartPatternResource(GameModelRepository.Bundle modelBundle, GameFilterPartPattern pattern) {
+	public FilterPartPatternResource(GameModelFileRepository.Bundle modelBundle, GameFilterPartPattern pattern) {
 		super(modelBundle, pattern);
 	}
 

@@ -1,10 +1,12 @@
 package com.tcoffman.ttwb.state;
 
+import static com.tcoffman.ttwb.core.Core.TOKEN_ROOT;
 import static com.tcoffman.ttwb.plugin.CorePlugins.CORE;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -14,15 +16,18 @@ import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.component.GameComponentRef;
 import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 import com.tcoffman.ttwb.model.GameModel;
+import com.tcoffman.ttwb.model.GamePartPrototype;
 import com.tcoffman.ttwb.model.GamePartRelationshipType;
 import com.tcoffman.ttwb.model.GameRole;
 import com.tcoffman.ttwb.model.GameRule;
 import com.tcoffman.ttwb.model.GameStage;
+import com.tcoffman.ttwb.model.pattern.StandardPatternContext;
 import com.tcoffman.ttwb.model.pattern.operation.GameOperationPattern;
 import com.tcoffman.ttwb.model.pattern.operation.GameOperationPatternSet;
 import com.tcoffman.ttwb.model.pattern.operation.StandardGameOperationPattern;
 import com.tcoffman.ttwb.model.pattern.operation.StandardGameOperationPatternSet;
 import com.tcoffman.ttwb.model.pattern.part.GamePartPattern;
+import com.tcoffman.ttwb.model.pattern.part.StandardFilterPartPattern;
 import com.tcoffman.ttwb.model.pattern.place.GamePlacePattern;
 import com.tcoffman.ttwb.plugin.ModelPlugin;
 import com.tcoffman.ttwb.plugin.PluginException;
@@ -34,20 +39,25 @@ public class StandardGameState implements GameState {
 
 	private final GameModel m_model;
 	private final PluginSet m_pluginSet;
-	private final Collection<StandardGameParticipant> m_participants = new ArrayList<StandardGameParticipant>();
-	private final Collection<StandardGamePart> m_parts = new ArrayList<StandardGamePart>();
-	private final Collection<GamePartRelationship> m_relationships = new ArrayList<GamePartRelationship>();
+	private final Collection<StandardGameParticipant> m_participants = new ArrayList<>();
+	private final Collection<StandardGamePart> m_parts = new ArrayList<>();
+	private final StandardGamePart m_partRoot;
+	private final Collection<GamePartRelationship> m_relationships = new ArrayList<>();
 	private GameComponentRef<GameStage> m_currentStage;
-	private final List<GameStateLogEntry> m_log = new ArrayList<GameStateLogEntry>();
+	private final List<GameStateLogEntry> m_log = new ArrayList<>();
 
 	public StandardGameState(GameModel model, PluginSet pluginSet) {
 		m_model = model;
 		m_pluginSet = pluginSet;
 		m_currentStage = m_model.getInitialStage();
 
+		final GameComponentRef<GamePartPrototype> rootPrototype = m_model.effectiveRootPrototype();
+		m_partRoot = new StandardGamePart(rootPrototype, Optional.empty());
+		m_parts.add(m_partRoot);
+
 		m_model.parts().map((i) -> {
 
-			return new StandardGamePart(i.getPrototype());
+			return new StandardGamePart(i.getPrototype(), i.getRoleBinding());
 
 		}).forEach(m_parts::add);
 	}
@@ -68,7 +78,7 @@ public class StandardGameState implements GameState {
 	}
 
 	public final class Resetter implements AutoCloseable {
-		private final List<StandardPartRelationship> m_relationshipsToResolve = new ArrayList<StandardPartRelationship>();
+		private final List<StandardPartRelationship> m_relationshipsToResolve = new ArrayList<>();
 
 		public Resetter appendLogEntry(GameStateLogEntry logEntry) {
 			m_log.add(logEntry);
@@ -89,7 +99,7 @@ public class StandardGameState implements GameState {
 			return this;
 		}
 
-		private final Collection<GamePart> m_takenParts = new ArrayList<GamePart>();
+		private final Collection<GamePart> m_takenParts = new ArrayList<>();
 		public final Predicate<GamePart> m_notTaken = (p) -> !m_takenParts.contains(p);
 
 		public GamePart takePart(GamePartPattern pattern) {
@@ -240,11 +250,62 @@ public class StandardGameState implements GameState {
 	}
 
 	public @Override Stream<? extends GamePart> find(GamePartPattern pattern) {
-		return m_executor.find(pattern);
+		try (StandardPatternContext ctx = new StandardPatternContext()) {
+			// ctx.bindPart(TOKEN_ROOT, );
+			return m_executor.find(pattern);
+		}
+	}
+
+	private StandardPatternContext prepareContext(StandardPatternContext ctx) throws GameComponentBuilderException {
+		final GamePart root = m_executor.findOne(StandardFilterPartPattern.create().setMatchPrototype(m_model.effectiveRootPrototype()).done());
+		ctx.bindPart(TOKEN_ROOT, (p) -> p == root);
+		return ctx;
 	}
 
 	public @Override Stream<? extends GamePlace> find(GamePlacePattern pattern) {
-		return m_executor.find(pattern);
+		try (StandardPatternContext ctx = new StandardPatternContext()) {
+			prepareContext(ctx);
+			return m_executor.find(pattern);
+		} catch (final IllegalArgumentException ex) {
+			throw new RuntimeException("failed to match pattern: " + pattern, ex);
+		} catch (final GameComponentBuilderException ex) {
+			throw new RuntimeException("can't find root part", ex);
+		}
 	}
 
+	@Override
+	public boolean test(GamePlacePattern pattern, GamePart part) {
+		try (StandardPatternContext ctx = new StandardPatternContext()) {
+			prepareContext(ctx);
+			return pattern.matchesParts().test(part);
+		} catch (final IllegalArgumentException ex) {
+			throw new RuntimeException("failed to test part with predicate", ex);
+		} catch (final GameComponentBuilderException ex) {
+			throw new RuntimeException("can't find root part", ex);
+		}
+	}
+
+	@Override
+	public boolean test(GamePlacePattern pattern, GamePlace place) {
+		try (StandardPatternContext ctx = new StandardPatternContext()) {
+			prepareContext(ctx);
+			return pattern.matches().test(place);
+		} catch (final IllegalArgumentException ex) {
+			throw new RuntimeException("failed to test part with predicate", ex);
+		} catch (final GameComponentBuilderException ex) {
+			throw new RuntimeException("can't find root part", ex);
+		}
+	}
+
+	@Override
+	public boolean test(GamePartPattern pattern, GamePart part) {
+		try (StandardPatternContext ctx = new StandardPatternContext()) {
+			prepareContext(ctx);
+			return pattern.matches().test(part);
+		} catch (final IllegalArgumentException ex) {
+			throw new RuntimeException("failed to test part with predicate", ex);
+		} catch (final GameComponentBuilderException ex) {
+			throw new RuntimeException("can't find root part", ex);
+		}
+	}
 }

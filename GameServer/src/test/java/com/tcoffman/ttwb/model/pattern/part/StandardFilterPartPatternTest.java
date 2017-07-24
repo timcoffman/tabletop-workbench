@@ -16,7 +16,6 @@ import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.component.GameComponentRef;
 import com.tcoffman.ttwb.model.GamePartPrototype;
 import com.tcoffman.ttwb.model.GameRole;
-import com.tcoffman.ttwb.model.pattern.part.StandardFilterPartPattern;
 import com.tcoffman.ttwb.state.GamePart;
 
 public class StandardFilterPartPatternTest {
@@ -26,8 +25,10 @@ public class StandardFilterPartPatternTest {
 
 	private GamePartPrototype m_prototypeA;
 	private GamePartPrototype m_prototypeB;
+	private GamePartPrototype m_prototypeC;
 	private GamePart m_partA;
 	private GamePart m_partB;
+	private GamePart m_partC;
 
 	@Before
 	public void setup() {
@@ -36,15 +37,28 @@ public class StandardFilterPartPatternTest {
 
 		m_prototypeA = mock(GamePartPrototype.class);
 		m_prototypeB = mock(GamePartPrototype.class);
+		m_prototypeC = mock(GamePartPrototype.class);
 
-		when(m_prototypeA.getRoleBinding()).thenReturn(Optional.of(GameComponentRef.wrap(m_roleA)));
-		when(m_prototypeB.getRoleBinding()).thenReturn(Optional.of(GameComponentRef.wrap(m_roleB)));
+		when(m_prototypeA.effectiveRoleBinding()).thenReturn(Optional.of(GameComponentRef.wrap(m_roleA)));
+		when(m_prototypeB.effectiveRoleBinding()).thenReturn(Optional.of(GameComponentRef.wrap(m_roleB)));
+		when(m_prototypeC.effectiveRoleBinding()).thenReturn(Optional.of(GameComponentRef.wrap(m_roleB)));
+
+		when(m_prototypeA.getExtends()).thenReturn(Optional.empty());
+		when(m_prototypeB.getExtends()).thenReturn(Optional.of(GameComponentRef.wrap(m_prototypeC)));
+		when(m_prototypeC.getExtends()).thenReturn(Optional.empty());
 
 		m_partA = mock(GamePart.class);
 		m_partB = mock(GamePart.class);
+		m_partC = mock(GamePart.class);
 
 		when(m_partA.getPrototype()).thenReturn(GameComponentRef.wrap(m_prototypeA));
 		when(m_partB.getPrototype()).thenReturn(GameComponentRef.wrap(m_prototypeB));
+		when(m_partC.getPrototype()).thenReturn(GameComponentRef.wrap(m_prototypeC));
+
+		when(m_partA.effectiveRoleBinding()).thenReturn(Optional.of(GameComponentRef.wrap(m_roleA)));
+		when(m_partB.effectiveRoleBinding()).thenReturn(Optional.of(GameComponentRef.wrap(m_roleB)));
+		when(m_partC.effectiveRoleBinding()).thenReturn(Optional.of(GameComponentRef.wrap(m_roleB)));
+
 	}
 
 	@Rule
@@ -71,6 +85,16 @@ public class StandardFilterPartPatternTest {
 		final StandardFilterPartPattern pattern = StandardFilterPartPattern.create().setMatchPrototype(GameComponentRef.wrap(m_prototypeA)).done();
 		assertThat(pattern.matches().test(m_partA), equalTo(true));
 		assertThat(pattern.matches().test(m_partB), equalTo(false));
+		assertThat(pattern.matches().test(m_partC), equalTo(false));
+	}
+
+	@Test
+	public void patternFilteringOnExtendedPrototypeCanIdentifiyPrototype() throws GameComponentBuilderException {
+
+		final StandardFilterPartPattern pattern = StandardFilterPartPattern.create().setMatchPrototype(GameComponentRef.wrap(m_prototypeC)).done();
+		assertThat(pattern.matches().test(m_partA), equalTo(false));
+		assertThat(pattern.matches().test(m_partB), equalTo(true));
+		assertThat(pattern.matches().test(m_partC), equalTo(true));
 	}
 
 	@Test

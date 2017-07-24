@@ -12,10 +12,10 @@ import com.tcoffman.ttwb.model.GameRole;
 
 public final class ResolvedMoveOperation extends ResolvedOperation {
 
-	private final Collection<ResolvedMoveSubject> m_subjects = new ArrayList<>();
+	private final Collection<ResolvedMoveSubjectTargetPairs> m_subjectTargetPairs = new ArrayList<>();
 
-	public Stream<? extends ResolvedMoveSubject> subjects() {
-		return m_subjects.stream();
+	public Stream<? extends ResolvedMoveSubjectTargetPairs> subjects() {
+		return m_subjectTargetPairs.stream();
 	}
 
 	@Override
@@ -41,7 +41,7 @@ public final class ResolvedMoveOperation extends ResolvedOperation {
 		protected void validate() throws GameComponentBuilderException {
 			setTypeInternal(GameOperation.Type.MOVE);
 			super.validate();
-			requireNotEmpty(CORE, "subjects", m_subjects);
+			requireNotEmpty(CORE, "subjects", m_subjectTargetPairs);
 		}
 
 		@Override
@@ -54,15 +54,15 @@ public final class ResolvedMoveOperation extends ResolvedOperation {
 			return this;
 		}
 
-		public Editor createSubject(AbstractEditor.Initializer<ResolvedMoveSubject.Editor> initializer) throws GameComponentBuilderException {
-			return configure(ResolvedMoveSubject.create().completed(m_subjects::add), initializer);
+		public Editor createSubjectTargetPair(AbstractEditor.Initializer<ResolvedMoveSubjectTargetPairs.Editor> initializer) throws GameComponentBuilderException {
+			return configure(ResolvedMoveSubjectTargetPairs.create().completed(m_subjectTargetPairs::add), initializer);
 		}
 
 	}
 
 	@Override
 	public String toString() {
-		return m_subjects.toString();
+		return m_subjectTargetPairs.toString();
 	}
 
 }

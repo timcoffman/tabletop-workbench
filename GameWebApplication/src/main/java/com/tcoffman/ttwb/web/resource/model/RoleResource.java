@@ -8,14 +8,14 @@ import javax.ws.rs.core.MediaType;
 
 import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 import com.tcoffman.ttwb.model.GameRole;
-import com.tcoffman.ttwb.web.GameModelRepository;
+import com.tcoffman.ttwb.web.GameModelFileRepository;
 
 public class RoleResource extends AbstractModelSubresource {
 
 	private final String m_roleId;
 	private final GameRole m_role;
 
-	public RoleResource(GameModelRepository.Bundle modelBundle, String roleId, GameRole role) {
+	public RoleResource(GameModelFileRepository.Bundle modelBundle, String roleId, GameRole role) {
 		super(modelBundle);
 		m_roleId = roleId;
 		m_role = role;

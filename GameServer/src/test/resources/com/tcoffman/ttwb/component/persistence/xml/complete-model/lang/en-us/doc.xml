@@ -49,6 +49,38 @@
 		<description>Board with spaces for placing <a href="prototype#piece">the pieces</a>.</description>
 	</prototype>
 		
+	<rule id="setup">
+		<name format="short">Setup</name>
+		<name format="long">Setting Up</name>
+		<description>
+			Start <a href="stage#turn">the first turn</a>.
+		</description>
+	</rule>
+	
+	<operation id="place-the-board">
+		<name format="short">place the board</name>
+		<name format="long">Place the board.</name>
+		<description>
+			Put <a href="prototype#board">the board</a> on the <a href="prototype#root">table</a>.
+		</description>
+	</operation>
+	
+	<operation id="place-the-supplies">
+		<name format="short">place the supplies</name>
+		<name format="long">Place the supplies.</name>
+		<description>
+			Put <a href="prototype#supply">the supplies</a> on the <a href="prototype#root">table</a>.
+		</description>
+	</operation>
+	
+	<operation id="place-the-pieces">
+		<name format="short">place the pieces</name>
+		<name format="long">Place the pieces.</name>
+		<description>
+			Put all the <a href="prototype#piece">the pieces</a> on the <a href="prototype#supply">supplies</a> corresponding to each player.
+		</description>
+	</operation>
+	
 	<stage id="prologue">
 		<name format="short">Setup</name>
 		<name format="long">Setting Up</name>

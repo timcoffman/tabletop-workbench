@@ -8,12 +8,13 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
-import com.tcoffman.ttwb.web.GameModelRepository;
+import com.tcoffman.ttwb.doc.GameComponentDocumentation;
+import com.tcoffman.ttwb.web.GameModelFileRepository;
 import com.tcoffman.ttwb.web.resource.model.plugin.ModelPluginsResource;
 
 public class ModelResource extends AbstractModelSubresource {
 
-	public ModelResource(GameModelRepository.Bundle modelBundle) {
+	public ModelResource(GameModelFileRepository.Bundle modelBundle) {
 		super(modelBundle);
 	}
 
@@ -28,7 +29,7 @@ public class ModelResource extends AbstractModelSubresource {
 	}
 
 	public String getLabel() {
-		return "Model #" + modelBundle().getModelId();
+		return modelBundle().getModel().getDocumentation().getName(GameComponentDocumentation.Format.SHORT);
 	}
 
 	// "sub-resource locator" (no http-method // annotations)

@@ -12,8 +12,8 @@ import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 import com.tcoffman.ttwb.model.pattern.operation.GameOperationPattern;
 import com.tcoffman.ttwb.model.pattern.operation.GameOperationPatternSet;
-import com.tcoffman.ttwb.web.GameModelRepository;
-import com.tcoffman.ttwb.web.GameStateRepository;
+import com.tcoffman.ttwb.web.GameModelFileRepository;
+import com.tcoffman.ttwb.web.GameStateFileRepository;
 import com.tcoffman.ttwb.web.resource.model.StagesResource;
 import com.tcoffman.ttwb.web.resource.model.pattern.OperationPatternResource;
 import com.tcoffman.ttwb.web.resource.state.AbstractStateSubresource;
@@ -22,16 +22,16 @@ public class OperationPatternSetResource extends AbstractStateSubresource {
 
 	private final GameOperationPatternSet m_opPatternSet;
 
-	public OperationPatternSetResource(GameStateRepository.Bundle stateBundle, GameOperationPatternSet opPatternSet) {
+	public OperationPatternSetResource(GameStateFileRepository.Bundle stateBundle, GameOperationPatternSet opPatternSet) {
 		super(stateBundle);
 		m_opPatternSet = opPatternSet;
 	}
 
-	// @GET
-	// @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	// public OperationPatternSetResource get() {
-	// return this;
-	// }
+	@GET
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public OperationPatternSetResource get() {
+		return this;
+	}
 
 	public String getLabel() {
 		return "Operation Pattern Set";
@@ -48,11 +48,11 @@ public class OperationPatternSetResource extends AbstractStateSubresource {
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public List<OperationPatternResource> getOperationPatterns() throws GameComponentBuilderException {
-		final GameModelRepository.Bundle modelBundle = m_modelRepository.getBundle(stateBundle().getModelId());
+		final GameModelFileRepository.Bundle modelBundle = m_modelRepository.getBundle(stateBundle().getModelId());
 		return m_opPatternSet.operations().map((p) -> createOperationPatternResource(modelBundle, p)).collect(Collectors.toList());
 	}
 
-	private OperationPatternResource createOperationPatternResource(GameModelRepository.Bundle modelBundle, GameOperationPattern opPattern) {
+	private OperationPatternResource createOperationPatternResource(GameModelFileRepository.Bundle modelBundle, GameOperationPattern opPattern) {
 		return subresource(new OperationPatternResource(modelBundle, opPattern));
 	}
 

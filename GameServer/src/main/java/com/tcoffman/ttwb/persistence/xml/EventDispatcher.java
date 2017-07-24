@@ -69,7 +69,7 @@ public class EventDispatcher<E extends Throwable> {
 			final String namespaceURI = event.asStartElement().getName().getNamespaceURI();
 			@SuppressWarnings("unchecked")
 			final Iterator<Attribute> attributes = event.asStartElement().getAttributes();
-			final EventDispatcher<E> dispatcher = new EventDispatcher<E>(namespaceURI, attributes, m_eventReader);
+			final EventDispatcher<E> dispatcher = new EventDispatcher<>(namespaceURI, attributes, m_eventReader);
 			consumer.accept(event, dispatcher);
 			if (!dispatcher.completed())
 				throw new IllegalStateException("handler failed to fully process event " + event);
@@ -79,16 +79,16 @@ public class EventDispatcher<E extends Throwable> {
 	}
 
 	private <T extends XMLEvent> EventHandler<T> createEventHandler(Predicate<T> predicate, EventConsumer<T, E> consumer) {
-		return new EventHandler<T>(predicate, consumer);
+		return new EventHandler<>(predicate, consumer);
 	}
 
-	private final List<EventHandler<StartElement>> m_startElementHandlers = new ArrayList<EventHandler<StartElement>>();
-	private final List<EventHandler<Attribute>> m_attributeHandlers = new ArrayList<EventHandler<Attribute>>();
+	private final List<EventHandler<StartElement>> m_startElementHandlers = new ArrayList<>();
+	private final List<EventHandler<Attribute>> m_attributeHandlers = new ArrayList<>();
 	private Optional<EventConsumer<StartElement, E>> m_unhandledStartElementConsumer = Optional.empty();
 	private Optional<EventConsumer<Attribute, E>> m_unhandledAttributeConsumer = Optional.empty();
 
 	public static <E extends Throwable> EventDispatcher<E> from(XMLEventReader eventReader, Class<E> exceptionClass) {
-		return new EventDispatcher<E>(eventReader);
+		return new EventDispatcher<>(eventReader);
 	}
 
 	public EventDispatcher(XMLEventReader eventReader) {
@@ -152,7 +152,7 @@ public class EventDispatcher<E extends Throwable> {
 	public String contents() throws XMLStreamException {
 		final StringBuffer sb = new StringBuffer();
 		skip(sb::append);
-		return sb.toString();
+		return sb.toString().trim();
 	}
 
 	public void skip() throws XMLStreamException {

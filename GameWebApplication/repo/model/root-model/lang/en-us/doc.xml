@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<documentation
+	xmlns="urn:com.tcoffman.ttwb.doc/v/1.0"
+	lang="en-us"
+	>
+
+	<model>
+		<name format="long">Root</name>
+		<name format="short">Root</name>
+	</model>
+
+	<role id="system">
+			<name format="short">System</name>
+			<name format="long">Game System</name>
+	</role>
+	
+</documentation>

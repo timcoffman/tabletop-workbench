@@ -6,15 +6,15 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.tcoffman.ttwb.component.persistence.GameModelRepository;
 import com.tcoffman.ttwb.model.GamePartRelationshipType;
-import com.tcoffman.ttwb.web.GameModelRepository.Bundle;
 import com.tcoffman.ttwb.web.resource.model.AbstractModelSubresource;
 
 public class RelationshipTypeResource extends AbstractModelSubresource {
 
 	private final GamePartRelationshipType m_relationshipType;
 
-	public RelationshipTypeResource(Bundle modelBundle, GamePartRelationshipType relationshipType) {
+	public RelationshipTypeResource(GameModelRepository.Bundle modelBundle, GamePartRelationshipType relationshipType) {
 		super(modelBundle);
 		m_relationshipType = relationshipType;
 	}

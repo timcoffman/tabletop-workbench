@@ -9,14 +9,14 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import com.tcoffman.ttwb.model.pattern.operation.GameOperationPatternSet;
-import com.tcoffman.ttwb.web.GameStateRepository;
+import com.tcoffman.ttwb.web.GameStateFileRepository;
 import com.tcoffman.ttwb.web.resource.state.AbstractStateSubresource;
 import com.tcoffman.ttwb.web.resource.state.StateResource;
 import com.tcoffman.ttwb.web.resource.state.StatesResource;
 
 public class OperationPatternSetsResource extends AbstractStateSubresource {
 
-	public OperationPatternSetsResource(GameStateRepository.Bundle stateBundle) {
+	public OperationPatternSetsResource(GameStateFileRepository.Bundle stateBundle) {
 		super(stateBundle);
 	}
 

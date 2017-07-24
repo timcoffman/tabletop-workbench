@@ -10,7 +10,7 @@ import javax.xml.stream.XMLStreamException;
 
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.doc.GameComponentDocumentation;
-import com.tcoffman.ttwb.web.GameStateRepository;
+import com.tcoffman.ttwb.web.GameStateFileRepository;
 import com.tcoffman.ttwb.web.resource.state.AbstractStateSubresource;
 import com.tcoffman.ttwb.web.resource.state.LogEntriesResource;
 import com.tcoffman.ttwb.web.resource.state.ParticipantsResource;
@@ -21,7 +21,7 @@ import com.tcoffman.ttwb.web.resource.state.pattern.OperationPatternSetsResource
 
 public class RunnerResource extends AbstractStateSubresource {
 
-	public RunnerResource(GameStateRepository.Bundle stateBundle) {
+	public RunnerResource(GameStateFileRepository.Bundle stateBundle) {
 		super(stateBundle);
 	}
 

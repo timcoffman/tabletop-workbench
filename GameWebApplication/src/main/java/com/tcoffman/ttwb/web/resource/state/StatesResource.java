@@ -1,9 +1,7 @@
 package com.tcoffman.ttwb.web.resource.state;
 
-import java.beans.IntrospectionException;
 import java.net.URI;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
@@ -21,11 +19,18 @@ import org.json.JSONException;
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.plugin.PluginException;
 import com.tcoffman.ttwb.state.GameRunner;
-import com.tcoffman.ttwb.web.GameModelRepository;
-import com.tcoffman.ttwb.web.GameStateRepository;
-import com.tcoffman.ttwb.web.GameStateRepository.Bundle;
+import com.tcoffman.ttwb.web.GameModelFileRepository;
+import com.tcoffman.ttwb.web.GameStateFileRepository;
+import com.tcoffman.ttwb.web.GameStateFileRepository.Bundle;
 import com.tcoffman.ttwb.web.resource.AbstractRootResource;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Info;
+import io.swagger.annotations.SwaggerDefinition;
+
+@Api("States")
+@SwaggerDefinition(info = @Info(description = "Access to view and update game states", version = "1.0.0", title = "Game States API"))
 @Path("/states")
 public class StatesResource extends AbstractRootResource {
 
@@ -37,6 +42,7 @@ public class StatesResource extends AbstractRootResource {
 		return uriBuilder.path(StatesResource.class).path(StatesResource.class, "getState");
 	}
 
+	@ApiOperation("List of all states")
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public List<URI> getStates() {
@@ -66,17 +72,13 @@ public class StatesResource extends AbstractRootResource {
 
 	}
 
-	public Map<String, Object> getCreate() throws IntrospectionException {
-		return beanWritablePropertyMap(StateCreationForm.class);
-	}
-
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public StateResource createState(StateCreationForm stateCreationForm) throws JSONException, XMLStreamException, PluginException {
 		final String modelId = stateCreationForm.getModel();
-		final GameModelRepository.Bundle modelBundle = m_modelRepository.getBundle(modelId);
-		final GameStateRepository.Bundle stateBundle = m_stateRepository.create(modelBundle.getModel(), modelBundle.getModelId(), modelBundle.getPluginSet(),
+		final GameModelFileRepository.Bundle modelBundle = m_modelRepository.getBundle(modelId);
+		final GameStateFileRepository.Bundle stateBundle = m_stateRepository.create(modelBundle.getModel(), modelBundle.getModelId(), modelBundle.getPluginSet(),
 				modelBundle.getModelRefResolver());
 
 		final GameRunner runner = new GameRunner(stateBundle.getState());
@@ -85,7 +87,7 @@ public class StatesResource extends AbstractRootResource {
 		return createStateResource(stateBundle);
 	}
 
-	private StateResource createStateResource(final GameStateRepository.Bundle stateBundle) {
+	private StateResource createStateResource(final GameStateFileRepository.Bundle stateBundle) {
 		return subresource(new StateResource(stateBundle));
 	}
 

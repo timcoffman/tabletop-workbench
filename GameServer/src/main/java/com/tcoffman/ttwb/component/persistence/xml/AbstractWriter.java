@@ -74,11 +74,19 @@ public abstract class AbstractWriter {
 	}
 
 	protected Supplier<IllegalArgumentException> missingComponent(GameComponentRef<? extends GameComponent> componentRef) {
-		return () -> new IllegalArgumentException("missing reference to component " + componentRef);
+		return () -> createMissingComponentException(componentRef);
+	}
+
+	private IllegalArgumentException createMissingComponentException(GameComponentRef<? extends GameComponent> componentRef) {
+		return new IllegalArgumentException("missing reference to component " + componentRef);
 	}
 
 	protected Supplier<IllegalArgumentException> missingComponent(GameComponent component) {
-		return () -> new IllegalArgumentException("missing reference to component " + component);
+		return () -> createMissingComponentException(component);
+	}
+
+	private IllegalArgumentException createMissingComponentException(GameComponent component) {
+		return new IllegalArgumentException("missing reference to component " + component);
 	}
 
 	protected String idFor(Object obj, Supplier<String> idSupplier) {

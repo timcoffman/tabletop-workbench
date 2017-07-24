@@ -10,6 +10,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -27,14 +28,17 @@ import org.junit.Test;
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.component.GameComponentRef;
 import com.tcoffman.ttwb.component.persistence.GameComponentRefResolver;
+import com.tcoffman.ttwb.component.persistence.GameModelRepository;
 import com.tcoffman.ttwb.component.persistence.xml.BundleHelper;
 import com.tcoffman.ttwb.core.Core;
 import com.tcoffman.ttwb.core.Grid;
 import com.tcoffman.ttwb.doc.GameComponentDocumentation;
+import com.tcoffman.ttwb.doc.GameModelDocumentation;
 import com.tcoffman.ttwb.doc.persistence.DocumentationRefResolver;
 import com.tcoffman.ttwb.model.GameModel;
 import com.tcoffman.ttwb.model.StandardGameModelBuilder;
 import com.tcoffman.ttwb.model.StandardRootGameModel;
+import com.tcoffman.ttwb.model.persistance.ModelRefResolver;
 import com.tcoffman.ttwb.model.persistance.xml.StandardGameModelParser;
 import com.tcoffman.ttwb.plugin.ModelPlugin;
 import com.tcoffman.ttwb.plugin.PluginException;
@@ -44,6 +48,7 @@ import com.tcoffman.ttwb.plugin.PluginSet;
 public class StandardGameModelParserTest {
 
 	private PluginSet m_pluginSet;
+	private GameModelRepository m_importedModelRepository;
 	private StandardGameModelParser m_standardGameModelParser;
 
 	private GameComponentRef<GameComponentDocumentation> mockDocumentationForId(final String id) {
@@ -94,14 +99,48 @@ public class StandardGameModelParserTest {
 		when(documentationRefResolver.getRuleResolver()).thenReturn(genericDocumentationResolver);
 		when(documentationRefResolver.getOperationResolver()).thenReturn(genericDocumentationResolver);
 
-		final StandardRootGameModel rootModel = StandardRootGameModel.create().setDocumentation(mockDocumentationForId("root")).done();
+		final GameModel rootModel = StandardRootGameModel.create().setCorePlugin(m_pluginSet.requirePlugin(CORE))
+				.setDocumentation(mockDocumentationForId("root")).done();
+		final GameModelRepository.Bundle rootBundle = new GameModelRepository.Bundle() {
 
-		@SuppressWarnings("unchecked")
-		final GameComponentRefResolver<GameModel> importedModelResolver = mock(GameComponentRefResolver.class);
-		when(importedModelResolver.lookup("root")).thenAnswer(invocation -> Optional.of(GameComponentRef.wrap(rootModel)));
-		when(importedModelResolver.lookupId(rootModel)).thenAnswer(invocation -> Optional.of("root"));
+			@Override
+			public PluginSet getPluginSet() {
+				return m_pluginSet;
+			}
 
-		m_standardGameModelParser = new StandardGameModelParser(m_pluginSet, importedModelResolver, documentationRefResolver);
+			@Override
+			public String getModelId() {
+				return "root";
+			}
+
+			@Override
+			public GameModelDocumentation getDocumentation() {
+				return mock(GameModelDocumentation.class);
+			}
+
+			@Override
+			public DocumentationRefResolver getDocumentationResolver() {
+				return mock(DocumentationRefResolver.class);
+			}
+
+			@Override
+			public ModelRefResolver getModelRefResolver() {
+				return mock(ModelRefResolver.class);
+			}
+
+			@Override
+			public GameModel getModel() {
+				return rootModel;
+			}
+
+		};
+
+		m_importedModelRepository = mock(GameModelRepository.class);
+		when(m_importedModelRepository.getBundle("root")).thenReturn(rootBundle);
+		when(m_importedModelRepository.getBundle(eq("root"), anyString())).thenReturn(rootBundle);
+		when(m_importedModelRepository.getBundle(rootModel)).thenReturn(rootBundle);
+
+		m_standardGameModelParser = new StandardGameModelParser(m_pluginSet, m_importedModelRepository, documentationRefResolver);
 	}
 
 	@Test
@@ -125,7 +164,8 @@ public class StandardGameModelParserTest {
 
 	@Test
 	public void canWriteMinimalModel() throws TransformerException, PluginException, UnsupportedEncodingException {
-		final StandardGameModelBuilder builder = new StandardGameModelBuilder(m_pluginSet);
+		final GameModel rootModel = m_importedModelRepository.getBundle("root").getModel();
+		final StandardGameModelBuilder builder = new StandardGameModelBuilder(m_pluginSet, rootModel);
 		builder.setDocumentation(GameComponentRef.wrap(mock(GameComponentDocumentation.class))).createStage((s) -> {
 			s.setDocumentation(GameComponentRef.wrap(mock(GameComponentDocumentation.class)));
 		});

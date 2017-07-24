@@ -15,7 +15,7 @@ import com.tcoffman.ttwb.state.mutation.GameStateAddRelationship;
 import com.tcoffman.ttwb.state.mutation.GameStateLogEntry;
 import com.tcoffman.ttwb.state.mutation.GameStateMutation;
 import com.tcoffman.ttwb.state.mutation.GameStateRemoveRelationship;
-import com.tcoffman.ttwb.web.GameStateRepository;
+import com.tcoffman.ttwb.web.GameStateFileRepository;
 import com.tcoffman.ttwb.web.resource.model.RolesResource;
 import com.tcoffman.ttwb.web.resource.model.plugin.RelationshipTypesResource;
 
@@ -25,7 +25,7 @@ public class StateMutationResource extends AbstractStateSubresource {
 	private final GameStateLogEntry m_logEntry;
 	private final GameStateMutation m_mutation;
 
-	public StateMutationResource(GameStateRepository.Bundle stateBundle, long logEntryIndex, GameStateLogEntry logEntry, GameStateMutation mutation) {
+	public StateMutationResource(GameStateFileRepository.Bundle stateBundle, long logEntryIndex, GameStateLogEntry logEntry, GameStateMutation mutation) {
 		super(stateBundle);
 		m_logEntryIndex = logEntryIndex;
 		m_logEntry = logEntry;

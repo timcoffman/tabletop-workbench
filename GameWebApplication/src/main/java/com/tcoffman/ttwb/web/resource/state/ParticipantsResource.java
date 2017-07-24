@@ -1,10 +1,8 @@
 package com.tcoffman.ttwb.web.resource.state;
 
-import java.beans.IntrospectionException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -16,19 +14,19 @@ import javax.xml.stream.XMLStreamException;
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.model.GameRole;
 import com.tcoffman.ttwb.state.GameParticipant;
-import com.tcoffman.ttwb.web.GameStateRepository;
+import com.tcoffman.ttwb.web.GameStateFileRepository;
 import com.tcoffman.ttwb.web.UnrecognizedValueException;
 
 public class ParticipantsResource extends AbstractStateSubresource {
 
-	public ParticipantsResource(GameStateRepository.Bundle stateBundle) {
+	public ParticipantsResource(GameStateFileRepository.Bundle stateBundle) {
 		super(stateBundle);
 	}
 
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public List<ParticipantResource> getParticipants() {
-		final List<ParticipantResource> participants = new ArrayList<ParticipantResource>();
+		final List<ParticipantResource> participants = new ArrayList<>();
 		for (final Iterator<? extends GameParticipant> i = stateBundle().getState().participants().iterator(); i.hasNext();)
 			try {
 				final GameParticipant participant = i.next();
@@ -62,15 +60,11 @@ public class ParticipantsResource extends AbstractStateSubresource {
 
 	}
 
-	public Map<String, Object> getCreate() throws IntrospectionException {
-		return beanWritablePropertyMap(ParticipantCreationForm.class);
-	}
-
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public ParticipantResource createParticipant(ParticipantCreationForm participantCreationForm) throws GameComponentBuilderException, XMLStreamException,
-			UnrecognizedValueException {
+	public ParticipantResource createParticipant(ParticipantCreationForm participantCreationForm)
+			throws GameComponentBuilderException, XMLStreamException, UnrecognizedValueException {
 
 		final String auth = participantCreationForm.getUser();
 

@@ -13,14 +13,14 @@ import javax.xml.stream.XMLStreamException;
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.model.GameRule;
 import com.tcoffman.ttwb.model.GameStage;
-import com.tcoffman.ttwb.web.GameModelRepository;
+import com.tcoffman.ttwb.web.GameModelFileRepository;
 
 public class RulesResource extends AbstractModelSubresource {
 
 	private final String m_stageId;
 	private final GameStage m_stage;
 
-	public RulesResource(GameModelRepository.Bundle modelBundle, String stageId, GameStage stage) {
+	public RulesResource(GameModelFileRepository.Bundle modelBundle, String stageId, GameStage stage) {
 		super(modelBundle);
 		m_stageId = stageId;
 		m_stage = stage;

@@ -14,14 +14,14 @@ import javax.ws.rs.core.UriBuilder;
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.model.GameStage;
 import com.tcoffman.ttwb.model.GameStageContainer;
-import com.tcoffman.ttwb.web.GameModelRepository;
+import com.tcoffman.ttwb.web.GameModelFileRepository;
 import com.tcoffman.ttwb.web.UnrecognizedValueException;
 
 public class StagesResource extends AbstractModelSubresource {
 
 	private final GameStageContainer m_container;
 
-	public StagesResource(GameModelRepository.Bundle modelBundle, GameStageContainer container) {
+	public StagesResource(GameModelFileRepository.Bundle modelBundle, GameStageContainer container) {
 		super(modelBundle);
 		m_container = container;
 	}

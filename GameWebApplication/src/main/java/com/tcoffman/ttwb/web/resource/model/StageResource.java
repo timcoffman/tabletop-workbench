@@ -10,14 +10,14 @@ import javax.ws.rs.core.MediaType;
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 import com.tcoffman.ttwb.model.GameStage;
-import com.tcoffman.ttwb.web.GameModelRepository;
+import com.tcoffman.ttwb.web.GameModelFileRepository;
 
 public class StageResource extends AbstractModelSubresource {
 
 	private final String m_stageId;
 	private final GameStage m_stage;
 
-	public StageResource(GameModelRepository.Bundle modelBundle, String stageId, GameStage stage) {
+	public StageResource(GameModelFileRepository.Bundle modelBundle, String stageId, GameStage stage) {
 		super(modelBundle);
 		m_stageId = stageId;
 		m_stage = stage;

@@ -121,8 +121,8 @@ class ModelParser extends AbstractGameParser {
 		dispatcher.read();
 	}
 
-	void parseModel(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher) throws XMLStreamException,
-			GameComponentBuilderException {
+	void parseModel(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher)
+			throws XMLStreamException, GameComponentBuilderException {
 		m_editor.setDocumentation(m_documentationRefResolver.getModel());
 
 		dispatcher.on(MODEL_ELEMENT_QNAME_IMPORT, this::parseImport);
@@ -136,26 +136,26 @@ class ModelParser extends AbstractGameParser {
 		m_modelRefManager.resolveAll();
 	}
 
-	private void parseImport(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher) throws GameComponentBuilderException,
-			XMLStreamException {
+	private void parseImport(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher)
+			throws GameComponentBuilderException, XMLStreamException {
 		dispatcher.attr(MODEL_ATTR_NAME_MODEL,
 				(id) -> m_editor.addImportedModel(m_modelRefManager.getImportedModelResolver().lookup(id).orElseThrow(missingComponent(id)).get()));
 		dispatcher.read();
 	}
 
-	private void parseInitialStage(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher) throws GameComponentBuilderException,
-			XMLStreamException {
+	private void parseInitialStage(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher)
+			throws GameComponentBuilderException, XMLStreamException {
 		dispatcher.attr(MODEL_ATTR_NAME_STAGE_REF, (id) -> m_editor.setInitialStage(m_modelRefManager.getStageManager().createRef(id)));
 		dispatcher.read();
 	}
 
-	private void parseStage(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher) throws GameComponentBuilderException,
-			XMLStreamException {
+	private void parseStage(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher)
+			throws GameComponentBuilderException, XMLStreamException {
 		createAndInitialize(m_editor::createStage, (s) -> new StageParser(s).parse(startElement, dispatcher));
 	}
 
-	private void parseRole(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher) throws GameComponentBuilderException,
-			XMLStreamException {
+	private void parseRole(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher)
+			throws GameComponentBuilderException, XMLStreamException {
 		createAndInitialize(m_editor::createRole, (r) -> {
 
 			r.setDocumentation(defaultDocumentation(startElement, MODEL_ATTR_NAME_TYPE));
@@ -167,20 +167,20 @@ class ModelParser extends AbstractGameParser {
 
 	}
 
-	private void parsePrototype(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher) throws GameComponentBuilderException,
-			XMLStreamException {
+	private void parsePrototype(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher)
+			throws GameComponentBuilderException, XMLStreamException {
 		final Creator<StandardGamePartPrototype.Editor> creator = (i) -> m_editor.createPrototype(CORE, i);
 		createAndInitialize(creator, (p) -> new PartPrototypeParser(p).parse(startElement, dispatcher));
 	}
 
-	private void parseParts(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher) throws GameComponentBuilderException,
-			XMLStreamException {
+	private void parseParts(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher)
+			throws GameComponentBuilderException, XMLStreamException {
 		dispatcher.on(MODEL_ELEMENT_QNAME_PART, this::parsePart);
 		dispatcher.read();
 	}
 
-	private void parsePart(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher) throws GameComponentBuilderException,
-			XMLStreamException {
+	private void parsePart(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher)
+			throws GameComponentBuilderException, XMLStreamException {
 		createAndInitialize(m_editor::createPart, (p) -> new PartParser(p).parse(startElement, dispatcher));
 	}
 
@@ -190,13 +190,12 @@ class ModelParser extends AbstractGameParser {
 
 	private GameComponentRef<GameComponentDocumentation> defaultDocumentation(StartElement startElement, String identifyingAttrName)
 			throws GameComponentBuilderException {
-		final StandardComponentDocumentation doc = StandardComponentDocumentation
-				.create()
+		final StandardComponentDocumentation doc = StandardComponentDocumentation.create()
 				.setName(GameComponentDocumentation.Format.SHORT,
 						"#" + Optional.ofNullable(startElement.getAttributeByName(new QName(identifyingAttrName))).map(Attribute::getValue).orElse(""))
-				.setDescription(
-						startElement.getName().getLocalPart() + "@" + startElement.getLocation().getLineNumber() + ":"
-								+ startElement.getLocation().getColumnNumber()).done();
+				.setDescription(startElement.getName().getLocalPart() + "@" + startElement.getLocation().getLineNumber() + ":"
+						+ startElement.getLocation().getColumnNumber())
+				.done();
 		return doc.self(GameComponentDocumentation.class);
 	}
 
@@ -207,8 +206,8 @@ class ModelParser extends AbstractGameParser {
 			m_editor = editor;
 		}
 
-		public void parse(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher) throws GameComponentBuilderException,
-				XMLStreamException {
+		public void parse(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher)
+				throws GameComponentBuilderException, XMLStreamException {
 
 			m_editor.setDocumentation(defaultDocumentation(startElement));
 
@@ -222,8 +221,8 @@ class ModelParser extends AbstractGameParser {
 
 		}
 
-		private void parsePlace(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher) throws GameComponentBuilderException,
-				XMLStreamException {
+		private void parsePlace(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher)
+				throws GameComponentBuilderException, XMLStreamException {
 			createAndInitialize(m_editor::createPlace, (p) -> new PlaceParser(p).parse(startElement, dispatcher));
 		}
 	}
@@ -235,8 +234,8 @@ class ModelParser extends AbstractGameParser {
 			m_editor = editor;
 		}
 
-		public void parse(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher) throws GameComponentBuilderException,
-				XMLStreamException {
+		public void parse(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher)
+				throws GameComponentBuilderException, XMLStreamException {
 
 			dispatcher.attr(MODEL_ATTR_NAME_PROTOTYPE_REF, (id) -> m_editor.setPrototype(m_modelRefManager.getPartPrototypeManager().createRef(id)));
 			dispatcher.attr(MODEL_ATTR_NAME_BINDING, (id) -> m_editor.setBinding(m_modelRefManager.getRoleManager().createRef(id)));
@@ -257,8 +256,8 @@ class ModelParser extends AbstractGameParser {
 			m_editor = editor;
 		}
 
-		private void parse(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher) throws GameComponentBuilderException,
-				XMLStreamException {
+		private void parse(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher)
+				throws GameComponentBuilderException, XMLStreamException {
 
 			m_editor.setDocumentation(defaultDocumentation(startElement, MODEL_ATTR_NAME_TYPE));
 
@@ -274,11 +273,11 @@ class ModelParser extends AbstractGameParser {
 			m_editor.createProperty(modelPlugin.getName(), name.getLocalPart(), (p) -> p.setValue(value));
 		}
 
-		private void parseComponent(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher) throws GameComponentBuilderException,
-				XMLStreamException {
+		private void parseComponent(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher)
+				throws GameComponentBuilderException, XMLStreamException {
 			final ModelPlugin modelPlugin = requireModelPlugin(startElement);
-			final Creator<StandardGameModelComponent.Editor> creator = (i) -> m_editor.createComponent(modelPlugin.getName(), startElement.getName()
-					.getLocalPart(), i);
+			final Creator<StandardGameModelComponent.Editor> creator = (i) -> m_editor.createComponent(modelPlugin.getName(),
+					startElement.getName().getLocalPart(), i);
 			createAndInitialize(creator, (c) -> {
 
 				new ComponentParser(c).parse(startElement, dispatcher);
@@ -294,8 +293,8 @@ class ModelParser extends AbstractGameParser {
 			m_editor = editor;
 		}
 
-		private void parse(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher) throws GameComponentBuilderException,
-				XMLStreamException {
+		private void parse(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher)
+				throws GameComponentBuilderException, XMLStreamException {
 			dispatcher.attr(this::parseProperty);
 			dispatcher.other(this::parseComponent);
 			dispatcher.read();
@@ -306,11 +305,11 @@ class ModelParser extends AbstractGameParser {
 			m_editor.createProperty(modelPlugin.getName(), name.getLocalPart(), (p) -> p.setValue(value));
 		}
 
-		private void parseComponent(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher) throws GameComponentBuilderException,
-				XMLStreamException {
+		private void parseComponent(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher)
+				throws GameComponentBuilderException, XMLStreamException {
 			final ModelPlugin modelPlugin = requireModelPlugin(startElement);
-			final Creator<StandardGameModelComponent.Editor> creator = (i) -> m_editor.createComponent(modelPlugin.getName(), startElement.getName()
-					.getLocalPart(), i);
+			final Creator<StandardGameModelComponent.Editor> creator = (i) -> m_editor.createComponent(modelPlugin.getName(),
+					startElement.getName().getLocalPart(), i);
 			createAndInitialize(creator, (c) -> {
 
 				new ComponentParser(c).parse(startElement, dispatcher);
@@ -326,8 +325,8 @@ class ModelParser extends AbstractGameParser {
 			m_editor = editor;
 		}
 
-		private void parse(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher) throws GameComponentBuilderException,
-				XMLStreamException {
+		private void parse(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher)
+				throws GameComponentBuilderException, XMLStreamException {
 
 			m_editor.setDocumentation(defaultDocumentation(startElement, MODEL_ATTR_NAME_TYPE));
 
@@ -341,8 +340,8 @@ class ModelParser extends AbstractGameParser {
 
 		}
 
-		private void parseRule(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher) throws GameComponentBuilderException,
-				XMLStreamException {
+		private void parseRule(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher)
+				throws GameComponentBuilderException, XMLStreamException {
 			final Creator<StandardGameRule.Editor> creator = (i) -> m_editor.createRule(CORE, i);
 			createAndInitialize(creator, (r) -> {
 
@@ -359,8 +358,8 @@ class ModelParser extends AbstractGameParser {
 			dispatcher.read();
 		}
 
-		private void parseStage(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher) throws GameComponentBuilderException,
-				XMLStreamException {
+		private void parseStage(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher)
+				throws GameComponentBuilderException, XMLStreamException {
 			createAndInitialize(m_editor::createStage, (s) -> new StageParser(s).parse(startElement, dispatcher));
 		}
 	}
@@ -372,8 +371,8 @@ class ModelParser extends AbstractGameParser {
 			m_editor = editor;
 		}
 
-		private void parse(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher) throws GameComponentBuilderException,
-				XMLStreamException {
+		private void parse(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher)
+				throws GameComponentBuilderException, XMLStreamException {
 
 			m_editor.setDocumentation(defaultDocumentation(startElement, MODEL_ATTR_NAME_TYPE));
 
@@ -414,8 +413,8 @@ class ModelParser extends AbstractGameParser {
 			m_editor = editor;
 		}
 
-		private void parse(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher) throws GameComponentBuilderException,
-				XMLStreamException {
+		private void parse(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher)
+				throws GameComponentBuilderException, XMLStreamException {
 
 			m_editor.setDocumentation(defaultDocumentation(startElement));
 
@@ -428,25 +427,25 @@ class ModelParser extends AbstractGameParser {
 
 		}
 
-		private void parseRole(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher) throws GameComponentBuilderException,
-				XMLStreamException {
+		private void parseRole(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher)
+				throws GameComponentBuilderException, XMLStreamException {
 			final StandardGameRolePattern rolePattern = StandardGameAnyRolePattern.create().done();
 			m_editor.setRolePattern(rolePattern);
 			dispatcher.skip();
 		}
 
-		private void parseSubject(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher) throws GameComponentBuilderException,
-				XMLStreamException {
+		private void parseSubject(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher)
+				throws GameComponentBuilderException, XMLStreamException {
 			parsePlacePattern(startElement, dispatcher, m_editor::setSubjectPlacePattern);
 		}
 
-		private void parseTarget(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher) throws GameComponentBuilderException,
-				XMLStreamException {
+		private void parseTarget(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher)
+				throws GameComponentBuilderException, XMLStreamException {
 			parsePlacePattern(startElement, dispatcher, m_editor::setTargetPlacePattern);
 		}
 
-		private void parseQuantity(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher) throws GameComponentBuilderException,
-				XMLStreamException {
+		private void parseQuantity(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher)
+				throws GameComponentBuilderException, XMLStreamException {
 			dispatcher.skip();
 		}
 
@@ -473,8 +472,8 @@ class ModelParser extends AbstractGameParser {
 			m_editor = editor;
 		}
 
-		private void parse(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher) throws GameComponentBuilderException,
-				XMLStreamException {
+		private void parse(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher)
+				throws GameComponentBuilderException, XMLStreamException {
 			dispatcher.on(MODEL_ELEMENT_QNAME_PATTERN_FILTER, this::parseFilterPlacePattern);
 			dispatcher.on(MODEL_ELEMENT_QNAME_PATTERN_RELATIONHIP, this::parseRelationshipPlacePattern);
 			dispatcher.on(MODEL_ELEMENT_QNAME_PATTERN_INTERSECTION, this::parseIntersectionPlacePattern);
@@ -542,8 +541,8 @@ class ModelParser extends AbstractGameParser {
 			m_editor = editor;
 		}
 
-		private void parse(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher) throws GameComponentBuilderException,
-				XMLStreamException {
+		private void parse(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher)
+				throws GameComponentBuilderException, XMLStreamException {
 			dispatcher.on(MODEL_ELEMENT_QNAME_PATTERN_FILTER, this::parseFilterPartPattern);
 			dispatcher.on(MODEL_ELEMENT_QNAME_PATTERN_INTERSECTION, this::parseIntersectionPartPattern);
 			dispatcher.on(MODEL_ELEMENT_QNAME_PATTERN_ROOT, this::parseRootPartPattern);
@@ -637,7 +636,11 @@ class ModelParser extends AbstractGameParser {
 	}
 
 	private Supplier<GameComponentBuilderException> missingComponent(String id) {
-		return () -> new GameComponentBuilderException(DOC_PARSER_XML, "missing component \"" + id + "\"");
+		return () -> createMissingComponentException(id);
+	}
+
+	private GameComponentBuilderException createMissingComponentException(String id) {
+		return new GameComponentBuilderException(DOC_PARSER_XML, "missing component \"" + id + "\"");
 	}
 
 }

@@ -6,15 +6,15 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.tcoffman.ttwb.component.persistence.GameModelRepository;
 import com.tcoffman.ttwb.model.GamePlaceType;
-import com.tcoffman.ttwb.web.GameModelRepository.Bundle;
 import com.tcoffman.ttwb.web.resource.model.AbstractModelSubresource;
 
 public class PlaceTypeResource extends AbstractModelSubresource {
 
 	private final GamePlaceType m_placeType;
 
-	public PlaceTypeResource(Bundle modelBundle, GamePlaceType placeType) {
+	public PlaceTypeResource(GameModelRepository.Bundle modelBundle, GamePlaceType placeType) {
 		super(modelBundle);
 		m_placeType = placeType;
 	}

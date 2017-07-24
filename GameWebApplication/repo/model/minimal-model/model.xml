@@ -6,6 +6,8 @@
 	xmlns:grid="urn:com.tcoffman.ttwb.grid/v/1.0"
 	>
 
+	<import model="root"/>
+
 	<name>Minimal</name>
 
 	<role id="only-role" doc="doc:only-role"/>

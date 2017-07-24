@@ -5,11 +5,11 @@ import java.util.stream.Collectors;
 
 import com.tcoffman.ttwb.model.pattern.place.GameIntersectionPlacePattern;
 import com.tcoffman.ttwb.model.pattern.place.GamePlacePattern;
-import com.tcoffman.ttwb.web.GameModelRepository;
+import com.tcoffman.ttwb.web.GameModelFileRepository;
 
 public class IntersectionPlacePatternResource extends PlacePatternResource<GameIntersectionPlacePattern> {
 
-	public IntersectionPlacePatternResource(GameModelRepository.Bundle modelBundle, GameIntersectionPlacePattern pattern) {
+	public IntersectionPlacePatternResource(GameModelFileRepository.Bundle modelBundle, GameIntersectionPlacePattern pattern) {
 		super(modelBundle, pattern);
 	}
 

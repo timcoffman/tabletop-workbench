@@ -9,14 +9,14 @@ import javax.ws.rs.core.UriBuilder;
 import com.tcoffman.ttwb.model.GamePlaceType;
 import com.tcoffman.ttwb.plugin.ModelPlugin;
 import com.tcoffman.ttwb.plugin.PluginException;
-import com.tcoffman.ttwb.web.GameModelRepository;
+import com.tcoffman.ttwb.web.GameModelFileRepository;
 import com.tcoffman.ttwb.web.resource.model.AbstractModelSubresource;
 
 public class PlaceTypesResource extends AbstractModelSubresource {
 
 	private final ModelPlugin m_plugin;
 
-	public PlaceTypesResource(GameModelRepository.Bundle modelBundle, ModelPlugin plugin) {
+	public PlaceTypesResource(GameModelFileRepository.Bundle modelBundle, ModelPlugin plugin) {
 		super(modelBundle);
 		m_plugin = plugin;
 	}

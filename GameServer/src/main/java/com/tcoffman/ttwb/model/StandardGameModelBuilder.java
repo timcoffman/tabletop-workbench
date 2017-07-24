@@ -14,9 +14,10 @@ public class StandardGameModelBuilder {
 	private final StandardGameModel.Editor m_editor;
 	private final PluginSet m_plugins;
 
-	public StandardGameModelBuilder(PluginSet pluginSet) {
+	public StandardGameModelBuilder(PluginSet pluginSet, GameModel rootModel) {
 		m_editor = StandardGameModel.create();
 		m_plugins = pluginSet;
+		m_editor.addImportedModel(rootModel);
 	}
 
 	public GameModel build() throws GameComponentBuilderException {

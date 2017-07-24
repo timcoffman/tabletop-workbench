@@ -111,7 +111,7 @@
 
 	<initial-stage ref="prologue"/>
 
-	<stage id="prologue">
+	<stage id="prologue" doc="prologue">
 		<rule to-stage="turn" doc="doc:setup">
 			<move xmlns="urn:com.tcoffman.ttwb.model/v/1.0" doc="doc:place-the-board">
 				<role> <filter binding="system"/> </role>
@@ -136,7 +136,7 @@
 		</rule>		
 	</stage>
 	
-	<stage id="turn">
+	<stage id="turn" doc="turn">
 		<initial-stage ref="x-turn"/>
 		
 		<stage id="x-turn">
@@ -164,7 +164,7 @@
 
 	</stage>
 	
-	<stage id="epilogue">
+	<stage id="epilogue" doc="epilogue">
 		
 	</stage>
 

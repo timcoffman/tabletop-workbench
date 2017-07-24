@@ -2,11 +2,11 @@ package com.tcoffman.ttwb.web.resource.model.pattern;
 
 import com.tcoffman.ttwb.model.pattern.part.GameInversionPartPattern;
 import com.tcoffman.ttwb.model.pattern.part.GamePartPattern;
-import com.tcoffman.ttwb.web.GameModelRepository;
+import com.tcoffman.ttwb.web.GameModelFileRepository;
 
 public class InversionPartPatternResource extends PartPatternResource<GameInversionPartPattern> {
 
-	public InversionPartPatternResource(GameModelRepository.Bundle modelBundle, GameInversionPartPattern pattern) {
+	public InversionPartPatternResource(GameModelFileRepository.Bundle modelBundle, GameInversionPartPattern pattern) {
 		super(modelBundle, pattern);
 	}
 

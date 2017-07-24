@@ -9,17 +9,17 @@ import javax.ws.rs.core.MediaType;
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 import com.tcoffman.ttwb.model.GamePartInstance;
-import com.tcoffman.ttwb.web.GameModelRepository;
+import com.tcoffman.ttwb.web.GameModelFileRepository;
 
 public class PartInstanceResource extends AbstractModelSubresource {
 
 	private final long m_partIndex;
-	private final GamePartInstance m_part;
+	private final GamePartInstance m_partInstance;
 
-	public PartInstanceResource(GameModelRepository.Bundle modelBundle, long partIndex, GamePartInstance part) {
+	public PartInstanceResource(GameModelFileRepository.Bundle modelBundle, long partIndex, GamePartInstance partInstance) {
 		super(modelBundle);
 		m_partIndex = partIndex;
-		m_part = part;
+		m_partInstance = partInstance;
 	}
 
 	@GET
@@ -33,11 +33,23 @@ public class PartInstanceResource extends AbstractModelSubresource {
 	}
 
 	public URI getPrototypeResource() throws GameComponentBuilderException {
-		return PartPrototypesResource.pathTo(baseUriBuilder()).build(modelBundle().getModelId(), lookupPartPrototypeId(m_part.getPrototype()));
+		return PartPrototypesResource.pathTo(baseUriBuilder()).build(modelBundle().getModelId(), lookupPartPrototypeId(m_partInstance.getPrototype()));
+	}
+
+	public URI getRole() {
+		if (!m_partInstance.getRoleBinding().isPresent())
+			return null;
+
+		try {
+			return RolesResource.pathTo(baseUriBuilder()).build(modelBundle().getModelId(), lookupRoleId(m_partInstance.getRoleBinding().get()));
+		} catch (final GameComponentBuilderException ex) {
+			ex.printStackTrace();
+			return null;
+		}
 	}
 
 	public String getLabel() {
-		return m_part.getPrototype().get().getDocumentation().getName(GameComponentDocumentation.Format.SHORT);
+		return m_partInstance.getPrototype().get().getDocumentation().getName(GameComponentDocumentation.Format.SHORT);
 	}
 
 }

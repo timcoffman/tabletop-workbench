@@ -10,14 +10,14 @@ import com.tcoffman.ttwb.model.pattern.part.GameIntersectionPartPattern;
 import com.tcoffman.ttwb.model.pattern.part.GameInversionPartPattern;
 import com.tcoffman.ttwb.model.pattern.part.GamePartPattern;
 import com.tcoffman.ttwb.model.pattern.part.GameVariablePartPattern;
-import com.tcoffman.ttwb.web.GameModelRepository;
+import com.tcoffman.ttwb.web.GameModelFileRepository;
 import com.tcoffman.ttwb.web.resource.model.AbstractModelSubresource;
 
 public abstract class PartPatternResource<T extends GamePartPattern> extends AbstractModelSubresource {
 
 	protected final T m_pattern;
 
-	public PartPatternResource(GameModelRepository.Bundle modelBundle, T pattern) {
+	public PartPatternResource(GameModelFileRepository.Bundle modelBundle, T pattern) {
 		super(modelBundle);
 		m_pattern = pattern;
 	}
@@ -30,7 +30,7 @@ public abstract class PartPatternResource<T extends GamePartPattern> extends Abs
 
 	public abstract String getType();
 
-	public static PartPatternResource<?> createUninitializedPartPattern(GameModelRepository.Bundle modelBundle, GamePartPattern pattern) {
+	public static PartPatternResource<?> createUninitializedPartPattern(GameModelFileRepository.Bundle modelBundle, GamePartPattern pattern) {
 		return pattern.visit(new GamePartPattern.Visitor<PartPatternResource<?>, RuntimeException>() {
 
 			@Override

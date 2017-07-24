@@ -5,13 +5,13 @@ import java.net.URI;
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.model.GamePlaceType;
 import com.tcoffman.ttwb.model.pattern.place.GameFilterPlacePattern;
-import com.tcoffman.ttwb.web.GameModelRepository;
+import com.tcoffman.ttwb.web.GameModelFileRepository;
 import com.tcoffman.ttwb.web.resource.model.RolesResource;
 import com.tcoffman.ttwb.web.resource.model.plugin.PlaceTypesResource;
 
 public class FilterPlacePatternResource extends PlacePatternResource<GameFilterPlacePattern> {
 
-	public FilterPlacePatternResource(GameModelRepository.Bundle modelBundle, GameFilterPlacePattern pattern) {
+	public FilterPlacePatternResource(GameModelFileRepository.Bundle modelBundle, GameFilterPlacePattern pattern) {
 		super(modelBundle, pattern);
 	}
 

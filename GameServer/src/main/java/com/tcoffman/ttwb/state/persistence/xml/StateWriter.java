@@ -1,5 +1,6 @@
 package com.tcoffman.ttwb.state.persistence.xml;
 
+import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ATTR_NAME_BINDING;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_NS;
 import static com.tcoffman.ttwb.state.persistence.xml.XmlConstants.STATE_ATTR_NAME_BINDING;
 import static com.tcoffman.ttwb.state.persistence.xml.XmlConstants.STATE_ATTR_NAME_LOG_FORWARD_RESULT;
@@ -65,7 +66,7 @@ public class StateWriter extends AbstractWriter {
 
 	private final GameState m_state;
 	private final ModelRefResolver m_modelResolver;
-	private final StandardComponentRefManager<GamePart> m_partRefManager = new StandardComponentRefManager<GamePart>("part");
+	private final StandardComponentRefManager<GamePart> m_partRefManager = new StandardComponentRefManager<>("part");
 	private final String m_modelId;
 
 	private final GameAuthorizationManager m_authorizationManager;
@@ -128,6 +129,7 @@ public class StateWriter extends AbstractWriter {
 	private void writePart(Element partsElement, GamePart part) {
 
 		final Element partElement = createAndAppendElement(partsElement, part, STATE_ELEMENT_QNAME_PART);
+		part.getRoleBinding().ifPresent((r) -> partElement.setAttribute(MODEL_ATTR_NAME_BINDING, externalIdForRole(r.get())));
 		partElement.setAttribute(STATE_ATTR_NAME_PROTOTYPE_REF, externalIdForPartPrototype(part.getPrototype()));
 	}
 
@@ -209,13 +211,13 @@ public class StateWriter extends AbstractWriter {
 
 		final GamePlace src = relationshipMutation.getSource();
 		final GamePlaceType srcType = src.getPrototype().get().getType().get();
-		mutationElement.setAttribute(STATE_ATTR_NAME_LOG_MUTATION_REL_SRC, idFor(src.getOwner()) + "/" + prefixFor(srcType.getDeclaringPlugin()) + ":"
-				+ srcType.getLocalName());
+		mutationElement.setAttribute(STATE_ATTR_NAME_LOG_MUTATION_REL_SRC,
+				idFor(src.getOwner()) + "/" + prefixFor(srcType.getDeclaringPlugin()) + ":" + srcType.getLocalName());
 
 		final GamePlace dst = relationshipMutation.getDestination();
 		final GamePlaceType dstType = dst.getPrototype().get().getType().get();
-		mutationElement.setAttribute(STATE_ATTR_NAME_LOG_MUTATION_REL_DST, idFor(dst.getOwner()) + "/" + prefixFor(dstType.getDeclaringPlugin()) + ":"
-				+ dstType.getLocalName());
+		mutationElement.setAttribute(STATE_ATTR_NAME_LOG_MUTATION_REL_DST,
+				idFor(dst.getOwner()) + "/" + prefixFor(dstType.getDeclaringPlugin()) + ":" + dstType.getLocalName());
 		return mutationElement;
 	}
 

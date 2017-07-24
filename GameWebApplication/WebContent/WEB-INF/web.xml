@@ -16,17 +16,65 @@
 	<servlet>
 		<servlet-name>GameWebApplication</servlet-name>
 		<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
-<init-param>
-    <param-name>javax.ws.rs.Application</param-name>
-    <param-value>com.tcoffman.ttwb.web.GameWebApplication</param-value>
-  </init-param>		<init-param>
+		<init-param>
+			<param-name>javax.ws.rs.Application</param-name>
+			<param-value>com.tcoffman.ttwb.web.GameWebApplication</param-value>
+		</init-param>
+		<init-param>
 			<param-name>jersey.config.server.provider.packages</param-name>
-			<param-value>com.tcoffman.ttwb.web,com.fasterxml.jackson.jaxrs.json</param-value>
+			<param-value>io.swagger.jaxrs.listing,com.tcoffman.ttwb.web,com.fasterxml.jackson.jaxrs.json,com.jersey.jaxb</param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
+
+	<servlet>
+		<servlet-name>Jersey2Config</servlet-name>
+		<servlet-class>io.swagger.jersey.config.JerseyJaxrsConfig</servlet-class>
+		<init-param>
+			<param-name>api.version</param-name>
+			<param-value>1.0.0</param-value>
+		</init-param>
+		<init-param>
+			<param-name>swagger.api.basepath</param-name>
+			<param-value>http://localhost:8080/tabletop-web/api</param-value>
+		</init-param>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+
+	<servlet>
+		<servlet-name>less</servlet-name>
+		<servlet-class>com.asual.lesscss.LessServlet</servlet-class>
+		<init-param>
+			<param-name>compress</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		<load-on-startup>3</load-on-startup>
+	</servlet>
+
+
 	<servlet-mapping>
 		<servlet-name>GameWebApplication</servlet-name>
 		<url-pattern>/api/*</url-pattern>
 	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>less</servlet-name>
+		<url-pattern>*.less</url-pattern>
+	</servlet-mapping>
+
+	<filter>
+		<filter-name>UrlRewriteFilter</filter-name>
+		<filter-class>org.tuckey.web.filters.urlrewrite.UrlRewriteFilter</filter-class>
+		<init-param>
+			<param-name>confPath</param-name>
+			<param-value>/WEB-INF/rewrite_url_rules.xml</param-value>
+		</init-param>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>UrlRewriteFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+	</filter-mapping>
 </web-app>

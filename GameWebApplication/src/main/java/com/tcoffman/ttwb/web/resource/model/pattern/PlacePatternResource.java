@@ -11,14 +11,14 @@ import com.tcoffman.ttwb.model.pattern.place.GameIntersectionPlacePattern;
 import com.tcoffman.ttwb.model.pattern.place.GameInversionPlacePattern;
 import com.tcoffman.ttwb.model.pattern.place.GamePlacePattern;
 import com.tcoffman.ttwb.model.pattern.place.GameRelationshipPlacePattern;
-import com.tcoffman.ttwb.web.GameModelRepository;
+import com.tcoffman.ttwb.web.GameModelFileRepository;
 import com.tcoffman.ttwb.web.resource.model.AbstractModelSubresource;
 
 public abstract class PlacePatternResource<T extends GamePlacePattern> extends AbstractModelSubresource {
 
 	protected final T m_pattern;
 
-	public PlacePatternResource(GameModelRepository.Bundle modelBundle, T pattern) {
+	public PlacePatternResource(GameModelFileRepository.Bundle modelBundle, T pattern) {
 		super(modelBundle);
 		m_pattern = pattern;
 	}
@@ -67,7 +67,7 @@ public abstract class PlacePatternResource<T extends GamePlacePattern> extends A
 		return subresource(PartPatternResource.createUninitializedPartPattern(modelBundle(), pattern));
 	}
 
-	public static PlacePatternResource<?> createUninitializedPlacePattern(GameModelRepository.Bundle modelBundle, GamePlacePattern pattern) {
+	public static PlacePatternResource<?> createUninitializedPlacePattern(GameModelFileRepository.Bundle modelBundle, GamePlacePattern pattern) {
 		return pattern.visit(new GamePlacePattern.Visitor<PlacePatternResource<?>, RuntimeException>() {
 
 			@Override

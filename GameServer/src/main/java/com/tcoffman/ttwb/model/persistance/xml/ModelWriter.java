@@ -79,8 +79,8 @@ import com.tcoffman.ttwb.plugin.PluginName;
 public class ModelWriter {
 
 	private final GameModel m_model;
-	private final Map<Integer, Element> m_objectElements = new HashMap<Integer, Element>();
-	private final Map<Integer, String> m_objectIdentifierMap = new HashMap<Integer, String>();
+	private final Map<Integer, Element> m_objectElements = new HashMap<>();
+	private final Map<Integer, String> m_objectIdentifierMap = new HashMap<>();
 	private final ModelRefManager m_externalRefManager;
 
 	public ModelWriter(GameModel model, ModelRefManager externalRefManager) {
@@ -113,8 +113,8 @@ public class ModelWriter {
 
 	}
 
-	private final Map<String, PluginName> m_namespacePrefixes = new HashMap<String, PluginName>();
-	private final Map<PluginName, String> m_namespaces = new HashMap<PluginName, String>();
+	private final Map<String, PluginName> m_namespacePrefixes = new HashMap<>();
+	private final Map<PluginName, String> m_namespaces = new HashMap<>();
 
 	private String nextAvailablePrefix(String prefixBase) {
 		String prefix = prefixBase;
@@ -239,6 +239,7 @@ public class ModelWriter {
 	private void writePart(Element modelElement, GamePartInstance part) {
 
 		final Element partElement = createAndAppendElement(modelElement, part, MODEL_ELEMENT_QNAME_PART);
+		part.getRoleBinding().ifPresent((r) -> partElement.setAttribute(MODEL_ATTR_NAME_BINDING, idForRole(r)));
 		partElement.setAttribute(MODEL_ATTR_NAME_PROTOTYPE_REF, idForPrototype(part.getPrototype()));
 	}
 
@@ -344,8 +345,8 @@ public class ModelWriter {
 
 				final Optional<GameComponentRef<GameRole>> matchRoleBinding = pattern.getMatchesRoleBinding();
 				if (matchRoleBinding.isPresent()) {
-					final GameRole placeType = matchRoleBinding.get().get();
-					filterElement.setAttribute(MODEL_ATTR_NAME_TYPE, idFor(placeType));
+					final GameRole roleBinding = matchRoleBinding.get().get();
+					filterElement.setAttribute(MODEL_ATTR_NAME_TYPE, idFor(roleBinding));
 				}
 
 				writePattern(createAndAppendElement(filterElement, MODEL_ELEMENT_QNAME_PART), pattern.getPartPattern());
@@ -402,8 +403,8 @@ public class ModelWriter {
 
 				final Optional<GameComponentRef<GameRole>> matchRoleBinding = pattern.getMatchesRoleBinding();
 				if (matchRoleBinding.isPresent()) {
-					final GameRole placeType = matchRoleBinding.get().get();
-					filterElement.setAttribute(MODEL_ATTR_NAME_TYPE, idFor(placeType));
+					final GameRole roleBinding = matchRoleBinding.get().get();
+					filterElement.setAttribute(MODEL_ATTR_NAME_TYPE, idFor(roleBinding));
 				}
 
 				return filterElement;

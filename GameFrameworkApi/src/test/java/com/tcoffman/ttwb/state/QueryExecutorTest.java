@@ -156,6 +156,7 @@ public class QueryExecutorTest {
 	public void intersectionPartPatternMatchesEverything() throws GameComponentBuilderException {
 		final GameIntersectionPartPattern intersectionPattern = mock(GameIntersectionPartPattern.class);
 		when(intersectionPattern.countPatterns()).thenReturn(1);
+		when(intersectionPattern.limitQuantity((Stream<?>) Mockito.any(Stream.class))).thenAnswer((inv) -> inv.getArguments()[0]);
 		when(intersectionPattern.patterns()).thenReturn((Stream) Stream.of(m_matchesAnyPartPattern));
 		when(intersectionPattern.matches()).thenReturn((p) -> m_matchesAnyPartPattern.matches().test(p) && m_matchesAnyPartPattern.matches().test(p));
 		final List<? extends GamePart> parts = m_queryExecutor.find(intersectionPattern).collect(Collectors.toList());

@@ -34,13 +34,15 @@ public class StandardGameModelBuilderTest {
 
 	private PluginSet m_pluginSet;
 	private StandardGameModelBuilder m_builder;
+	private GameModel m_rootModel;
 
 	@Before
 	public void setupStandardGameModelBuilder() throws PluginException {
 		m_pluginSet = mock(PluginSet.class);
 		doThrow(PluginException.class).when(m_pluginSet).requirePlugin(any(PluginName.class));
+		m_rootModel = mock(GameModel.class);
 
-		m_builder = new StandardGameModelBuilder(m_pluginSet);
+		m_builder = new StandardGameModelBuilder(m_pluginSet, m_rootModel);
 	}
 
 	@Test

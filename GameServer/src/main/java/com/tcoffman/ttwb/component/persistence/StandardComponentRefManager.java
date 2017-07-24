@@ -3,6 +3,7 @@ package com.tcoffman.ttwb.component.persistence;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import com.tcoffman.ttwb.component.GameComponent;
 import com.tcoffman.ttwb.component.GameComponentRef;
@@ -11,12 +12,22 @@ public class StandardComponentRefManager<T extends GameComponent> implements Gam
 
 	private final String m_idPrefix;
 	private int m_nextId = 1;
-	private final Map<String, T> m_managedComponents = new HashMap<String, T>();
-	private final Map<T, String> m_managedComponentIds = new HashMap<T, String>();
-	private final Map<String, GameComponentManagedRef<T>> m_modelComponentRefs = new HashMap<String, GameComponentManagedRef<T>>();
+	private final Map<String, T> m_managedComponents = new HashMap<>();
+	private final Map<T, String> m_managedComponentIds = new HashMap<>();
+	private final Map<String, GameComponentManagedRef<T>> m_modelComponentRefs = new HashMap<>();
 
 	public StandardComponentRefManager(String idPrefix) {
 		m_idPrefix = idPrefix;
+	}
+
+	@Override
+	public Stream<Map.Entry<String, T>> references() {
+		return m_managedComponents.entrySet().stream();
+	}
+
+	@Override
+	public void registerAll(GameComponentRefResolver<T> resolver) {
+		resolver.references().forEach((ref) -> register(ref.getValue(), ref.getKey()));
 	}
 
 	@Override
@@ -45,7 +56,7 @@ public class StandardComponentRefManager<T extends GameComponent> implements Gam
 	public GameComponentRef<T> createRef(String id) {
 		GameComponentManagedRef<T> ref = m_modelComponentRefs.get(id);
 		if (null == ref)
-			m_modelComponentRefs.put(id, ref = new GameComponentManagedRef<T>());
+			m_modelComponentRefs.put(id, ref = new GameComponentManagedRef<>());
 		return ref;
 	}
 

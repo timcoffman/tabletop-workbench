@@ -8,14 +8,14 @@ import com.tcoffman.ttwb.model.pattern.quantity.GameAnyQuantityPattern;
 import com.tcoffman.ttwb.model.pattern.quantity.GameQuantityPattern;
 import com.tcoffman.ttwb.model.pattern.quantity.GameRangeQuantityPattern;
 import com.tcoffman.ttwb.model.pattern.quantity.GameSingleQuantityPattern;
-import com.tcoffman.ttwb.web.GameModelRepository;
+import com.tcoffman.ttwb.web.GameModelFileRepository;
 import com.tcoffman.ttwb.web.resource.model.AbstractModelSubresource;
 
 public class QuantityPatternResource extends AbstractModelSubresource {
 
 	private final GameQuantityPattern m_pattern;
 
-	public QuantityPatternResource(GameModelRepository.Bundle modelBundle, GameQuantityPattern pattern) {
+	public QuantityPatternResource(GameModelFileRepository.Bundle modelBundle, GameQuantityPattern pattern) {
 		super(modelBundle);
 		m_pattern = pattern;
 	}

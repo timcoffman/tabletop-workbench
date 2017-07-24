@@ -13,12 +13,12 @@ import javax.ws.rs.core.UriBuilder;
 
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.model.GameRole;
-import com.tcoffman.ttwb.web.GameModelRepository;
+import com.tcoffman.ttwb.web.GameModelFileRepository;
 import com.tcoffman.ttwb.web.UnrecognizedValueException;
 
 public class RolesResource extends AbstractModelSubresource {
 
-	public RolesResource(GameModelRepository.Bundle modelBundle) {
+	public RolesResource(GameModelFileRepository.Bundle modelBundle) {
 		super(modelBundle);
 	}
 

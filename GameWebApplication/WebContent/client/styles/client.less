@@ -1,0 +1,150 @@
+
+
+/*
+ http://colorschemedesigner.com/csd-3.5/#3q21Tw0w0w0w0
+ */
+
+@primary-1: #0776A0 ;
+@primary-2: #226078 ;
+@primary-3: #024C68 ;
+@primary-4: #3AA6D0 ;
+@primary-5: #62B1D0 ;
+@complementary-1: #FF8500 ;
+@complementary-2: #BF7A30 ;
+@complementary-3: #A65600 ;
+@complementary-4: #FFA340 ;
+@complementary-5: #FFBC73 ;
+
+.heading,
+.property {
+	display: flex ;
+	flex-flow: row nowrap ;
+}
+
+.heading > .label {
+	flex: 1 0 10em ;
+}
+
+.property > .label,
+.property > .note {
+	flex: 0 0 4em ;
+}
+
+.heading > .interaction,
+.property > .value {
+	flex: 1 0 4em ;
+}
+
+body {
+	display: flex;
+	flex-flow: column nowrap;
+	margin: 0 ;
+	padding: 0 ;
+}
+
+body > * {
+	flex: 1 1 auto ;
+	margin: 0 ;
+}
+
+body {
+	background: @primary-5 ;
+	color: @primary-3 ;
+}
+
+.header, .footer {
+	background: @primary-3 ;
+	color: @primary-5 ;
+	flex: 0 1 auto ;
+	padding: 0.5em ;
+	font-size: 14pt;
+}
+
+.states {
+	display: flex;
+	flex-flow: row wrap ;
+	margin: 0 ;
+	padding: 0 ;
+
+	color: @complementary-3 ;
+}
+
+.states a {
+	color: @complementary-3 ;
+}
+
+.states a:hover {
+	color: @complementary-1 ;
+}
+
+.states > * {
+	flex: 1 1 auto;
+	margin: 2px ;
+	
+	border-radius: 3px ;
+	border: solid @complementary-1 2px ;
+	
+}
+
+.state.master {
+	padding: 2px ;
+}
+
+.state.master:hover {
+	background: @primary-2 ;
+	color: @complementary-1 ;
+	cursor: pointer ;
+}
+
+.state.detail {
+	display: flex ;
+	flex-flow: column nowrap ;
+	margin: 0 ;
+	padding: 0 ;
+}
+
+.state.detail > * {
+	flex: 0 1 auto ;
+	margin: 0 ;
+	padding: 0 ;
+}
+
+.state.detail > * {
+	margin: 2px ;
+	padding: 0 ;
+	border-radius: 3px ;
+	border: solid @complementary-1 2px ; 
+}
+
+.state.detail > * {
+	display: flex ;
+	flex-flow: column nowrap ;
+}
+
+.state.detail > * > * {
+	flex: 1 1 auto ;
+	padding: 4px ;
+}
+
+.state.detail > * > .heading {
+	border-top-left-radius: 3px ;
+	border-top-right-radius: 3px ;
+	background: @complementary-1 ;
+	color: @primary-3 ;
+}
+
+.state.detail .interaction {
+	text-align: right ;
+}
+
+.diagram {
+	display: flex ;
+	flex-flow: row wrap ;
+}
+
+.diagram .node {
+	flex: 0 0 5em ;
+	margin: 3px ;
+	padding: 3px ;
+	height: 5em ;
+}

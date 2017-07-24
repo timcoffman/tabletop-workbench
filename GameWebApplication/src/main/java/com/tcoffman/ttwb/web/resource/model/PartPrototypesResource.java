@@ -14,12 +14,12 @@ import javax.xml.stream.XMLStreamException;
 
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.model.GamePartPrototype;
-import com.tcoffman.ttwb.web.GameModelRepository;
+import com.tcoffman.ttwb.web.GameModelFileRepository;
 import com.tcoffman.ttwb.web.UnrecognizedValueException;
 
 public class PartPrototypesResource extends AbstractModelSubresource {
 
-	public PartPrototypesResource(GameModelRepository.Bundle modelBundle) {
+	public PartPrototypesResource(GameModelFileRepository.Bundle modelBundle) {
 		super(modelBundle);
 	}
 

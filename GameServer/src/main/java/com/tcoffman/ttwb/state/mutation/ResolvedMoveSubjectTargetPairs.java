@@ -11,7 +11,7 @@ import com.tcoffman.ttwb.component.AbstractEditor;
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.state.GamePlace;
 
-public final class ResolvedMoveSubject {
+public final class ResolvedMoveSubjectTargetPairs {
 
 	private GamePlace m_subject;
 	private final Collection<GamePlace> m_targets = new ArrayList<>();
@@ -24,19 +24,19 @@ public final class ResolvedMoveSubject {
 		return m_targets.stream();
 	}
 
-	private ResolvedMoveSubject() {
+	private ResolvedMoveSubjectTargetPairs() {
 
 	}
 
 	public static Editor create() {
-		return new ResolvedMoveSubject().edit();
+		return new ResolvedMoveSubjectTargetPairs().edit();
 	}
 
 	public Editor edit() {
 		return new Editor();
 	}
 
-	public class Editor extends AbstractEditor<ResolvedMoveSubject> {
+	public class Editor extends AbstractEditor<ResolvedMoveSubjectTargetPairs> {
 
 		@Override
 		protected void validate() throws GameComponentBuilderException {
@@ -45,8 +45,8 @@ public final class ResolvedMoveSubject {
 		}
 
 		@Override
-		protected ResolvedMoveSubject model() {
-			return ResolvedMoveSubject.this;
+		protected ResolvedMoveSubjectTargetPairs model() {
+			return ResolvedMoveSubjectTargetPairs.this;
 		}
 
 		public Editor setSubject(GamePlace subject) {

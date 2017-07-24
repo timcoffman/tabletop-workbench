@@ -7,21 +7,21 @@ import com.tcoffman.ttwb.model.GamePartRelationshipType;
 import com.tcoffman.ttwb.model.GamePlaceType;
 import com.tcoffman.ttwb.model.GameRole;
 import com.tcoffman.ttwb.model.GameStage;
-import com.tcoffman.ttwb.web.GameModelRepository;
+import com.tcoffman.ttwb.web.GameModelFileRepository;
 import com.tcoffman.ttwb.web.UnrecognizedValueException;
 import com.tcoffman.ttwb.web.resource.AbstractSubresource;
 
 public abstract class AbstractModelSubresource extends AbstractSubresource implements ModelContextAwareResource {
 
-	private final GameModelRepository.Bundle m_modelBundle;
+	private final GameModelFileRepository.Bundle m_modelBundle;
 
-	public AbstractModelSubresource(GameModelRepository.Bundle modelBundle) {
+	public AbstractModelSubresource(GameModelFileRepository.Bundle modelBundle) {
 		super();
 		m_modelBundle = modelBundle;
 	}
 
 	@Override
-	public GameModelRepository.Bundle modelBundle() {
+	public GameModelFileRepository.Bundle modelBundle() {
 		return m_modelBundle;
 	}
 

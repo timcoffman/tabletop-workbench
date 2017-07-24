@@ -11,7 +11,7 @@ import javax.ws.rs.core.MediaType;
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.state.mutation.GameStateLogEntry;
 import com.tcoffman.ttwb.state.mutation.GameStateMutation;
-import com.tcoffman.ttwb.web.GameStateRepository;
+import com.tcoffman.ttwb.web.GameStateFileRepository;
 import com.tcoffman.ttwb.web.resource.model.StagesResource;
 
 public class LogEntryResource extends AbstractStateSubresource {
@@ -19,7 +19,7 @@ public class LogEntryResource extends AbstractStateSubresource {
 	private final long m_logEntryIndex;
 	private final GameStateLogEntry m_logEntry;
 
-	public LogEntryResource(GameStateRepository.Bundle stateBundle, long logEntryIndex, GameStateLogEntry logEntry) {
+	public LogEntryResource(GameStateFileRepository.Bundle stateBundle, long logEntryIndex, GameStateLogEntry logEntry) {
 		super(stateBundle);
 		m_logEntryIndex = logEntryIndex;
 		m_logEntry = logEntry;

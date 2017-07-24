@@ -14,15 +14,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import javax.xml.stream.XMLStreamException;
 
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
-import com.tcoffman.ttwb.component.GameComponentRef;
-import com.tcoffman.ttwb.component.persistence.GameComponentRefResolver;
-import com.tcoffman.ttwb.doc.StandardModelDocumentation;
+import com.tcoffman.ttwb.component.persistence.GameModelRepository;
+import com.tcoffman.ttwb.component.persistence.GameRootModelRepository;
+import com.tcoffman.ttwb.doc.GameModelDocumentation;
 import com.tcoffman.ttwb.doc.persistence.DocumentationRefResolver;
 import com.tcoffman.ttwb.doc.persistence.xml.StandardGameDocumentationParser;
 import com.tcoffman.ttwb.model.GameModel;
@@ -32,14 +32,17 @@ import com.tcoffman.ttwb.plugin.DefaultPluginFactory;
 import com.tcoffman.ttwb.plugin.PluginFactory;
 import com.tcoffman.ttwb.plugin.PluginSet;
 
-public class GameModelRepository {
+public class GameModelFileRepository implements GameModelRepository {
 
 	private final Path m_base;
 	private final DefaultPluginFactory m_pluginFactory;
 	private final StandardGameDocumentationParser m_documentationParser;
-	private final Map<String, Reference<Bundle>> m_cache = new HashMap<String, Reference<Bundle>>();
+	private final Map<String, Reference<GameModelRepository.Bundle>> m_cache = new HashMap<>();
+	private final Map<String, Supplier<InputStream>> m_streamSources = new HashMap<>();
 
-	public GameModelRepository() {
+	private final GameRootModelRepository m_rootRepo;
+
+	public GameModelFileRepository() {
 		m_base = Paths.get("/Users/coffman/Development/tabletop-workbench/GameWebApplication/repo/model");
 
 		m_pluginFactory = new DefaultPluginFactory();
@@ -47,30 +50,8 @@ public class GameModelRepository {
 		m_pluginFactory.install(GRID, com.tcoffman.ttwb.core.Grid.class);
 
 		m_documentationParser = new StandardGameDocumentationParser();
-	}
 
-	private class ImportedModelRefResolver implements GameComponentRefResolver<GameModel> {
-
-		private final String m_documentationLang;
-
-		public ImportedModelRefResolver(String documentationLang) {
-			m_documentationLang = documentationLang;
-		}
-
-		@Override
-		public Optional<GameComponentRef<GameModel>> lookup(String id) {
-			try {
-				return Optional.of(getBundle(id, m_documentationLang)).map(Bundle::getModel).map(GameComponentRef::wrap);
-			} catch (final GameComponentBuilderException ex) {
-				ex.printStackTrace();
-				return Optional.empty();
-			}
-		}
-
-		@Override
-		public Optional<String> lookupId(GameModel importedModel) {
-			return m_cache.entrySet().stream().filter((e) -> e.getValue() == importedModel).map(Map.Entry::getKey).findAny();
-		}
+		m_rootRepo = new GameRootModelRepository(m_pluginFactory);
 
 	}
 
@@ -89,41 +70,63 @@ public class GameModelRepository {
 		return m_pluginFactory;
 	}
 
+	@Override
 	public Bundle getBundle(String name) throws GameComponentBuilderException {
 		return getBundle(name, "en-us");
 	}
 
-	public Bundle getBundle(String name, String documentationLang) throws GameComponentBuilderException {
+	public void installModel(String id, Supplier<InputStream> streamSource) {
+		final String key = "model" + ":" + id;
+		m_streamSources.put(key, streamSource);
+	}
+
+	public void installDocumentation(String id, String documentationLang, Supplier<InputStream> streamSource) {
+		final String key = "doc" + ":" + id + ":" + documentationLang;
+		m_streamSources.put(key, streamSource);
+
+	}
+
+	@Override
+	public GameModelRepository.Bundle getBundle(String name, String documentationLang) throws GameComponentBuilderException {
 		final String cacheKey = name + ":" + documentationLang;
 		final Reference<Bundle> bundleRef = m_cache.get(cacheKey);
 		if (null != bundleRef && null != bundleRef.get())
 			return bundleRef.get();
 
-		BundleImpl bundle;
+		Bundle bundle;
 		try {
-			bundle = new BundleImpl(name, documentationLang);
+			if ("root".equals(name))
+				bundle = m_rootRepo.getBundle(name, documentationLang);
+			else
+				bundle = new BundleImpl(name, documentationLang);
 		} catch (final XMLStreamException ex) {
 			throw new GameComponentBuilderException(CORE, ex);
 		}
 
-		m_cache.put(cacheKey, new SoftReference<Bundle>(bundle));
+		m_cache.put(cacheKey, new SoftReference<>(bundle));
 		return bundle;
 	}
 
-	public interface Bundle {
+	@Override
+	public GameModelRepository.Bundle getBundle(GameModel model) throws GameComponentBuilderException {
+		return m_cache.entrySet().stream().filter((e) -> e.getValue().get() != null).filter((e) -> e.getValue().get().getModel() == model)
+				.map(Map.Entry::getValue).map(Reference::get).findAny().orElseThrow(() -> new GameComponentBuilderException(CORE, "unknown model"));
+	}
 
-		PluginSet getPluginSet();
+	private InputStream getDocumentationResourcesAsStream(String modelId, String documentationLang) throws GameComponentBuilderException {
+		final String key = "doc" + ":" + modelId + ":" + documentationLang;
+		final Supplier<InputStream> streamSource = m_streamSources.get(key);
+		if (null != streamSource)
+			return streamSource.get();
+		return getResourceAsStream(modelId + "-model/lang/" + documentationLang + "/doc.xml");
+	}
 
-		String getModelId();
-
-		StandardModelDocumentation getDocumentation();
-
-		DocumentationRefResolver getDocumentationResolver();
-
-		ModelRefResolver getModelRefResolver();
-
-		GameModel getModel();
-
+	private InputStream getModelResourcesAsStream(String modelId) throws GameComponentBuilderException {
+		final String key = "model" + ":" + modelId;
+		final Supplier<InputStream> streamSource = m_streamSources.get(key);
+		if (null != streamSource)
+			return streamSource.get();
+		return getResourceAsStream(modelId + "-model/model.xml");
 	}
 
 	private InputStream getResourceAsStream(String modelId) throws GameComponentBuilderException {
@@ -138,7 +141,7 @@ public class GameModelRepository {
 	private class BundleImpl implements Bundle {
 		private final String m_id;
 		private final String m_documentationLang;
-		private final StandardModelDocumentation m_documentation;
+		private final GameModelDocumentation m_documentation;
 		private final DocumentationRefResolver m_documentationRefResolver;
 		private final GameModel m_model;
 		private final ModelRefResolver m_modelRefResolver;
@@ -148,12 +151,20 @@ public class GameModelRepository {
 			m_id = id;
 			m_documentationLang = documentationLang;
 			m_pluginSet = new PluginSet(m_pluginFactory);
-			m_documentation = m_documentationParser.parse(getResourceAsStream(m_id + "-model/lang/" + m_documentationLang + "/doc.xml"), m_id);
-			m_documentationRefResolver = m_documentationParser.createResolver(m_id);
-			final StandardGameModelParser modelParser = new StandardGameModelParser(m_pluginSet, new ImportedModelRefResolver(m_documentationLang),
-					m_documentationRefResolver);
-			m_model = modelParser.parse(getResourceAsStream(m_id + "-model/model.xml"), m_id);
-			m_modelRefResolver = modelParser.createResolver(m_id);
+			try (InputStream s = getDocumentationResourcesAsStream(m_id, m_documentationLang)) {
+				m_documentation = m_documentationParser.parse(s, m_id);
+				m_documentationRefResolver = m_documentationParser.createResolver(m_id);
+			} catch (final IOException ex) {
+				throw new RuntimeException(ex);
+			}
+
+			final StandardGameModelParser modelParser = new StandardGameModelParser(m_pluginSet, GameModelFileRepository.this, m_documentationRefResolver);
+			try (InputStream s = getModelResourcesAsStream(m_id)) {
+				m_model = modelParser.parse(s, m_id);
+				m_modelRefResolver = modelParser.createResolver(m_id);
+			} catch (final IOException ex) {
+				throw new RuntimeException(ex);
+			}
 		}
 
 		@Override
@@ -162,7 +173,7 @@ public class GameModelRepository {
 		}
 
 		@Override
-		public StandardModelDocumentation getDocumentation() {
+		public GameModelDocumentation getDocumentation() {
 			return m_documentation;
 		}
 

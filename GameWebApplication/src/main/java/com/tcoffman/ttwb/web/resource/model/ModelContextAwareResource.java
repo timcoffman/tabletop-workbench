@@ -7,12 +7,12 @@ import com.tcoffman.ttwb.model.GamePartRelationshipType;
 import com.tcoffman.ttwb.model.GamePlaceType;
 import com.tcoffman.ttwb.model.GameRole;
 import com.tcoffman.ttwb.model.GameStage;
-import com.tcoffman.ttwb.web.GameModelRepository;
+import com.tcoffman.ttwb.web.GameModelFileRepository;
 import com.tcoffman.ttwb.web.UnrecognizedValueException;
 
 public interface ModelContextAwareResource {
 
-	GameModelRepository.Bundle modelBundle();
+	GameModelFileRepository.Bundle modelBundle();
 
 	String lookupId(GamePartPrototype prototype) throws GameComponentBuilderException;
 

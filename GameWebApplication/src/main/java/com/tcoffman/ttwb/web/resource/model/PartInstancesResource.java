@@ -13,11 +13,11 @@ import javax.xml.stream.XMLStreamException;
 
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.model.GamePartInstance;
-import com.tcoffman.ttwb.web.GameModelRepository;
+import com.tcoffman.ttwb.web.GameModelFileRepository;
 
 public class PartInstancesResource extends AbstractModelSubresource {
 
-	public PartInstancesResource(GameModelRepository.Bundle modelBundle) {
+	public PartInstancesResource(GameModelFileRepository.Bundle modelBundle) {
 		super(modelBundle);
 	}
 

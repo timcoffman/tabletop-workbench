@@ -26,11 +26,14 @@ import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 import com.tcoffman.ttwb.doc.StandardComponentDocumentation;
 import com.tcoffman.ttwb.model.GameModel;
 import com.tcoffman.ttwb.model.GamePartInstance;
+import com.tcoffman.ttwb.model.GamePartPrototype;
+import com.tcoffman.ttwb.model.GamePlacePrototype;
 import com.tcoffman.ttwb.model.GamePlaceType;
 import com.tcoffman.ttwb.model.GameRole;
 import com.tcoffman.ttwb.model.StandardGameModelBuilder;
 import com.tcoffman.ttwb.model.StandardGamePartPrototype;
 import com.tcoffman.ttwb.model.StandardGameStage;
+import com.tcoffman.ttwb.model.StandardRootGameModel;
 import com.tcoffman.ttwb.model.pattern.operation.GameOperationPattern;
 import com.tcoffman.ttwb.model.pattern.operation.GameOperationPatternSet;
 import com.tcoffman.ttwb.model.pattern.part.GamePartPattern;
@@ -52,6 +55,7 @@ public class StandardGameStateTest {
 	private static final PluginName PLUGIN_NAME = new PluginName("a.b.c", "1.0");
 
 	private PluginSet m_pluginSet;
+	private GameModel m_rootModel;
 	private StandardGameStage m_epilogueStage;
 	private StandardGameStage m_sagaStage;
 	private StandardGameStage m_prologueStage;
@@ -74,9 +78,14 @@ public class StandardGameStateTest {
 		final PluginSet pluginSet = mock(PluginSet.class);
 		when(pluginSet.requirePlugin(PLUGIN_NAME)).thenReturn(new TestPlugin());
 
+		final GamePlacePrototype rootPrototypeTop = mock(GamePlacePrototype.class);
+		final GamePartPrototype rootPrototype = mock(GamePartPrototype.class);
+		when(rootPrototype.effectivePlaces()).thenReturn((Stream) Stream.of(rootPrototypeTop));
+
 		final GameModel model = mock(GameModel.class);
 		when(model.getRequiredPlugins()).thenReturn(Arrays.asList(PLUGIN_NAME));
 		when(model.parts()).thenReturn(Stream.empty());
+		when(model.effectiveRootPrototype()).thenReturn(GameComponentRef.wrap(rootPrototype));
 
 		final StandardGameState state = new StandardGameState(model, pluginSet);
 		assertThat(state, notNullValue());
@@ -116,14 +125,13 @@ public class StandardGameStateTest {
 
 		final DocumentationGenerator doc = new DocumentationGenerator();
 
-		m_model = new StandardGameModelBuilder(m_pluginSet)
-				.addRequiredPlugin(CORE)
-				.setDocumentation(doc.gen("MODEL"))
+		m_rootModel = StandardRootGameModel.create().setCorePlugin(m_pluginSet.requirePlugin(CORE)).setDocumentation(doc.gen("ROOT")).done();
+
+		m_model = new StandardGameModelBuilder(m_pluginSet, m_rootModel).addRequiredPlugin(CORE).setDocumentation(doc.gen("MODEL"))
 
 				.createRole((r) -> {
 					r.setDocumentation(doc.gen("ROLE"));
-				})
-				.createPrototype(CORE, (proto) -> {
+				}).createPrototype(CORE, (proto) -> {
 
 					proto.completed(capturePrototype);
 					proto.setDocumentation(doc.gen("PROTOTYPE"));
@@ -146,8 +154,7 @@ public class StandardGameStateTest {
 
 				.createPart((p) -> {
 					p.setPrototype(GameComponentRef.deferred(() -> m_prototype));
-				})
-				.createPart((p) -> {
+				}).createPart((p) -> {
 					p.setPrototype(GameComponentRef.deferred(() -> m_prototype));
 				})
 
@@ -173,43 +180,40 @@ public class StandardGameStateTest {
 
 				})
 
-				.createStage(
-						(s) -> {
-							s.completed(captureSaga);
-							s.setDocumentation(doc.gen("SAGA"));
+				.createStage((s) -> {
+					s.completed(captureSaga);
+					s.setDocumentation(doc.gen("SAGA"));
 
-							s.setTerminal(false);
-							s.createRule(
-									CORE,
-									(r) -> {
-										r.setDocumentation(doc.gen("RULE"));
+					s.setTerminal(false);
+					s.createRule(CORE, (r) -> {
+						r.setDocumentation(doc.gen("RULE"));
 
-										r.setResult(GameComponentRef.deferred(() -> m_epilogueStage));
+						r.setResult(GameComponentRef.deferred(() -> m_epilogueStage));
 
-										r.createOperationPattern((p) -> {
+						r.createOperationPattern((p) -> {
 
-											p.setType(GameOperation.Type.MOVE);
+							p.setType(GameOperation.Type.MOVE);
 
-											p.setRolePattern(StandardGameAnyRolePattern.create().done());
+							p.setRolePattern(StandardGameAnyRolePattern.create().done());
 
-											final GamePartPattern subjectPartPattern = StandardFilterPartPattern.create()
-											.setMatchPrototype(GameComponentRef.deferred(() -> m_prototype)).done();
-											final GamePlacePattern subjectPlacePattern = StandardFilterPlacePattern.create().setPartPattern(subjectPartPattern)
-													.setMatchType(placeTypeBottom).done();
-											p.setSubjectPlacePattern(subjectPlacePattern);
+							final GamePartPattern subjectPartPattern = StandardFilterPartPattern.create()
+									.setMatchPrototype(GameComponentRef.deferred(() -> m_prototype)).done();
+							final GamePlacePattern subjectPlacePattern = StandardFilterPlacePattern.create().setPartPattern(subjectPartPattern)
+									.setMatchType(placeTypeBottom).done();
+							p.setSubjectPlacePattern(subjectPlacePattern);
 
-											final GamePartPattern targetPartPattern = StandardFilterPartPattern.create()
-											.setMatchPrototype(GameComponentRef.deferred(() -> m_prototype)).done();
-											final GamePlacePattern targetPlacePattern = StandardFilterPlacePattern.create().setPartPattern(targetPartPattern)
-													.setMatchType(placeTypeTop).done();
-											p.setTargetPlacePattern(targetPlacePattern);
+							final GamePartPattern targetPartPattern = StandardFilterPartPattern.create()
+									.setMatchPrototype(GameComponentRef.deferred(() -> m_prototype)).done();
+							final GamePlacePattern targetPlacePattern = StandardFilterPlacePattern.create().setPartPattern(targetPartPattern)
+									.setMatchType(placeTypeTop).done();
+							p.setTargetPlacePattern(targetPlacePattern);
 
-											p.setDocumentation(doc.gen("TEST MOVE"));
-										});
+							p.setDocumentation(doc.gen("TEST MOVE"));
+						});
 
-									});
+					});
 
-						})
+				})
 
 				.createStage((s) -> {
 					s.completed(captureEpilogue);
@@ -288,10 +292,10 @@ public class StandardGameStateTest {
 	}
 
 	private StandardGameOperation fulfillMove(final StateView view, GameOperationPattern opPattern, final GameRole opRole) {
-		final GamePlacePattern subjectPlacePattern = opPattern.getSubjectPlacePattern().orElseThrow(
-				() -> new IllegalStateException("move op cannot be fulfilled: no subject"));
-		final GamePlacePattern targetPlacePattern = opPattern.getTargetPlacePattern().orElseThrow(
-				() -> new IllegalStateException("move op cannot be fulfilled: no target"));
+		final GamePlacePattern subjectPlacePattern = opPattern.getSubjectPlacePattern()
+				.orElseThrow(() -> new IllegalStateException("move op cannot be fulfilled: no subject"));
+		final GamePlacePattern targetPlacePattern = opPattern.getTargetPlacePattern()
+				.orElseThrow(() -> new IllegalStateException("move op cannot be fulfilled: no target"));
 
 		return new StandardGameMoveOperation(opRole, subjectPlacePattern, targetPlacePattern);
 	}

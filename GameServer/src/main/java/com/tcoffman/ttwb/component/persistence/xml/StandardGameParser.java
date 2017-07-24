@@ -1,7 +1,8 @@
-package com.tcoffman.ttwb.component.persistance.xml;
+package com.tcoffman.ttwb.component.persistence.xml;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Objects;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -32,6 +33,7 @@ public abstract class StandardGameParser {
 	}
 
 	protected static XMLEventReader createXMLEventReader(InputStream is) throws XMLStreamException {
+		Objects.requireNonNull(is);
 		return s_xmlInputFactory.createXMLEventReader(is);
 	}
 

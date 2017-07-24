@@ -18,14 +18,14 @@ import com.tcoffman.ttwb.model.GamePlaceType;
 import com.tcoffman.ttwb.plugin.ModelPlugin;
 import com.tcoffman.ttwb.plugin.PluginException;
 import com.tcoffman.ttwb.plugin.PluginName;
-import com.tcoffman.ttwb.web.GameModelRepository;
+import com.tcoffman.ttwb.web.GameModelFileRepository;
 
 public class PlacePrototypesResource extends AbstractModelSubresource {
 
 	private final String m_partPrototypeId;
 	private final GamePartPrototype m_partPrototype;
 
-	public PlacePrototypesResource(GameModelRepository.Bundle modelBundle, String partPrototypeId, GamePartPrototype partPrototype) {
+	public PlacePrototypesResource(GameModelFileRepository.Bundle modelBundle, String partPrototypeId, GamePartPrototype partPrototype) {
 		super(modelBundle);
 		m_partPrototypeId = partPrototypeId;
 		m_partPrototype = partPrototype;

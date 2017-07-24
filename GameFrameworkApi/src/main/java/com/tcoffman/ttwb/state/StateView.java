@@ -19,6 +19,12 @@ public interface StateView {
 
 	Stream<? extends GamePlace> find(GamePlacePattern pattern);
 
+	boolean test(GamePlacePattern pattern, GamePart part);
+
+	boolean test(GamePlacePattern pattern, GamePlace place);
+
+	boolean test(GamePartPattern pattern, GamePart part);
+
 	QueryExecutor queryExecutor();
 
 }

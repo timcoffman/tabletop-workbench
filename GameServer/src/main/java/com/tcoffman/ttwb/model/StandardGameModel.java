@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -18,12 +19,12 @@ import com.tcoffman.ttwb.plugin.PluginName;
 
 public class StandardGameModel extends StandardDocumentableComponent implements GameModel {
 
-	private final Set<PluginName> m_requiredPlugins = new HashSet<PluginName>();
-	private final Collection<GameModel> m_imports = new ArrayList<GameModel>();
-	private final Collection<StandardGamePartPrototype> m_prototypes = new ArrayList<StandardGamePartPrototype>();
-	private final Collection<StandardGamePartInstance> m_parts = new ArrayList<StandardGamePartInstance>();
-	private final Collection<StandardGameRole> m_roles = new ArrayList<StandardGameRole>();
-	private final Collection<GameStage> m_stages = new ArrayList<GameStage>();
+	private final Set<PluginName> m_requiredPlugins = new HashSet<>();
+	private final Collection<GameModel> m_imports = new ArrayList<>();
+	private final Collection<StandardGamePartPrototype> m_prototypes = new ArrayList<>();
+	private final Collection<StandardGamePartInstance> m_parts = new ArrayList<>();
+	private final Collection<StandardGameRole> m_roles = new ArrayList<>();
+	private final Collection<GameStage> m_stages = new ArrayList<>();
 	private GameComponentRef<GameStage> m_initialStage;
 
 	private StandardGameModel() {
@@ -53,13 +54,19 @@ public class StandardGameModel extends StandardDocumentableComponent implements 
 	}
 
 	@Override
+	public GameComponentRef<GamePartPrototype> effectiveRootPrototype() {
+		return m_imports.stream().map(GameModel::effectiveRootPrototype).filter(Objects::nonNull).findAny()
+				.orElseThrow(() -> new IllegalStateException("missing root prototype"));
+	}
+
+	@Override
 	public Stream<? extends GameModel> effectiveImportedModels() {
 		return Stream.concat(m_imports.stream(), m_imports.stream().flatMap(GameModel::effectiveImportedModels)).distinct();
 	}
 
 	@Override
-	public GameRole getSystemRole() {
-		return effectiveImportedModels().map(GameModel::getSystemRole).findFirst().orElseThrow(() -> new IllegalStateException("missing system role"));
+	public GameRole effectiveSystemRole() {
+		return effectiveImportedModels().map(GameModel::effectiveSystemRole).findFirst().orElseThrow(() -> new IllegalStateException("missing system role"));
 	}
 
 	@Override
@@ -94,12 +101,14 @@ public class StandardGameModel extends StandardDocumentableComponent implements 
 
 	public final class Editor extends StandardDocumentableComponent.Editor<StandardGameModel> {
 
-		private final Set<ModelPlugin> m_modelPlugins = new HashSet<ModelPlugin>();
+		private final Set<ModelPlugin> m_modelPlugins = new HashSet<>();
 
 		@Override
 		protected void validate() throws GameComponentBuilderException {
 			super.validate();
-			final Collection<GameComponentBuilderException> errors = new ArrayList<GameComponentBuilderException>();
+			final Collection<GameComponentBuilderException> errors = new ArrayList<>();
+
+			requireNotEmpty(CORE, "imported models", m_imports);
 			m_modelPlugins.stream().forEach((mp) -> mp.validate(StandardGameModel.this, errors::add));
 			if (!errors.isEmpty())
 				throw errors.iterator().next();

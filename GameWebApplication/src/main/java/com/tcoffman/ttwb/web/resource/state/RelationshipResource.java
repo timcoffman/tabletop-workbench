@@ -11,14 +11,14 @@ import com.tcoffman.ttwb.model.GamePartRelationshipType;
 import com.tcoffman.ttwb.model.GamePlaceType;
 import com.tcoffman.ttwb.state.GamePartRelationship;
 import com.tcoffman.ttwb.state.GamePlace;
-import com.tcoffman.ttwb.web.GameStateRepository;
+import com.tcoffman.ttwb.web.GameStateFileRepository;
 import com.tcoffman.ttwb.web.resource.model.plugin.RelationshipTypesResource;
 
 public class RelationshipResource extends AbstractStateSubresource {
 
 	private final GamePartRelationship m_relationship;
 
-	public RelationshipResource(GameStateRepository.Bundle stateBundle, GamePartRelationship relationship) {
+	public RelationshipResource(GameStateFileRepository.Bundle stateBundle, GamePartRelationship relationship) {
 		super(stateBundle);
 		m_relationship = relationship;
 	}

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<model
+	xmlns="urn:com.tcoffman.ttwb.model/v/1.0"
+	xmlns:doc="urn:com.tcoffman.ttwb.doc/v/1.0"
+	xmlns:core="urn:com.tcoffman.ttwb.core/v/1.0"
+	xmlns:grid="urn:com.tcoffman.ttwb.grid/v/1.0"
+	abstract="true"
+	>
+	<name>Root</name>
+
+	<role id="system" doc="doc:system"/>
+
+	<parts>
+	</parts>
+
+</model>

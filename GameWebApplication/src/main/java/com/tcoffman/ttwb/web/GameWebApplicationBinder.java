@@ -8,8 +8,8 @@ public class GameWebApplicationBinder extends AbstractBinder {
 
 	@Override
 	protected void configure() {
-		bind(GameStateRepository.class).to(GameStateRepository.class).in(Singleton.class);
-		bind(GameModelRepository.class).to(GameModelRepository.class).in(Singleton.class);
+		bind(GameStateFileRepository.class).to(GameStateFileRepository.class).in(Singleton.class);
+		bind(GameModelFileRepository.class).to(GameModelFileRepository.class).in(Singleton.class);
 	}
 
 }

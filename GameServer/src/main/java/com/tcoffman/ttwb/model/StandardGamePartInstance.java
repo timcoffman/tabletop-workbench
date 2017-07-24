@@ -21,6 +21,11 @@ public class StandardGamePartInstance implements GamePartInstance {
 		return m_prototype;
 	}
 
+	@Override
+	public Optional<GameComponentRef<GameRole>> getRoleBinding() {
+		return m_binding;
+	}
+
 	public static Editor create() {
 		return new StandardGamePartInstance().edit();
 	}

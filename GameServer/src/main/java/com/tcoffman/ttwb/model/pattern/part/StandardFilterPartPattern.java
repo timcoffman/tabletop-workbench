@@ -18,9 +18,14 @@ public class StandardFilterPartPattern extends StandardNarrowingPartPattern impl
 	private Optional<GameComponentRef<GamePartPrototype>> m_matchesPrototype = Optional.empty();
 	private Optional<GameComponentRef<GameRole>> m_matchesRoleBinding = Optional.empty();
 
+	private static boolean prototypeMatches(GamePartPrototype prototype, GamePartPrototype matchingPrototype) {
+		return prototype == matchingPrototype
+				|| prototype.getExtends().map(GameComponentRef::get).map((p) -> prototypeMatches(p, matchingPrototype)).orElse(false);
+	}
+
 	private static boolean prototypeMatches(GamePart part, GamePartPrototype matchingPrototype) {
 		final GamePartPrototype prototype = part.getPrototype().get();
-		return prototype == matchingPrototype;
+		return prototypeMatches(prototype, matchingPrototype);
 	}
 
 	private Predicate<GamePart> allowsPrototype() {
@@ -28,7 +33,7 @@ public class StandardFilterPartPattern extends StandardNarrowingPartPattern impl
 	}
 
 	private static boolean bindingMatches(GamePart part, GameRole matchingRole) {
-		final Optional<GameComponentRef<GameRole>> binding = part.getPrototype().get().getRoleBinding();
+		final Optional<GameComponentRef<GameRole>> binding = part.effectiveRoleBinding();
 		return binding.isPresent() && binding.get().get() == matchingRole;
 	}
 

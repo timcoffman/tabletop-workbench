@@ -1,10 +1,8 @@
 package com.tcoffman.ttwb.web.resource.runner;
 
-import java.beans.IntrospectionException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -19,9 +17,9 @@ import javax.xml.stream.XMLStreamException;
 import org.json.JSONException;
 
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
-import com.tcoffman.ttwb.web.GameModelRepository;
-import com.tcoffman.ttwb.web.GameStateRepository;
-import com.tcoffman.ttwb.web.GameStateRepository.Bundle;
+import com.tcoffman.ttwb.web.GameModelFileRepository;
+import com.tcoffman.ttwb.web.GameStateFileRepository;
+import com.tcoffman.ttwb.web.GameStateFileRepository.Bundle;
 import com.tcoffman.ttwb.web.resource.AbstractRootResource;
 
 @Path("/runners")
@@ -38,7 +36,7 @@ public class RunnersResource extends AbstractRootResource {
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public List<RunnerResource> getRunners() {
-		final List<RunnerResource> states = new ArrayList<RunnerResource>();
+		final List<RunnerResource> states = new ArrayList<>();
 		for (final Iterator<? extends String> i = m_stateRepository.stateIds().iterator(); i.hasNext();)
 			try {
 				states.add(createRunnerResource(getStateBundle(i.next())));
@@ -72,23 +70,19 @@ public class RunnersResource extends AbstractRootResource {
 
 	}
 
-	public Map<String, Object> getCreate() throws IntrospectionException {
-		return beanWritablePropertyMap(RunnerCreationForm.class);
-	}
-
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public RunnerResource createRunner(RunnerCreationForm runnerCreationForm) throws JSONException, GameComponentBuilderException, XMLStreamException {
 		final String modelId = runnerCreationForm.getState();
-		final GameModelRepository.Bundle modelBundle = m_modelRepository.getBundle(modelId);
-		final GameStateRepository.Bundle stateBundle = m_stateRepository.create(modelBundle.getModel(), modelBundle.getModelId(), modelBundle.getPluginSet(),
+		final GameModelFileRepository.Bundle modelBundle = m_modelRepository.getBundle(modelId);
+		final GameStateFileRepository.Bundle stateBundle = m_stateRepository.create(modelBundle.getModel(), modelBundle.getModelId(), modelBundle.getPluginSet(),
 				modelBundle.getModelRefResolver());
 
 		return createRunnerResource(stateBundle);
 	}
 
-	private RunnerResource createRunnerResource(final GameStateRepository.Bundle stateBundle) {
+	private RunnerResource createRunnerResource(final GameStateFileRepository.Bundle stateBundle) {
 		return subresource(new RunnerResource(stateBundle));
 	}
 

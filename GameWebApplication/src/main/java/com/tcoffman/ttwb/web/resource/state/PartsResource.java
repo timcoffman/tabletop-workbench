@@ -13,12 +13,12 @@ import javax.ws.rs.core.UriBuilder;
 
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.state.GamePart;
-import com.tcoffman.ttwb.web.GameStateRepository;
+import com.tcoffman.ttwb.web.GameStateFileRepository;
 import com.tcoffman.ttwb.web.UnrecognizedValueException;
 
 public class PartsResource extends AbstractStateSubresource {
 
-	public PartsResource(GameStateRepository.Bundle stateBundle) {
+	public PartsResource(GameStateFileRepository.Bundle stateBundle) {
 		super(stateBundle);
 	}
 
@@ -29,7 +29,7 @@ public class PartsResource extends AbstractStateSubresource {
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public List<PartResource> getParts() {
-		final List<PartResource> parts = new ArrayList<PartResource>();
+		final List<PartResource> parts = new ArrayList<>();
 		for (final Iterator<? extends GamePart> i = stateBundle().getState().parts().iterator(); i.hasNext();)
 			try {
 				final GamePart part = i.next();

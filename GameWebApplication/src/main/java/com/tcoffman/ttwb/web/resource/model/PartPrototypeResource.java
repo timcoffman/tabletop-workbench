@@ -10,14 +10,14 @@ import javax.ws.rs.core.MediaType;
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 import com.tcoffman.ttwb.model.GamePartPrototype;
-import com.tcoffman.ttwb.web.GameModelRepository;
+import com.tcoffman.ttwb.web.GameModelFileRepository;
 
 public class PartPrototypeResource extends AbstractModelSubresource {
 
 	private final String m_prototypeId;
 	private final GamePartPrototype m_prototype;
 
-	public PartPrototypeResource(GameModelRepository.Bundle modelBundle, String prototypeId, GamePartPrototype prototype) {
+	public PartPrototypeResource(GameModelFileRepository.Bundle modelBundle, String prototypeId, GamePartPrototype prototype) {
 		super(modelBundle);
 		m_prototypeId = prototypeId;
 		m_prototype = prototype;
@@ -35,6 +35,30 @@ public class PartPrototypeResource extends AbstractModelSubresource {
 
 	public String getLabel() {
 		return m_prototype.getDocumentation().getName(GameComponentDocumentation.Format.SHORT);
+	}
+
+	public URI getExtends() {
+		if (!m_prototype.getExtends().isPresent())
+			return null;
+
+		try {
+			return PartPrototypesResource.pathTo(baseUriBuilder()).build(modelBundle().getModelId(), lookupPartPrototypeId(m_prototype.getExtends().get()));
+		} catch (final GameComponentBuilderException ex) {
+			ex.printStackTrace();
+			return null;
+		}
+	}
+
+	public URI getRole() {
+		if (!m_prototype.getRoleBinding().isPresent())
+			return null;
+
+		try {
+			return RolesResource.pathTo(baseUriBuilder()).build(modelBundle().getModelId(), lookupRoleId(m_prototype.getRoleBinding().get()));
+		} catch (final GameComponentBuilderException ex) {
+			ex.printStackTrace();
+			return null;
+		}
 	}
 
 	// "sub-resource locator" (no http-method // annotations)

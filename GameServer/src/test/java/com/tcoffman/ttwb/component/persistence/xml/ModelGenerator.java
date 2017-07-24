@@ -17,6 +17,7 @@ import com.tcoffman.ttwb.model.GameRole;
 import com.tcoffman.ttwb.model.GameStage;
 import com.tcoffman.ttwb.model.StandardGameModel;
 import com.tcoffman.ttwb.model.StandardGameRule;
+import com.tcoffman.ttwb.model.StandardRootGameModel;
 import com.tcoffman.ttwb.plugin.DefaultPluginFactory;
 import com.tcoffman.ttwb.plugin.ModelPlugin;
 import com.tcoffman.ttwb.plugin.PluginException;
@@ -76,6 +77,8 @@ public final class ModelGenerator {
 
 		PluginSet getPluginSet();
 
+		GameModel getRootModel();
+
 		GameRole getRole();
 
 		GamePartPrototype getPartPrototypeA();
@@ -104,9 +107,16 @@ public final class ModelGenerator {
 		private GameStage m_prologue;
 		private GameStage m_epilogue;
 		private final PluginSet m_pluginSet;
+		private final StandardRootGameModel m_rootModel;
 
 		public ResultImpl(DefaultPluginFactory m_pluginFactory) {
 			m_pluginSet = new PluginSet(m_pluginFactory);
+			try {
+				m_rootModel = StandardRootGameModel.create().setCorePlugin(m_pluginSet.requirePlugin(CORE)).setDocumentation(createGenericDocumentation("root"))
+						.done();
+			} catch (final PluginException ex) {
+				throw new RuntimeException(ex);
+			}
 		}
 
 		@Override
@@ -117,6 +127,11 @@ public final class ModelGenerator {
 		@Override
 		public PluginSet getPluginSet() {
 			return m_pluginSet;
+		}
+
+		@Override
+		public GameModel getRootModel() {
+			return m_rootModel;
 		}
 
 		@Override
@@ -206,7 +221,10 @@ public final class ModelGenerator {
 		final ResultImpl result = new ResultImpl(m_pluginFactory);
 		final GameComponentRef<GamePlaceType> placeTypeBottom = result.requireModelPlugin(CORE).getPlaceType(Core.PLACE_PHYSICAL_BOTTOM);
 		final GameComponentRef<GamePlaceType> placeTypeTop = result.requireModelPlugin(CORE).getPlaceType(Core.PLACE_PHYSICAL_TOP);
+		final GameModel rootModel = result.getRootModel();
+
 		final StandardGameModel.Editor model = StandardGameModel.create();
+		model.addImportedModel(rootModel);
 		model.setDocumentation(createGenericDocumentation("model"));
 		model.createRole((role) -> {
 			role.completed(result::setRole);

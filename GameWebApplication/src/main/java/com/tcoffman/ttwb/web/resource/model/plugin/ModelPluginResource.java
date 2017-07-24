@@ -10,14 +10,14 @@ import javax.ws.rs.core.MediaType;
 import com.tcoffman.ttwb.plugin.ModelPlugin;
 import com.tcoffman.ttwb.plugin.PluginException;
 import com.tcoffman.ttwb.plugin.PluginName;
-import com.tcoffman.ttwb.web.GameModelRepository;
+import com.tcoffman.ttwb.web.GameModelFileRepository;
 import com.tcoffman.ttwb.web.resource.model.AbstractModelSubresource;
 
 public class ModelPluginResource extends AbstractModelSubresource {
 
 	private final PluginName m_pluginName;
 
-	public ModelPluginResource(GameModelRepository.Bundle modelBundle, final PluginName pluginName) {
+	public ModelPluginResource(GameModelFileRepository.Bundle modelBundle, final PluginName pluginName) {
 		super(modelBundle);
 		m_pluginName = pluginName;
 	}

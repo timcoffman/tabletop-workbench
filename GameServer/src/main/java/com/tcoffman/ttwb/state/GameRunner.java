@@ -33,7 +33,7 @@ import com.tcoffman.ttwb.state.mutation.GameStateAddRelationship;
 import com.tcoffman.ttwb.state.mutation.GameStateLogEntry;
 import com.tcoffman.ttwb.state.mutation.GameStateRemoveRelationship;
 import com.tcoffman.ttwb.state.mutation.ResolvedMoveOperation;
-import com.tcoffman.ttwb.state.mutation.ResolvedMoveSubject;
+import com.tcoffman.ttwb.state.mutation.ResolvedMoveSubjectTargetPairs;
 import com.tcoffman.ttwb.state.mutation.ResolvedOperation;
 import com.tcoffman.ttwb.state.mutation.ResolvedOperationSet;
 import com.tcoffman.ttwb.state.mutation.ResolvedSignalOperation;
@@ -59,9 +59,7 @@ public class GameRunner {
 		final List<? extends GameOperationPatternSet> validResultPatternSets = m_state.allowedOperations().filter(matchesResult(result))
 				.collect(Collectors.toList());
 		if (validResultPatternSets.isEmpty())
-			throw new IllegalArgumentException("no allowed operations match the result \""
-					+ result
-					+ "\"; try one of "
+			throw new IllegalArgumentException("no allowed operations match the result \"" + result + "\"; try one of "
 					+ m_state.allowedOperations().map(GameOperationPatternSet::getResult).map(GameComponentRef::get).distinct().map(Object::toString)
 							.collect(Collectors.joining(", ", "[", "]")));
 
@@ -84,6 +82,7 @@ public class GameRunner {
 	private Stream<List<OperationPatternMatch>> matchOperationPatterns(List<? extends GameOperationPattern> opPatterns,
 			List<? extends ResolvedOperation> operations) {
 		final Stream.Builder<List<OperationPatternMatch>> builder = Stream.builder();
+
 		for (final ResolvedOperation resolvedOp : operations) {
 			final Predicate<GameOperationPattern> opPatternMatcher = matchesOperation(resolvedOp);
 
@@ -99,13 +98,13 @@ public class GameRunner {
 
 						/* nothing left to match; report this match */
 
-						final List<OperationPatternMatch> match = new ArrayList<OperationPatternMatch>();
+						final List<OperationPatternMatch> match = new ArrayList<>();
 						match.add(new OperationPatternMatch(opPattern, resolvedOp));
 						builder.add(match);
 
 					} else
 						matchOperationPatterns(remainingOpPatterns, remainingOps).forEach((submatch) -> {
-							final List<OperationPatternMatch> match = new ArrayList<OperationPatternMatch>();
+							final List<OperationPatternMatch> match = new ArrayList<>();
 							match.add(new OperationPatternMatch(opPattern, resolvedOp));
 							match.addAll(submatch);
 							builder.add(match);
@@ -145,20 +144,21 @@ public class GameRunner {
 		};
 	}
 
-	private Predicate<GameOperationPattern> matchesMoveSubject(ResolvedMoveSubject subject) {
+	private Predicate<GameOperationPattern> matchesMoveSubject(ResolvedMoveSubjectTargetPairs subject) {
 		// check the target quantity here!!
 		return (op) -> {
 			final GamePlacePattern subjectPattern = op.getSubjectPlacePattern()
 					.orElseThrow(() -> new IllegalArgumentException("missing subject place pattern"));
-			if (!subjectPattern.matchesParts().test(subject.getSubject().getOwner()))
+			;
+			if (!m_state.test(subjectPattern, subject.getSubject().getOwner()))
 				return false;
-			if (!subjectPattern.matches().test(subject.getSubject()))
+			if (!m_state.test(subjectPattern, subject.getSubject()))
 				return false;
 
 			final GamePlacePattern targetPattern = op.getTargetPlacePattern().orElseThrow(() -> new IllegalArgumentException("missing target place pattern"));
-			if (!subject.targets().map(GamePlace::getOwner).filter(targetPattern.matchesParts()).findAny().isPresent())
+			if (!subject.targets().map(GamePlace::getOwner).filter((p) -> m_state.test(targetPattern, p)).findAny().isPresent())
 				return false;
-			if (!subject.targets().filter(targetPattern.matches()).findAny().isPresent())
+			if (!subject.targets().filter((p) -> m_state.test(targetPattern, p)).findAny().isPresent())
 				return false;
 
 			return true;
@@ -226,7 +226,7 @@ public class GameRunner {
 						subjects.forEach((s) -> {
 
 							try {
-								resolvedOp.createSubject((m) -> {
+								resolvedOp.createSubjectTargetPair((m) -> {
 									m.setSubject(s);
 
 									try (StandardPatternContext ctx = new StandardPatternContext()) {
@@ -281,27 +281,22 @@ public class GameRunner {
 
 				@Override
 				public Void visit(ResolvedMoveOperation resolvedOp) throws RuntimeException {
-					resolvedOp.subjects().forEach(
-							(s) -> {
+					resolvedOp.subjects().forEach((s) -> {
 
-								/*
-								 * remove outgoing location relationship(s), if
-								 * any [rollback] restore outgoing location
-								 * relationship(s), if any
-								 */
-								s.getSubject()
-								.outgoingRelationships()
-								.filter((r) -> r.getType().get() == m_location.get())
-								.forEach(
-										(r) -> {
-											log.append(new GameStateRemoveRelationship(resolvedOp.getRole(), resolvedOp.getType(), r.getType(), r
-															.getSource().get(), r.getDestination().get()));
-										});
+						/*
+						 * remove outgoing location relationship(s), if any
+						 * [rollback] restore outgoing location relationship(s),
+						 * if any
+						 */
+						s.getSubject().outgoingRelationships().filter((r) -> r.getType().get() == m_location.get()).forEach((r) -> {
+							log.append(new GameStateRemoveRelationship(resolvedOp.getRole(), resolvedOp.getType(), r.getType(), r.getSource().get(),
+									r.getDestination().get()));
+						});
 
-								s.targets().forEach((t) -> {
-									log.append(new GameStateAddRelationship(resolvedOp.getRole(), resolvedOp.getType(), m_location, s.getSubject(), t));
-								});
-							});
+						s.targets().forEach((t) -> {
+							log.append(new GameStateAddRelationship(resolvedOp.getRole(), resolvedOp.getType(), m_location, s.getSubject(), t));
+						});
+					});
 					return null;
 				}
 
@@ -312,21 +307,20 @@ public class GameRunner {
 		return log;
 	}
 
-	public void autoAdvance() throws GameComponentBuilderException {
-		do {
-			final Iterator<? extends GameOperationPatternSet> i = m_state.allowedOperations().iterator();
-			if (!i.hasNext())
-				return; /* literally NO allowed operations */
-			final GameOperationPatternSet opPatternSet = i.next();
-			if (i.hasNext())
-				return; /* more than 1 allowed operation, can't decide */
+	public Optional<GameStateLogEntry> autoAdvance() throws GameComponentBuilderException {
+		final Iterator<? extends GameOperationPatternSet> i = m_state.allowedOperations().iterator();
+		if (!i.hasNext())
+			return Optional.empty(); /* literally NO allowed operations */
+		final GameOperationPatternSet opPatternSet = i.next();
+		if (i.hasNext())
+			return Optional
+					.empty(); /* more than 1 allowed operation, can't decide */
 
-			final Optional<ResolvedOperationSet> resolvedOpSet = autoResolve(opPatternSet);
-			if (!resolvedOpSet.isPresent())
-				return;
+		final Optional<ResolvedOperationSet> resolvedOpSet = autoResolve(opPatternSet);
+		if (!resolvedOpSet.isPresent())
+			return Optional.empty();
 
-			advance(resolvedOpSet.get());
-		} while (true);
+		return Optional.of(advance(resolvedOpSet.get()));
 	}
 
 	private Optional<ResolvedOperationSet> autoResolve(GameOperationPatternSet ops) {
@@ -346,24 +340,35 @@ public class GameRunner {
 	}
 
 	private Optional<ResolvedOperation> autoResolve(GameOperationPattern opPattern) {
-		final GameRole systemRole = m_state.getModel().getSystemRole();
+		final GameRole systemRole = m_state.getModel().effectiveSystemRole();
 
-		ResolvedOperation resolvedOp;
 		try {
 			switch (opPattern.getType()) {
 			case SIGNAL:
-				resolvedOp = ResolvedSignalOperation.create().setRole(systemRole).done();
-				break;
+				return Optional.of(ResolvedSignalOperation.create().setRole(systemRole).done());
 			case MOVE:
-				resolvedOp = ResolvedMoveOperation.create().setRole(systemRole).done();
-				break;
+				final ResolvedMoveOperation.Editor editor = ResolvedMoveOperation.create();
+				editor.setRole(systemRole);
+				final List<? extends GamePlace> subjects = m_state.find(opPattern.getSubjectPlacePattern().get()).collect(Collectors.toList());
+				final List<? extends GamePlace> targets = m_state.find(opPattern.getTargetPlacePattern().get()).collect(Collectors.toList());
+
+				if (subjects.isEmpty() || targets.isEmpty())
+					return Optional.empty();
+				else if (subjects.size() == 1 || targets.size() == 1) {
+					for (final GamePlace s : subjects)
+						editor.createSubjectTargetPair((stp) -> {
+							stp.setSubject(s);
+							targets.forEach(stp::addTarget);
+						});
+					return Optional.of(editor.done());
+				} else
+					return Optional.empty();
 			default:
 				throw new UnsupportedOperationException(opPattern.getType() + " not yet supported");
 			}
 		} catch (final GameComponentBuilderException ex) {
 			throw new IllegalStateException("failed to build resolved operation", ex);
 		}
-		return Optional.of(resolvedOp);
 	}
 
 	private <T> Stream<T> cloneAndDumpStream(PrintStream ps, String label, Stream<T> items) {

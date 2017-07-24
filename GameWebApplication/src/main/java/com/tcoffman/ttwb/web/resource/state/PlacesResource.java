@@ -19,14 +19,14 @@ import com.tcoffman.ttwb.plugin.PluginException;
 import com.tcoffman.ttwb.plugin.PluginName;
 import com.tcoffman.ttwb.state.GamePart;
 import com.tcoffman.ttwb.state.GamePlace;
-import com.tcoffman.ttwb.web.GameStateRepository;
+import com.tcoffman.ttwb.web.GameStateFileRepository;
 
 public class PlacesResource extends AbstractStateSubresource {
 
 	private final String m_partId;
 	private final GamePart m_part;
 
-	public PlacesResource(GameStateRepository.Bundle stateBundle, String partId, GamePart part) {
+	public PlacesResource(GameStateFileRepository.Bundle stateBundle, String partId, GamePart part) {
 		super(stateBundle);
 		m_partId = partId;
 		m_part = part;

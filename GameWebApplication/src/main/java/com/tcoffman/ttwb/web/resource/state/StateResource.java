@@ -21,7 +21,7 @@ import com.tcoffman.ttwb.model.pattern.place.GamePlacePattern;
 import com.tcoffman.ttwb.model.pattern.place.StandardAnyPlacePattern;
 import com.tcoffman.ttwb.state.GamePart;
 import com.tcoffman.ttwb.state.GamePlace;
-import com.tcoffman.ttwb.web.GameStateRepository;
+import com.tcoffman.ttwb.web.GameStateFileRepository;
 import com.tcoffman.ttwb.web.UnrecognizedValueException;
 import com.tcoffman.ttwb.web.resource.model.ModelsResource;
 import com.tcoffman.ttwb.web.resource.model.StagesResource;
@@ -30,7 +30,7 @@ import com.tcoffman.ttwb.web.resource.state.pattern.PatternUtils.PlacePatternFor
 
 public class StateResource extends AbstractStateSubresource {
 
-	public StateResource(GameStateRepository.Bundle stateBundle) {
+	public StateResource(GameStateFileRepository.Bundle stateBundle) {
 		super(stateBundle);
 	}
 

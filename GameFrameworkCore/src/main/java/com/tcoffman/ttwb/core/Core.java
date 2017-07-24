@@ -1,15 +1,28 @@
 package com.tcoffman.ttwb.core;
 
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import com.tcoffman.ttwb.component.GameComponent;
 import com.tcoffman.ttwb.component.GameComponentRef;
+import com.tcoffman.ttwb.doc.GameComponentDocumentation;
+import com.tcoffman.ttwb.model.GameModelComponent;
+import com.tcoffman.ttwb.model.GameModelProperty;
+import com.tcoffman.ttwb.model.GamePartPrototype;
 import com.tcoffman.ttwb.model.GamePartRelationshipType;
+import com.tcoffman.ttwb.model.GamePlacePrototype;
 import com.tcoffman.ttwb.model.GamePlaceType;
+import com.tcoffman.ttwb.model.GameRole;
 import com.tcoffman.ttwb.plugin.AbstractGeneralPlugin;
 import com.tcoffman.ttwb.plugin.PluginException;
 
 public class Core extends AbstractGeneralPlugin {
 
+	public static final String PART_ROOT = "root";
+
 	public static final String PLACE_PHYSICAL_TOP = "top";
 	public static final String PLACE_PHYSICAL_BOTTOM = "bottom";
+
 	public static final String RELATIONSHIP_PHYSICAL = "location";
 
 	public static final String TOKEN_ROOT = "root";
@@ -33,6 +46,95 @@ public class Core extends AbstractGeneralPlugin {
 			return getRelationshipTypePhysical();
 		else
 			return super.getRelationshipType(localName);
+	}
+
+	private GamePartPrototype m_root = null;
+
+	private final class CoreGamePartPrototype extends PluginComponent implements GamePartPrototype {
+
+		private final GamePlacePrototype m_top;
+
+		public CoreGamePartPrototype(String localName) {
+			super(localName);
+			m_top = new RootGamePlacePrototype();
+		}
+
+		@Override
+		public GameComponentDocumentation getDocumentation() {
+			throw new UnsupportedOperationException("not yet implemented");
+		}
+
+		@Override
+		public Stream<? extends GamePlacePrototype> effectivePlaces() {
+			return places();
+		}
+
+		@Override
+		public Stream<? extends GamePlacePrototype> places() {
+			return Stream.of(m_top);
+		}
+
+		@Override
+		public Optional<GameComponentRef<GamePartPrototype>> getExtends() {
+			return Optional.empty();
+		}
+
+		@Override
+		public Optional<GameComponentRef<GameRole>> effectiveRoleBinding() {
+			return getRoleBinding();
+		}
+
+		@Override
+		public Optional<GameComponentRef<GameRole>> getRoleBinding() {
+			return Optional.empty();
+		}
+
+		private final class RootGamePlacePrototype implements GamePlacePrototype {
+
+			public RootGamePlacePrototype() {
+			}
+
+			@Override
+			public <T extends GameComponent> GameComponentRef<T> self(Class<T> asType) {
+				return GameComponentRef.wrap(asType.cast(this));
+			}
+
+			@Override
+			public GameComponentDocumentation getDocumentation() {
+				throw new UnsupportedOperationException("not yet implemented");
+			}
+
+			@Override
+			public GamePartPrototype getOwner() {
+				return CoreGamePartPrototype.this;
+			}
+
+			@Override
+			public GameComponentRef<GamePlaceType> getType() {
+				return getPlaceTypePhysicalTop();
+			}
+
+			@Override
+			public Optional<GameComponentRef<GameRole>> getRoleBinding() {
+				return Optional.empty();
+			}
+
+			@Override
+			public Stream<? extends GameModelProperty> properties() {
+				return Stream.empty();
+			}
+
+			@Override
+			public Stream<? extends GameModelComponent> components() {
+				return Stream.empty();
+			}
+		}
+	}
+
+	private GameComponentRef<GamePartPrototype> getPartPrototypeRoot() {
+		if (null == m_root)
+			m_root = new CoreGamePartPrototype(PART_ROOT);
+		return createRef(m_root);
 	}
 
 	private GamePartRelationshipType m_location = null;

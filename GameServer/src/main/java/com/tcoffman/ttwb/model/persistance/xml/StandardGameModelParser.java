@@ -12,8 +12,8 @@ import javax.xml.transform.TransformerException;
 import org.w3c.dom.Document;
 
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
-import com.tcoffman.ttwb.component.persistance.xml.StandardGameParser;
-import com.tcoffman.ttwb.component.persistence.GameComponentRefResolver;
+import com.tcoffman.ttwb.component.persistence.GameModelRepository;
+import com.tcoffman.ttwb.component.persistence.xml.StandardGameParser;
 import com.tcoffman.ttwb.doc.persistence.DocumentationRefResolver;
 import com.tcoffman.ttwb.model.GameModel;
 import com.tcoffman.ttwb.model.StandardGameModel;
@@ -27,16 +27,15 @@ public class StandardGameModelParser extends StandardGameParser {
 
 	private final PluginSet m_pluginSet;
 	private final DocumentationRefResolver m_documentationRefResolver;
-	private final GameComponentRefResolver<GameModel> m_importedModelRefResolver;
+	private final GameModelRepository m_importedModelRepository;
 
-	public StandardGameModelParser(PluginSet pluginSet, GameComponentRefResolver<GameModel> importedModelRefResolver,
-			DocumentationRefResolver documentationRefResolver) {
+	public StandardGameModelParser(PluginSet pluginSet, GameModelRepository importedModelRepository, DocumentationRefResolver documentationRefResolver) {
 		m_pluginSet = pluginSet;
-		m_importedModelRefResolver = importedModelRefResolver;
+		m_importedModelRepository = importedModelRepository;
 		m_documentationRefResolver = documentationRefResolver;
 	}
 
-	private final Map<String, ModelRefManager> m_refManagers = new HashMap<String, ModelRefManager>();
+	private final Map<String, ModelRefManager> m_refManagers = new HashMap<>();
 
 	public ModelRefResolver createResolver(String modelId) {
 		final ModelRefResolver modelRefResolver = m_refManagers.get(modelId);
@@ -48,7 +47,7 @@ public class StandardGameModelParser extends StandardGameParser {
 	private ModelRefManager requireResolver(String modelId) {
 		ModelRefManager modelRefManager = m_refManagers.get(modelId);
 		if (null == modelRefManager)
-			m_refManagers.put(modelId, modelRefManager = new StandardModelRefManager(m_pluginSet, m_importedModelRefResolver));
+			m_refManagers.put(modelId, modelRefManager = new StandardModelRefManager(m_pluginSet, m_importedModelRepository));
 		return modelRefManager;
 	}
 

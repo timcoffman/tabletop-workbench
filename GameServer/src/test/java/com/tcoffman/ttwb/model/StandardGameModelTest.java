@@ -23,6 +23,7 @@ public class StandardGameModelTest {
 		final StandardGameModel.Editor editor = StandardGameModel.create();
 		editor.setDocumentation(GameComponentRef.wrap(mock(GameComponentDocumentation.class)));
 		editor.setInitialStage(emptyRef());
+		editor.addImportedModel(mock(GameModel.class));
 		editor.done();
 
 		thrown.expect(IllegalStateException.class);
@@ -34,6 +35,7 @@ public class StandardGameModelTest {
 		final StandardGameModel.Editor editor = StandardGameModel.create();
 		editor.setDocumentation(GameComponentRef.wrap(mock(GameComponentDocumentation.class)));
 		editor.setInitialStage(emptyRef());
+		editor.addImportedModel(mock(GameModel.class));
 		final GameModel model = editor.done();
 
 		assertThat(model, notNullValue());
@@ -44,6 +46,7 @@ public class StandardGameModelTest {
 		final StandardGameModel.Editor editor = StandardGameModel.create();
 		editor.setDocumentation(GameComponentRef.wrap(mock(GameComponentDocumentation.class)));
 		editor.setInitialStage(emptyRef());
+		editor.addImportedModel(mock(GameModel.class));
 		editor.done();
 
 	}

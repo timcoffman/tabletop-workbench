@@ -20,8 +20,8 @@ import javax.xml.transform.TransformerException;
 import org.w3c.dom.Document;
 
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
-import com.tcoffman.ttwb.component.persistance.xml.StandardGameParser;
 import com.tcoffman.ttwb.component.persistence.xml.AbstractWriter;
+import com.tcoffman.ttwb.component.persistence.xml.StandardGameParser;
 import com.tcoffman.ttwb.model.GameModel;
 import com.tcoffman.ttwb.model.persistance.ModelRefResolver;
 import com.tcoffman.ttwb.persistence.xml.EventDispatcher;

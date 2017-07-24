@@ -8,7 +8,7 @@ import javax.ws.rs.core.MediaType;
 
 import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 import com.tcoffman.ttwb.state.GameParticipant;
-import com.tcoffman.ttwb.web.GameStateRepository;
+import com.tcoffman.ttwb.web.GameStateFileRepository;
 import com.tcoffman.ttwb.web.resource.model.RolesResource;
 
 public class ParticipantResource extends AbstractStateSubresource {
@@ -16,7 +16,7 @@ public class ParticipantResource extends AbstractStateSubresource {
 	private final String m_roleId;
 	private final GameParticipant m_participant;
 
-	public ParticipantResource(GameStateRepository.Bundle stateBundle, String roleId, GameParticipant participant) {
+	public ParticipantResource(GameStateFileRepository.Bundle stateBundle, String roleId, GameParticipant participant) {
 		super(stateBundle);
 		m_roleId = roleId;
 		m_participant = participant;

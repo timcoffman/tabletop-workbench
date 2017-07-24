@@ -8,14 +8,14 @@ import javax.ws.rs.core.MediaType;
 import com.tcoffman.ttwb.model.pattern.operation.GameOperationPattern;
 import com.tcoffman.ttwb.model.pattern.place.GamePlacePattern;
 import com.tcoffman.ttwb.model.pattern.quantity.GameQuantityPattern;
-import com.tcoffman.ttwb.web.GameModelRepository;
+import com.tcoffman.ttwb.web.GameModelFileRepository;
 import com.tcoffman.ttwb.web.resource.model.AbstractModelSubresource;
 
 public class OperationPatternResource extends AbstractModelSubresource {
 
 	private final GameOperationPattern m_opPattern;
 
-	public OperationPatternResource(GameModelRepository.Bundle modelBundle, GameOperationPattern opPattern) {
+	public OperationPatternResource(GameModelFileRepository.Bundle modelBundle, GameOperationPattern opPattern) {
 		super(modelBundle);
 		m_opPattern = opPattern;
 	}
@@ -24,6 +24,10 @@ public class OperationPatternResource extends AbstractModelSubresource {
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public OperationPatternResource get() {
 		return this;
+	}
+
+	public String getDescription() {
+		return m_opPattern.getDocumentation().getDescription();
 	}
 
 	public String getType() {

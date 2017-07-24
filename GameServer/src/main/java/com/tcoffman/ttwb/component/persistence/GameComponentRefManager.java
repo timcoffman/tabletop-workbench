@@ -13,4 +13,6 @@ public interface GameComponentRefManager<T extends GameComponent> extends GameCo
 
 	public abstract void register(T component, String id);
 
+	public abstract void registerAll(GameComponentRefResolver<T> resolver);
+
 }

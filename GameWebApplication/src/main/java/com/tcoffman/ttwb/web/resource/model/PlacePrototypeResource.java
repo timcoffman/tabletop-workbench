@@ -12,7 +12,7 @@ import com.tcoffman.ttwb.model.GameModelProperty;
 import com.tcoffman.ttwb.model.GamePartPrototype;
 import com.tcoffman.ttwb.model.GamePlacePrototype;
 import com.tcoffman.ttwb.model.GamePlaceType;
-import com.tcoffman.ttwb.web.GameModelRepository;
+import com.tcoffman.ttwb.web.GameModelFileRepository;
 import com.tcoffman.ttwb.web.resource.model.plugin.PlaceTypesResource;
 
 public class PlacePrototypeResource extends AbstractModelSubresource {
@@ -21,7 +21,8 @@ public class PlacePrototypeResource extends AbstractModelSubresource {
 	private final GamePartPrototype m_partPrototype;
 	private final GamePlacePrototype m_prototype;
 
-	public PlacePrototypeResource(GameModelRepository.Bundle modelBundle, String partPrototypeId, GamePartPrototype partPrototype, GamePlacePrototype prototype) {
+	public PlacePrototypeResource(GameModelFileRepository.Bundle modelBundle, String partPrototypeId, GamePartPrototype partPrototype,
+			GamePlacePrototype prototype) {
 		super(modelBundle);
 		m_partPrototypeId = partPrototypeId;
 		m_partPrototype = partPrototype;

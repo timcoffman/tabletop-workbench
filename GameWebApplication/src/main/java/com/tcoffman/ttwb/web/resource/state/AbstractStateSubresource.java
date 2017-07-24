@@ -8,30 +8,30 @@ import com.tcoffman.ttwb.model.GamePlaceType;
 import com.tcoffman.ttwb.model.GameRole;
 import com.tcoffman.ttwb.model.GameStage;
 import com.tcoffman.ttwb.state.GamePart;
-import com.tcoffman.ttwb.web.GameModelRepository;
-import com.tcoffman.ttwb.web.GameStateRepository;
+import com.tcoffman.ttwb.web.GameModelFileRepository;
+import com.tcoffman.ttwb.web.GameStateFileRepository;
 import com.tcoffman.ttwb.web.UnrecognizedValueException;
 import com.tcoffman.ttwb.web.resource.AbstractSubresource;
 import com.tcoffman.ttwb.web.resource.state.pattern.PatternUtils;
 
 public abstract class AbstractStateSubresource extends AbstractSubresource implements StateContextAwareResource {
 
-	private final GameStateRepository.Bundle m_stateBundle;
+	private final GameStateFileRepository.Bundle m_stateBundle;
 	private final PatternUtils m_patternResourceUtils;
 
-	public AbstractStateSubresource(GameStateRepository.Bundle stateBundle) {
+	public AbstractStateSubresource(GameStateFileRepository.Bundle stateBundle) {
 		super();
 		m_stateBundle = stateBundle;
 		m_patternResourceUtils = new PatternUtils(this);
 	}
 
 	@Override
-	public GameStateRepository.Bundle stateBundle() {
+	public GameStateFileRepository.Bundle stateBundle() {
 		return m_stateBundle;
 	}
 
 	@Override
-	public GameModelRepository.Bundle modelBundle() {
+	public GameModelFileRepository.Bundle modelBundle() {
 		try {
 			return m_modelRepository.getBundle(stateBundle().getModelId());
 		} catch (final GameComponentBuilderException ex) {

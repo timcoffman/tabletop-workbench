@@ -10,7 +10,7 @@ import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 import com.tcoffman.ttwb.model.GamePlaceType;
 import com.tcoffman.ttwb.state.GamePart;
 import com.tcoffman.ttwb.state.GamePlace;
-import com.tcoffman.ttwb.web.GameStateRepository;
+import com.tcoffman.ttwb.web.GameStateFileRepository;
 import com.tcoffman.ttwb.web.resource.model.plugin.PlaceTypesResource;
 
 public class PlaceResource extends AbstractStateSubresource {
@@ -19,7 +19,7 @@ public class PlaceResource extends AbstractStateSubresource {
 	private final GamePart m_part;
 	private final GamePlace m_place;
 
-	public PlaceResource(GameStateRepository.Bundle stateBundle, String partId, GamePart part, GamePlace place) {
+	public PlaceResource(GameStateFileRepository.Bundle stateBundle, String partId, GamePart part, GamePlace place) {
 		super(stateBundle);
 		m_partId = partId;
 		m_part = part;

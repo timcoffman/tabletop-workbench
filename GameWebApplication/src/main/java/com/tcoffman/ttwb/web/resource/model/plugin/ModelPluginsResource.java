@@ -14,14 +14,14 @@ import javax.xml.stream.XMLStreamException;
 
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.plugin.PluginName;
-import com.tcoffman.ttwb.web.GameModelRepository;
+import com.tcoffman.ttwb.web.GameModelFileRepository;
 import com.tcoffman.ttwb.web.resource.model.AbstractModelSubresource;
 import com.tcoffman.ttwb.web.resource.model.ModelResource;
 import com.tcoffman.ttwb.web.resource.model.ModelsResource;
 
 public class ModelPluginsResource extends AbstractModelSubresource {
 
-	public ModelPluginsResource(GameModelRepository.Bundle modelBundle) {
+	public ModelPluginsResource(GameModelFileRepository.Bundle modelBundle) {
 		super(modelBundle);
 	}
 

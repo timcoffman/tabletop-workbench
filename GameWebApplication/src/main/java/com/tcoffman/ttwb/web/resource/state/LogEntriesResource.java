@@ -1,10 +1,8 @@
 package com.tcoffman.ttwb.web.resource.state;
 
-import java.beans.IntrospectionException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -32,13 +30,13 @@ import com.tcoffman.ttwb.state.StandardGameSignalOperation;
 import com.tcoffman.ttwb.state.mutation.GameOperation;
 import com.tcoffman.ttwb.state.mutation.GameStateLogEntry;
 import com.tcoffman.ttwb.state.mutation.ResolvedOperationSet;
-import com.tcoffman.ttwb.web.GameStateRepository;
+import com.tcoffman.ttwb.web.GameStateFileRepository;
 import com.tcoffman.ttwb.web.UnrecognizedValueException;
 import com.tcoffman.ttwb.web.resource.state.pattern.PatternUtils.PlacePatternForm;
 
 public class LogEntriesResource extends AbstractStateSubresource {
 
-	public LogEntriesResource(GameStateRepository.Bundle stateBundle) {
+	public LogEntriesResource(GameStateFileRepository.Bundle stateBundle) {
 		super(stateBundle);
 	}
 
@@ -53,7 +51,7 @@ public class LogEntriesResource extends AbstractStateSubresource {
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public List<LogEntryResource> getLogEntries() {
-		final List<LogEntryResource> logEntries = new ArrayList<LogEntryResource>();
+		final List<LogEntryResource> logEntries = new ArrayList<>();
 		foreachWithIndex(stateBundle().getState().log(), (n, le) -> logEntries.add(createLogEntryResource(n, le)));
 		return logEntries;
 	}
@@ -120,22 +118,26 @@ public class LogEntriesResource extends AbstractStateSubresource {
 
 	}
 
-	public Map<String, Object> getCreate() throws IntrospectionException {
-		return beanWritablePropertyMap(StateMutationForm.class);
-	}
-
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public LogEntryResource mutate(StateMutationForm stateMutationForm) throws XMLStreamException, UnrecognizedValueException, PluginException {
 
-		final StandardGameOperationSet operationSet = createOperationSet(stateMutationForm);
-
 		final GameRunner runner = new GameRunner(stateBundle().getState());
-		final ResolvedOperationSet resolvedOperationSet = runner.resolve(operationSet);
-		System.out.println(resolvedOperationSet);
+		GameStateLogEntry logEntry;
+		if (null != stateMutationForm.getResult()) {
+			final StandardGameOperationSet operationSet = createOperationSet(stateMutationForm);
 
-		final GameStateLogEntry logEntry = runner.advance(resolvedOperationSet);
+			final ResolvedOperationSet resolvedOperationSet = runner.resolve(operationSet);
+			System.out.println(resolvedOperationSet);
+
+			logEntry = runner.advance(resolvedOperationSet);
+		} else {
+			final Optional<GameStateLogEntry> autoLogEntry = runner.autoAdvance();
+			if (!autoLogEntry.isPresent())
+				return null;
+			logEntry = autoLogEntry.get();
+		}
 		final long logEntryIndex = -1;
 		stateBundle().store(this::getModelProvider);
 		return createLogEntryResource(logEntryIndex, logEntry);
@@ -152,15 +154,15 @@ public class LogEntriesResource extends AbstractStateSubresource {
 		return operationSet;
 	}
 
-	private StandardGameOperation createOperation(final GameRole role, final StateOperationForm operationForm) throws GameComponentBuilderException,
-			UnrecognizedValueException {
+	private StandardGameOperation createOperation(final GameRole role, final StateOperationForm operationForm)
+			throws GameComponentBuilderException, UnrecognizedValueException {
 		final GameOperation.Type type = GameOperation.Type.valueOf(operationForm.getType());
 		switch (type) {
 		case SIGNAL:
 			return new StandardGameSignalOperation(role);
 		case MOVE:
-			return new StandardGameMoveOperation(role, createPlacePattern(operationForm.getSubject()).get(), createPlacePattern(operationForm.getTarget())
-					.get());
+			return new StandardGameMoveOperation(role, createPlacePattern(operationForm.getSubject()).get(),
+					createPlacePattern(operationForm.getTarget()).get());
 		default:
 			throw new UnrecognizedValueException(operationForm.getType() + " not recognized", Stream.of(GameOperation.Type.values()));
 		}

@@ -25,6 +25,8 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.TransformerException;
 
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
+import com.tcoffman.ttwb.component.persistence.GameStateBundle;
+import com.tcoffman.ttwb.component.persistence.GameStateRepository;
 import com.tcoffman.ttwb.model.GameModel;
 import com.tcoffman.ttwb.model.persistance.ModelRefResolver;
 import com.tcoffman.ttwb.plugin.PluginSet;
@@ -38,14 +40,14 @@ import com.tcoffman.ttwb.state.persistence.StateRefResolver;
 import com.tcoffman.ttwb.state.persistence.xml.StandardGameStateParser;
 import com.tcoffman.ttwb.state.persistence.xml.StandardGameStateParser.ModelProvider;
 
-public class GameStateRepository {
+public class GameStateFileRepository implements GameStateRepository {
 
 	private final Path m_base;
 	// private final DefaultPluginFactory m_pluginFactory;
 	private final GameAuthorizationManager m_authMgr;
-	private final Map<String, Reference<Bundle>> m_cache = new HashMap<String, Reference<Bundle>>();
+	private final Map<String, Reference<Bundle>> m_cache = new HashMap<>();
 
-	public GameStateRepository() {
+	public GameStateFileRepository() {
 		m_base = Paths.get("/Users/coffman/Development/tabletop-workbench/GameWebApplication/repo/state");
 
 		// m_pluginFactory = new DefaultPluginFactory();
@@ -66,24 +68,12 @@ public class GameStateRepository {
 		}
 	}
 
-	public interface Bundle {
-
-		PluginSet getPluginSet();
-
-		String getStateId();
-
-		GameState getState();
-
-		StateRefResolver getStateRefResolver();
-
+	public interface Bundle extends GameStateBundle {
 		StateRefManager getStateRefManager();
-
-		String getModelId();
 
 		void store(Function<String, ModelProvider> modelProviderFactory) throws GameComponentBuilderException;
 
 		void remove() throws GameComponentBuilderException;
-
 	}
 
 	private static final String FORMAT_STATE_ID = "state-%1$d";
@@ -221,6 +211,7 @@ public class GameStateRepository {
 		}
 	}
 
+	@Override
 	public Bundle getBundle(String stateId, Function<String, StandardGameStateParser.ModelProvider> modelProviderFactory) throws GameComponentBuilderException {
 		final Reference<Bundle> bundleRef = m_cache.get(stateId);
 		if (null != bundleRef && null != bundleRef.get())
@@ -236,7 +227,7 @@ public class GameStateRepository {
 		} catch (final XMLStreamException ex) {
 			throw new GameComponentBuilderException(CORE, ex);
 		}
-		m_cache.put(stateId, new SoftReference<Bundle>(bundle));
+		m_cache.put(stateId, new SoftReference<>(bundle));
 		return bundle;
 	}
 
@@ -245,7 +236,7 @@ public class GameStateRepository {
 		parser.registerManager(bundle.getStateId(), bundle.getStateRefManager());
 		try (OutputStream os = openResourceAsStream(bundle.getStateId() + "-state.xml")) {
 			parser.write(bundle.getState(), os, bundle.getModelId());
-			m_cache.put(bundle.getStateId(), new SoftReference<Bundle>(bundle));
+			m_cache.put(bundle.getStateId(), new SoftReference<>(bundle));
 		} catch (final IOException ex) {
 			throw new GameComponentBuilderException(CORE, ex);
 		} catch (final TransformerException ex) {

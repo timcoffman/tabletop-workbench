@@ -1,11 +1,11 @@
 package com.tcoffman.ttwb.web.resource.model.pattern;
 
 import com.tcoffman.ttwb.model.pattern.part.GameVariablePartPattern;
-import com.tcoffman.ttwb.web.GameModelRepository;
+import com.tcoffman.ttwb.web.GameModelFileRepository;
 
 public class RootPartPatternResource extends PartPatternResource<GameVariablePartPattern> {
 
-	public RootPartPatternResource(GameModelRepository.Bundle modelBundle, GameVariablePartPattern pattern) {
+	public RootPartPatternResource(GameModelFileRepository.Bundle modelBundle, GameVariablePartPattern pattern) {
 		super(modelBundle, pattern);
 	}
 

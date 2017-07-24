@@ -13,7 +13,7 @@ public interface GameModel extends GameStageContainer, GameDocumentableComponent
 
 	Stream<? extends GameModel> effectiveImportedModels();
 
-	GameRole getSystemRole();
+	GameRole effectiveSystemRole();
 
 	Collection<PluginName> getRequiredPlugins();
 
@@ -26,5 +26,7 @@ public interface GameModel extends GameStageContainer, GameDocumentableComponent
 	GameComponentRef<GameStage> getInitialStage();
 
 	boolean isAbstract();
+
+	GameComponentRef<GamePartPrototype> effectiveRootPrototype();
 
 }

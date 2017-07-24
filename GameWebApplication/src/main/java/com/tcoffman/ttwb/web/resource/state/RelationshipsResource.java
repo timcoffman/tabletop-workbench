@@ -8,11 +8,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import com.tcoffman.ttwb.state.GamePartRelationship;
-import com.tcoffman.ttwb.web.GameStateRepository;
+import com.tcoffman.ttwb.web.GameStateFileRepository;
 
 public class RelationshipsResource extends AbstractStateSubresource {
 
-	public RelationshipsResource(GameStateRepository.Bundle stateBundle) {
+	public RelationshipsResource(GameStateFileRepository.Bundle stateBundle) {
 		super(stateBundle);
 	}
 
