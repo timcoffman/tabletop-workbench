@@ -5,7 +5,6 @@ import java.util.Optional;
 import com.tcoffman.ttwb.component.GameDocumentableComponent;
 import com.tcoffman.ttwb.model.pattern.part.GamePartPattern;
 import com.tcoffman.ttwb.model.pattern.place.GamePlacePattern;
-import com.tcoffman.ttwb.model.pattern.quantity.GameQuantityPattern;
 import com.tcoffman.ttwb.model.pattern.role.GameRolePattern;
 import com.tcoffman.ttwb.state.mutation.GameOperation;
 
@@ -23,6 +22,6 @@ public interface GameOperationPattern extends GameDocumentableComponent {
 
 	Optional<GamePlacePattern> getTargetPlacePattern();
 
-	Optional<GameQuantityPattern> getQuantityPattern();
+	// Optional<GameQuantityPattern> getQuantityPattern();
 
 }

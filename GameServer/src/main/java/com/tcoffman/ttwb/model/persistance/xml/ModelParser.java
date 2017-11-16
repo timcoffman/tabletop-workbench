@@ -8,6 +8,8 @@ import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ATTR_NA
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ATTR_NAME_EXTENDS;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ATTR_NAME_ID;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ATTR_NAME_IS_TERMINAL;
+import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ATTR_NAME_MAXIMUM;
+import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ATTR_NAME_MINIMUM;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ATTR_NAME_MODEL;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ATTR_NAME_PATTERN_TOKEN;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ATTR_NAME_PROTOTYPE_REF;
@@ -81,6 +83,10 @@ import com.tcoffman.ttwb.model.pattern.place.StandardAnyPlacePattern;
 import com.tcoffman.ttwb.model.pattern.place.StandardFilterPlacePattern;
 import com.tcoffman.ttwb.model.pattern.place.StandardIntersectionPlacePattern;
 import com.tcoffman.ttwb.model.pattern.place.StandardRelationshipPlacePattern;
+import com.tcoffman.ttwb.model.pattern.quantity.GameQuantityPattern;
+import com.tcoffman.ttwb.model.pattern.quantity.StandardAnyQuantityPattern;
+import com.tcoffman.ttwb.model.pattern.quantity.StandardRangeQuantityPattern;
+import com.tcoffman.ttwb.model.pattern.quantity.StandardSingleQuantityPattern;
 import com.tcoffman.ttwb.model.pattern.role.StandardGameAnyRolePattern;
 import com.tcoffman.ttwb.model.pattern.role.StandardGameRolePattern;
 import com.tcoffman.ttwb.model.persistance.ModelRefManager;
@@ -192,7 +198,7 @@ class ModelParser extends AbstractGameParser {
 			throws GameComponentBuilderException {
 		final StandardComponentDocumentation doc = StandardComponentDocumentation.create()
 				.setName(GameComponentDocumentation.Format.SHORT,
-						"#" + Optional.ofNullable(startElement.getAttributeByName(new QName(identifyingAttrName))).map(Attribute::getValue).orElse(""))
+						Optional.ofNullable(startElement.getAttributeByName(new QName(identifyingAttrName))).map(Attribute::getValue).orElse(""))
 				.setDescription(startElement.getName().getLocalPart() + "@" + startElement.getLocation().getLineNumber() + ":"
 						+ startElement.getLocation().getColumnNumber())
 				.done();
@@ -422,7 +428,6 @@ class ModelParser extends AbstractGameParser {
 			dispatcher.on(MODEL_ELEMENT_QNAME_PATTERN_ROLE, this::parseRole);
 			dispatcher.on(MODEL_ELEMENT_QNAME_PATTERN_SUBJECT, this::parseSubject);
 			dispatcher.on(MODEL_ELEMENT_QNAME_PATTERN_TARGET, this::parseTarget);
-			dispatcher.on(MODEL_ELEMENT_QNAME_PATTERN_QUANTITY, this::parseQuantity);
 			dispatcher.read();
 
 		}
@@ -442,11 +447,6 @@ class ModelParser extends AbstractGameParser {
 		private void parseTarget(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher)
 				throws GameComponentBuilderException, XMLStreamException {
 			parsePlacePattern(startElement, dispatcher, m_editor::setTargetPlacePattern);
-		}
-
-		private void parseQuantity(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher)
-				throws GameComponentBuilderException, XMLStreamException {
-			dispatcher.skip();
 		}
 
 	}
@@ -496,17 +496,18 @@ class ModelParser extends AbstractGameParser {
 			final StandardRelationshipPlacePattern.Editor editor = StandardRelationshipPlacePattern.create().completed(m_editor::addPattern);
 			dispatcher.on(MODEL_ELEMENT_QNAME_PATTERN_PART, (e, d) -> parsePartPattern(e, d, editor::setPartPattern));
 			dispatcher.on(MODEL_ELEMENT_QNAME_PATTERN_RELATED, (e, d) -> parsePlacePattern(e, d, editor::setRelatedPlacePattern));
-			dispatcher.skip();
+			dispatcher.read();
 			editor.done();
 		}
 
 		private void parseFilterPlacePattern(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher)
 				throws GameComponentBuilderException, XMLStreamException {
 			final StandardFilterPlacePattern.Editor editor = StandardFilterPlacePattern.create().completed(m_editor::addPattern);
+			dispatcher.on(MODEL_ELEMENT_QNAME_PATTERN_QUANTITY, (e, d) -> parseQuantityPattern(e, d, editor::setQuantityPattern));
 			dispatcher.on(MODEL_ELEMENT_QNAME_PATTERN_PART, (e, d) -> parsePartPattern(e, d, editor::setPartPattern));
 			dispatcher.attr(MODEL_ATTR_NAME_TYPE, (qn) -> editor.setMatchType(parseType(startElement, qn)));
 			dispatcher.attr(MODEL_ATTR_NAME_BINDING, (id) -> editor.setMatchBinding(m_modelRefManager.getRoleManager().createRef(id)));
-			dispatcher.skip();
+			dispatcher.read();
 			editor.done();
 		}
 
@@ -572,7 +573,7 @@ class ModelParser extends AbstractGameParser {
 		private void parseAnyPartPattern(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher)
 				throws GameComponentBuilderException, XMLStreamException {
 			final StandardAnyPartPattern.Editor editor = StandardAnyPartPattern.create().completed(m_editor::addPattern);
-			// no contents
+			dispatcher.on(MODEL_ELEMENT_QNAME_PATTERN_QUANTITY, (e, d) -> parseQuantityPattern(e, d, editor::setQuantityPattern));
 			dispatcher.read();
 			editor.done();
 		}
@@ -582,6 +583,7 @@ class ModelParser extends AbstractGameParser {
 			final StandardFilterPartPattern.Editor editor = StandardFilterPartPattern.create().completed(m_editor::addPattern);
 			dispatcher.attr(MODEL_ATTR_NAME_PROTOTYPE_REF, (id) -> editor.setMatchPrototype(m_modelRefManager.getPartPrototypeManager().createRef(id)));
 			dispatcher.attr(MODEL_ATTR_NAME_BINDING, (id) -> editor.setMatchBinding(m_modelRefManager.getRoleManager().createRef(id)));
+			dispatcher.on(MODEL_ELEMENT_QNAME_PATTERN_QUANTITY, (e, d) -> parseQuantityPattern(e, d, editor::setQuantityPattern));
 			dispatcher.read();
 			editor.done();
 		}
@@ -593,6 +595,39 @@ class ModelParser extends AbstractGameParser {
 			dispatcher.skip();
 
 			editor.done();
+		}
+
+	}
+
+	private static Long parseLong(String v) {
+		try {
+			return Long.parseLong(v);
+		} catch (final NumberFormatException ex) {
+			return null;
+		}
+	}
+
+	private void parseQuantityPattern(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher,
+			Consumer<GameQuantityPattern> consumer) throws GameComponentBuilderException, XMLStreamException {
+		final Optional<Long> min = Optional.ofNullable(startElement.getAttributeByName(QName.valueOf(MODEL_ATTR_NAME_MINIMUM))).map(Attribute::getValue)
+				.map(ModelParser::parseLong);
+		final Optional<Long> max = Optional.ofNullable(startElement.getAttributeByName(QName.valueOf(MODEL_ATTR_NAME_MAXIMUM))).map(Attribute::getValue)
+				.map(ModelParser::parseLong);
+		dispatcher.read();
+
+		if (!max.isPresent() && min.map(v -> v == 0).orElse(true))
+			// no max AND (min==0 OR no min)
+			consumer.accept(StandardAnyQuantityPattern.create().done());
+		else if (max.map(v -> v == 1).orElse(false) && min.map(v -> v == 1).orElse(false))
+			// max==1 AND min==1
+			// consumer.accept(StandardSingleQuantityPattern.create().done());
+			consumer.accept(StandardSingleQuantityPattern.create().done());
+		else {
+			// max is significant AND/OR min is significant
+			final StandardRangeQuantityPattern.Editor editor = StandardRangeQuantityPattern.create();
+			min.ifPresent(editor::setMinimum);
+			max.ifPresent(editor::setMaximum);
+			consumer.accept(editor.done());
 		}
 	}
 

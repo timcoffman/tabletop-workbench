@@ -44,10 +44,11 @@ public class OperationPatternResource extends AbstractModelSubresource {
 		return m_opPattern.getTargetPlacePattern().map(this::createPlacePatternResource).orElse(null);
 	}
 
-	@Path("/quantity")
-	public QuantityPatternResource getQuantity() {
-		return m_opPattern.getQuantityPattern().map(this::createQuantityPatternResource).orElse(null);
-	}
+	// @Path("/quantity")
+	// public QuantityPatternResource getQuantity() {
+	// return
+	// m_opPattern.getQuantityPattern().map(this::createQuantityPatternResource).orElse(null);
+	// }
 
 	private PlacePatternResource<?> createPlacePatternResource(GamePlacePattern pattern) {
 		return subresource(PlacePatternResource.createUninitializedPlacePattern(modelBundle(), pattern));

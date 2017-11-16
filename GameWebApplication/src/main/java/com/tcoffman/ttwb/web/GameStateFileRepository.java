@@ -24,9 +24,12 @@ import java.util.stream.Stream;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.TransformerException;
 
+import org.jgrapht.ext.ExportException;
+
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.component.persistence.GameStateBundle;
 import com.tcoffman.ttwb.component.persistence.GameStateRepository;
+import com.tcoffman.ttwb.component.persistence.gv.StandardGameStateGraphWriter;
 import com.tcoffman.ttwb.model.GameModel;
 import com.tcoffman.ttwb.model.persistance.ModelRefResolver;
 import com.tcoffman.ttwb.plugin.PluginSet;
@@ -240,6 +243,18 @@ public class GameStateFileRepository implements GameStateRepository {
 		} catch (final IOException ex) {
 			throw new GameComponentBuilderException(CORE, ex);
 		} catch (final TransformerException ex) {
+			throw new GameComponentBuilderException(CORE, ex);
+		} catch (final XMLStreamException ex) {
+			throw new GameComponentBuilderException(CORE, ex);
+		}
+
+		final StandardGameStateGraphWriter graphWriter = new StandardGameStateGraphWriter(m_authMgr, modelProviderFactory);
+		graphWriter.registerManager(bundle.getStateId(), bundle.getStateRefManager());
+		try (OutputStream os = openResourceAsStream(bundle.getStateId() + "-state.dot")) {
+			graphWriter.write(bundle.getState(), os, bundle.getModelId());
+		} catch (final IOException ex) {
+			throw new GameComponentBuilderException(CORE, ex);
+		} catch (final ExportException ex) {
 			throw new GameComponentBuilderException(CORE, ex);
 		} catch (final XMLStreamException ex) {
 			throw new GameComponentBuilderException(CORE, ex);

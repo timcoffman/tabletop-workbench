@@ -55,7 +55,7 @@ public class PlacePatternFormatter {
 	}
 
 	public PlacePatternFormatter matchesPart(GamePartPattern partPattern) {
-		return append("ON").append(partPattern.toString());
+		return append("ON:(").append(partPattern.toString()).append(")");
 	}
 
 	public PlacePatternFormatter equalProperty(String propertyName, Object propertyValue) {

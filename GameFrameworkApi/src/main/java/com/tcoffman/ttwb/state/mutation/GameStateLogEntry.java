@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.tcoffman.ttwb.component.GameComponentRef;
@@ -13,8 +14,8 @@ public final class GameStateLogEntry {
 
 	private final GameComponentRef<GameStage> m_forward;
 	private final GameComponentRef<GameStage> m_rollback;
-	private final List<GameStateMutation> m_forwardMutations = new ArrayList<GameStateMutation>();
-	private final List<GameStateMutation> m_rollbackMutations = new ArrayList<GameStateMutation>();
+	private final List<GameStateMutation> m_forwardMutations = new ArrayList<>();
+	private final List<GameStateMutation> m_rollbackMutations = new ArrayList<>();
 
 	public GameStateLogEntry(GameComponentRef<GameStage> forward, GameComponentRef<GameStage> rollback) {
 		m_forward = forward;
@@ -54,4 +55,12 @@ public final class GameStateLogEntry {
 			log.apply(j.previous(), i.next());
 		return log;
 	}
+
+	@Override
+	public String toString() {
+		return "--FORWARD--\n" + m_forward.get() + " <--\n" + m_forwardMutations.stream().map(Object::toString).collect(Collectors.joining("\n", "[\n", "\n]"))
+				+ "\n" + "--ROLLBACK--\n" + m_rollback.get() + " <--\n"
+				+ m_rollbackMutations.stream().map(Object::toString).collect(Collectors.joining("\n", "[\n", "\n]"));
+	}
+
 }

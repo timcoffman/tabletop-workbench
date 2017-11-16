@@ -224,7 +224,7 @@ public class EventDispatcher<E extends Throwable> {
 			return;
 		}
 
-		throw new IllegalStateException("no handler for " + startElement + " at " + startElement.getLocation().getLineNumber());
+		throw new IllegalStateException("no handler for " + startElement + ": " + startElement.getName() + " at " + startElement.getLocation().getLineNumber());
 	}
 
 	private void handle(Attribute attribute) throws XMLStreamException, E {

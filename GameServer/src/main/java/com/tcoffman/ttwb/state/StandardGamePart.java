@@ -59,7 +59,7 @@ public class StandardGamePart extends StandardComponent implements GamePart {
 
 	@Override
 	public String toString() {
-		return m_prototype.get().toString();
+		return m_prototype.get().toString() + m_roleBinding.map((r) -> "{" + r.toString() + "}").orElse("");
 	}
 
 }

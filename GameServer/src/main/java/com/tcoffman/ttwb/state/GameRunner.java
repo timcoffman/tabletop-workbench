@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -308,6 +309,10 @@ public class GameRunner {
 	}
 
 	public Optional<GameStateLogEntry> autoAdvance() throws GameComponentBuilderException {
+		return autoAdvance(AutomaticResolutionStrategy::new);
+	}
+
+	public Optional<GameStateLogEntry> autoAdvance(Function<GameState, ResolutionStrategy> strategyFactory) throws GameComponentBuilderException {
 		final Iterator<? extends GameOperationPatternSet> i = m_state.allowedOperations().iterator();
 		if (!i.hasNext())
 			return Optional.empty(); /* literally NO allowed operations */
@@ -316,59 +321,12 @@ public class GameRunner {
 			return Optional
 					.empty(); /* more than 1 allowed operation, can't decide */
 
-		final Optional<ResolvedOperationSet> resolvedOpSet = autoResolve(opPatternSet);
+		final ResolutionStrategy strategy = strategyFactory.apply(m_state);
+		final Optional<ResolvedOperationSet> resolvedOpSet = strategy.autoResolve(opPatternSet);
 		if (!resolvedOpSet.isPresent())
 			return Optional.empty();
 
 		return Optional.of(advance(resolvedOpSet.get()));
-	}
-
-	private Optional<ResolvedOperationSet> autoResolve(GameOperationPatternSet ops) {
-		final List<Optional<ResolvedOperation>> resolvedOps = ops.operations().map(this::autoResolve).collect(Collectors.toList());
-		if (!resolvedOps.stream().allMatch(Optional::isPresent))
-			return Optional.empty();
-
-		final ResolvedOperationSet.Editor resolvedOpSet = ResolvedOperationSet.create();
-		resolvedOpSet.setResult(ops.getResult());
-		resolvedOps.stream().map(Optional::get).forEach(resolvedOpSet::addOperation);
-
-		try {
-			return Optional.of(resolvedOpSet.done());
-		} catch (final GameComponentBuilderException ex) {
-			throw new IllegalStateException("failed to build resolved operation set", ex);
-		}
-	}
-
-	private Optional<ResolvedOperation> autoResolve(GameOperationPattern opPattern) {
-		final GameRole systemRole = m_state.getModel().effectiveSystemRole();
-
-		try {
-			switch (opPattern.getType()) {
-			case SIGNAL:
-				return Optional.of(ResolvedSignalOperation.create().setRole(systemRole).done());
-			case MOVE:
-				final ResolvedMoveOperation.Editor editor = ResolvedMoveOperation.create();
-				editor.setRole(systemRole);
-				final List<? extends GamePlace> subjects = m_state.find(opPattern.getSubjectPlacePattern().get()).collect(Collectors.toList());
-				final List<? extends GamePlace> targets = m_state.find(opPattern.getTargetPlacePattern().get()).collect(Collectors.toList());
-
-				if (subjects.isEmpty() || targets.isEmpty())
-					return Optional.empty();
-				else if (subjects.size() == 1 || targets.size() == 1) {
-					for (final GamePlace s : subjects)
-						editor.createSubjectTargetPair((stp) -> {
-							stp.setSubject(s);
-							targets.forEach(stp::addTarget);
-						});
-					return Optional.of(editor.done());
-				} else
-					return Optional.empty();
-			default:
-				throw new UnsupportedOperationException(opPattern.getType() + " not yet supported");
-			}
-		} catch (final GameComponentBuilderException ex) {
-			throw new IllegalStateException("failed to build resolved operation", ex);
-		}
 	}
 
 	private <T> Stream<T> cloneAndDumpStream(PrintStream ps, String label, Stream<T> items) {

@@ -9,8 +9,8 @@ import com.tcoffman.ttwb.component.GameComponentBuilderException;
 
 public class StandardRangeQuantityPattern extends StandardQuantityPattern implements GameRangeQuantityPattern {
 
-	private Optional<Long> m_minimum;
-	private Optional<Long> m_maximum;
+	private Optional<Long> m_minimum = Optional.empty();
+	private Optional<Long> m_maximum = Optional.empty();
 
 	@Override
 	public <T> Stream<T> limit(Stream<T> items) throws IllegalArgumentException {

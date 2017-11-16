@@ -49,4 +49,6 @@ public final class XmlConstants {
 	public static final String MODEL_ATTR_NAME_PROTOTYPE_REF = "prototype-ref";
 	public static final String MODEL_ATTR_NAME_EXTENDS = "extends";
 	public static final String MODEL_ATTR_NAME_BINDING = "binding";
+	public static final String MODEL_ATTR_NAME_MINIMUM = "min";
+	public static final String MODEL_ATTR_NAME_MAXIMUM = "max";
 }

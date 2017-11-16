@@ -71,7 +71,10 @@ import com.tcoffman.ttwb.model.pattern.place.GameIntersectionPlacePattern;
 import com.tcoffman.ttwb.model.pattern.place.GameInversionPlacePattern;
 import com.tcoffman.ttwb.model.pattern.place.GamePlacePattern;
 import com.tcoffman.ttwb.model.pattern.place.GameRelationshipPlacePattern;
+import com.tcoffman.ttwb.model.pattern.quantity.GameAnyQuantityPattern;
 import com.tcoffman.ttwb.model.pattern.quantity.GameQuantityPattern;
+import com.tcoffman.ttwb.model.pattern.quantity.GameRangeQuantityPattern;
+import com.tcoffman.ttwb.model.pattern.quantity.GameSingleQuantityPattern;
 import com.tcoffman.ttwb.model.pattern.role.GameRolePattern;
 import com.tcoffman.ttwb.model.persistance.ModelRefManager;
 import com.tcoffman.ttwb.plugin.PluginName;
@@ -290,15 +293,39 @@ public class ModelWriter {
 		operationPattern.getSubjectPlacePattern().ifPresent((p) -> writeSubjectPattern(operationPatternElement, p));
 		operationPattern.getTargetPattern().ifPresent((p) -> writeTargetPattern(operationPatternElement, p));
 		operationPattern.getTargetPlacePattern().ifPresent((p) -> writeTargetPattern(operationPatternElement, p));
-		operationPattern.getQuantityPattern().ifPresent((p) -> writePattern(operationPatternElement, p));
+		// operationPattern.getQuantityPattern().ifPresent((p) ->
+		// writePattern(operationPatternElement, p));
 	}
 
 	private void writeResult(Element operationPatternElement, GameComponentRef<GameStage> resultRef) {
 		operationPatternElement.setAttribute(MODEL_ATTR_NAME_RESULT, idForStage(resultRef));
 	}
 
-	private void writePattern(Element operationPatternElement, GameQuantityPattern p) {
-		createAndAppendElement(operationPatternElement, MODEL_ELEMENT_QNAME_PATTERN_QUANTITY);
+	private void writePattern(Element operationPatternElement, GameQuantityPattern pattern) {
+		final Element quantityElement = createAndAppendElement(operationPatternElement, MODEL_ELEMENT_QNAME_PATTERN_QUANTITY);
+		pattern.visit(new GameQuantityPattern.Visitor<Element, RuntimeException>() {
+
+			@Override
+			public Element visit(GameAnyQuantityPattern pattern) {
+				quantityElement.setAttribute("min", "0");
+				quantityElement.setAttribute("max", "*");
+				return null;
+			}
+
+			@Override
+			public Element visit(GameRangeQuantityPattern pattern) {
+				quantityElement.setAttribute("min", Long.toString(pattern.getMinimum().orElse(0L)));
+				quantityElement.setAttribute("max", pattern.getMaximum().map((v) -> Long.toString(v)).orElse("*"));
+				return null;
+			}
+
+			@Override
+			public Element visit(GameSingleQuantityPattern pattern) {
+				quantityElement.setAttribute("min", "1");
+				quantityElement.setAttribute("mix", "1");
+				return null;
+			}
+		});
 	}
 
 	private void writePattern(Element operationPatternElement, GameRolePattern rolePattern) {
@@ -329,6 +356,7 @@ public class ModelWriter {
 			@Override
 			public Element visit(GameAnyPlacePattern pattern) throws RuntimeException {
 				final Element anyElement = createAndAppendElement(parentElement, MODEL_ELEMENT_QNAME_PATTERN_ANY);
+				writePattern(anyElement, pattern.getQuantityPattern());
 				writePattern(createAndAppendElement(anyElement, MODEL_ELEMENT_QNAME_PART), pattern.getPartPattern());
 				return anyElement;
 			}
@@ -336,6 +364,7 @@ public class ModelWriter {
 			@Override
 			public Element visit(GameFilterPlacePattern pattern) throws RuntimeException {
 				final Element filterElement = createAndAppendElement(parentElement, MODEL_ELEMENT_QNAME_PATTERN_FILTER);
+				writePattern(filterElement, pattern.getQuantityPattern());
 
 				final Optional<GameComponentRef<GamePlaceType>> matchPlaceType = pattern.getMatchesType();
 				if (matchPlaceType.isPresent()) {

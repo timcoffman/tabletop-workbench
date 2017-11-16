@@ -31,4 +31,11 @@ public abstract class GameStateRelationshipMutation extends AbstractGameStateMut
 		return m_relationshipType;
 	}
 
+	@Override
+	public String toString() {
+		return verbString() + " " + m_source + " --" + m_relationshipType.get() + "--> " + m_destination;
+	}
+
+	protected abstract String verbString();
+
 }

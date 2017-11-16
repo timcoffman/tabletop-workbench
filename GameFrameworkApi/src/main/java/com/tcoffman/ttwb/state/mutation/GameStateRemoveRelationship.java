@@ -27,4 +27,10 @@ public class GameStateRemoveRelationship extends GameStateRelationshipMutation {
 	public AbstractGameStateMutation inverted() {
 		return new GameStateAddRelationship(m_role, m_type, m_relationshipType, m_source, m_destination);
 	}
+
+	@Override
+	protected String verbString() {
+		return "remove";
+	}
+
 }

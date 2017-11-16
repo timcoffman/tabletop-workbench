@@ -30,6 +30,8 @@
 		<place type="grid:2-0" grid:coords="2,0"/>
 		<place type="grid:2-1" grid:coords="2,1"/>
 		<place type="grid:2-2" grid:coords="2,2"/>
+		
+		<place type="core:bottom"/>
 	</prototype>
 
 	<prototype id="player-piece" abstract="true" doc="doc:piece">
@@ -115,23 +117,23 @@
 		<rule to-stage="turn" doc="doc:setup">
 			<move xmlns="urn:com.tcoffman.ttwb.model/v/1.0" doc="doc:place-the-board">
 				<role> <filter binding="system"/> </role>
-				<subject> <any> <part> <filter prototype-ref="board"/> </part> </any> </subject>
+				<subject> <filter type="core:bottom"> <part> <filter prototype-ref="board"/> </part> </filter> </subject>
 				<target> <any> <part> <root/> </part> </any> </target>
 			</move>
 			<move xmlns="urn:com.tcoffman.ttwb.model/v/1.0" doc="doc:place-the-supplies">
 				<role> <filter binding="system"/> </role>
-				<subject> <any> <part> <filter prototype-ref="supply"/> </part> </any> </subject>
+				<subject> <filter type="core:bottom"> <quantity max="*"/> <part> <filter prototype-ref="supply"> <quantity max="*"/> </filter> </part> </filter> </subject>
 				<target> <any> <part> <root/> </part> </any> </target>
 			</move>
 			<move xmlns="urn:com.tcoffman.ttwb.model/v/1.0" doc="doc:place-the-pieces">
 				<role> <filter binding="system"/> </role>
-				<subject> <any> <part> <filter prototype-ref="player-piece" binding="x"/> </part> </any> </subject>
-				<target> <any> <part> <filter prototype-ref="supply" binding="x"/> </part> </any> </target>
+				<subject> <filter type="core:bottom"> <quantity max="*"/> <part> <filter prototype-ref="player-piece" binding="x"> <quantity max="*"/> </filter> </part> </filter> </subject>
+				<target> <filter type="core:top"> <part> <filter prototype-ref="supply" binding="x"/> </part> </filter> </target>
 			</move>
 			<move xmlns="urn:com.tcoffman.ttwb.model/v/1.0" doc="doc:place-the-pieces">
 				<role> <filter binding="system"/> </role>
-				<subject> <any> <part> <filter prototype-ref="player-piece" binding="o"/> </part> </any> </subject>
-				<target> <any> <part> <filter prototype-ref="supply" binding="o"/> </part> </any> </target>
+				<subject> <filter type="core:bottom"> <quantity max="*"/> <part> <filter prototype-ref="player-piece" binding="o"> <quantity max="*"/> </filter> </part> </filter> </subject>
+				<target> <filter type="core:top"> <part> <filter prototype-ref="supply" binding="o"/> </part> </filter> </target>
 			</move>
 		</rule>		
 	</stage>

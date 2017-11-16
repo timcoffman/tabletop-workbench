@@ -131,6 +131,15 @@ public class StateWriter extends AbstractWriter {
 		final Element partElement = createAndAppendElement(partsElement, part, STATE_ELEMENT_QNAME_PART);
 		part.getRoleBinding().ifPresent((r) -> partElement.setAttribute(MODEL_ATTR_NAME_BINDING, externalIdForRole(r.get())));
 		partElement.setAttribute(STATE_ATTR_NAME_PROTOTYPE_REF, externalIdForPartPrototype(part.getPrototype()));
+		part.places().forEach((place) -> {
+			partElement.appendChild(partElement.getOwnerDocument().createComment(place.toString()));
+			place.outgoingRelationships().forEach((rel) -> {
+				partElement.appendChild(partElement.getOwnerDocument().createComment("to " + rel.getDestination().get().toString()));
+			});
+			place.incomingRelationships().forEach((rel) -> {
+				partElement.appendChild(partElement.getOwnerDocument().createComment("from " + rel.getSource().get().toString()));
+			});
+		});
 	}
 
 	private void writeRelationships(Element stateElement) {

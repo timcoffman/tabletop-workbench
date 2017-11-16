@@ -195,7 +195,7 @@ public class StandardGameState implements GameState {
 		editor.setType(operationPattern.getType());
 		editor.setRolePattern(operationPattern.getRolePattern());
 		editor.setDocumentation(operationPattern.getDocumentation().self(GameComponentDocumentation.class));
-		operationPattern.getQuantityPattern().ifPresent(editor::setQuantityPattern);
+		// operationPattern.getQuantityPattern().ifPresent(editor::setQuantityPattern);
 		operationPattern.getSubjectPlacePattern().ifPresent(editor::setSubjectPlacePattern);
 		operationPattern.getSubjectPattern().ifPresent(editor::setSubjectPattern);
 		operationPattern.getTargetPlacePattern().ifPresent(editor::setTargetPlacePattern);

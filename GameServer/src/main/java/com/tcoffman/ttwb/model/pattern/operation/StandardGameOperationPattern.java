@@ -8,7 +8,6 @@ import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.component.StandardDocumentableComponent;
 import com.tcoffman.ttwb.model.pattern.part.GamePartPattern;
 import com.tcoffman.ttwb.model.pattern.place.GamePlacePattern;
-import com.tcoffman.ttwb.model.pattern.quantity.GameQuantityPattern;
 import com.tcoffman.ttwb.model.pattern.role.GameRolePattern;
 import com.tcoffman.ttwb.model.pattern.role.StandardGameAnyRolePattern;
 import com.tcoffman.ttwb.state.mutation.GameOperation;
@@ -22,7 +21,8 @@ public class StandardGameOperationPattern extends StandardDocumentableComponent 
 	private Optional<GamePlacePattern> m_subjectPlacePattern = Optional.empty();
 	private Optional<GamePartPattern> m_targetPattern = Optional.empty();
 	private Optional<GamePlacePattern> m_targetPlacePattern = Optional.empty();
-	private Optional<GameQuantityPattern> m_quantityPattern = Optional.empty();
+	// private Optional<GameQuantityPattern> m_quantityPattern =
+	// Optional.empty();
 
 	private StandardGameOperationPattern() {
 	}
@@ -57,10 +57,10 @@ public class StandardGameOperationPattern extends StandardDocumentableComponent 
 		return m_targetPlacePattern;
 	}
 
-	@Override
-	public Optional<GameQuantityPattern> getQuantityPattern() {
-		return m_quantityPattern;
-	}
+	// @Override
+	// public Optional<GameQuantityPattern> getQuantityPattern() {
+	// return m_quantityPattern;
+	// }
 
 	public static final Editor create() {
 		return new StandardGameOperationPattern().edit();
@@ -116,17 +116,15 @@ public class StandardGameOperationPattern extends StandardDocumentableComponent 
 			m_targetPlacePattern = Optional.of(targetPlacePattern);
 		}
 
-		public void setQuantityPattern(GameQuantityPattern quantityPattern) {
-			requireNotDone();
-			m_quantityPattern = Optional.of(quantityPattern);
-		}
+		// public void setQuantityPattern(GameQuantityPattern quantityPattern) {
+		// requireNotDone();
+		// m_quantityPattern = Optional.of(quantityPattern);
+		// }
 	}
 
 	@Override
 	public String toString() {
-		return m_type.toString()
-				+ " "
-				+ Stream.of(Optional.of(m_rolePattern), m_subjectPlacePattern, m_subjectPattern, m_targetPlacePattern, m_targetPattern, m_quantityPattern)
+		return m_type.toString() + " " + Stream.of(Optional.of(m_rolePattern), m_subjectPlacePattern, m_subjectPattern, m_targetPlacePattern, m_targetPattern)
 				.filter(Optional::isPresent).map(Optional::get).map(Object::toString).collect(Collectors.joining(" AND ", "WHERE ", ""));
 	}
 
