@@ -7,18 +7,20 @@ import java.util.Collection;
 import java.util.stream.Stream;
 
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
+import com.tcoffman.ttwb.component.GameComponentRef;
 import com.tcoffman.ttwb.component.StandardDocumentableComponent;
+import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 import com.tcoffman.ttwb.plugin.PluginName;
 
 public class StandardGameStage extends StandardDocumentableComponent implements GameStage {
 
-	private final Collection<GameRule> m_rules = new ArrayList<GameRule>();
+	private final Collection<GameRule> m_rules = new ArrayList<>();
 	private final Reference<GameStageContainer> m_owner;
-	private final Collection<GameStage> m_stages = new ArrayList<GameStage>();
+	private final Collection<GameStage> m_stages = new ArrayList<>();
 	public boolean m_terminal = false;
 
 	private StandardGameStage(GameStageContainer owner) {
-		m_owner = new WeakReference<GameStageContainer>(owner);
+		m_owner = new WeakReference<>(owner);
 	}
 
 	@Override
@@ -50,6 +52,11 @@ public class StandardGameStage extends StandardDocumentableComponent implements 
 	}
 
 	public class Editor extends StandardDocumentableComponent.Editor<StandardGameStage> {
+
+		@Override
+		public Editor setDocumentation(GameComponentRef<GameComponentDocumentation> documentation) {
+			return (Editor) super.setDocumentation(documentation);
+		}
 
 		@Override
 		protected void validate() throws GameComponentBuilderException {

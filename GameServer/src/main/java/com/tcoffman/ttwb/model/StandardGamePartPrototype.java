@@ -9,6 +9,7 @@ import com.tcoffman.ttwb.component.AbstractEditor;
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.component.GameComponentRef;
 import com.tcoffman.ttwb.component.StandardDocumentableComponent;
+import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 import com.tcoffman.ttwb.plugin.PluginName;
 
 public class StandardGamePartPrototype extends StandardDocumentableComponent implements GamePartPrototype {
@@ -16,7 +17,7 @@ public class StandardGamePartPrototype extends StandardDocumentableComponent imp
 	private final PluginName m_declaringPlugin;
 	private Optional<GameComponentRef<GamePartPrototype>> m_extendsPrototype = Optional.empty();
 	private Optional<GameComponentRef<GameRole>> m_roleBinding = Optional.empty();
-	private final Collection<StandardGamePlacePrototype> m_places = new ArrayList<StandardGamePlacePrototype>();
+	private final Collection<StandardGamePlacePrototype> m_places = new ArrayList<>();
 
 	protected StandardGamePartPrototype(PluginName declaringPlugin) {
 		m_declaringPlugin = declaringPlugin;
@@ -64,6 +65,11 @@ public class StandardGamePartPrototype extends StandardDocumentableComponent imp
 	}
 
 	public class Editor extends StandardDocumentableComponent.Editor<StandardGamePartPrototype> {
+
+		@Override
+		public Editor setDocumentation(GameComponentRef<GameComponentDocumentation> documentation) {
+			return (Editor) super.setDocumentation(documentation);
+		}
 
 		@Override
 		protected void validate() throws GameComponentBuilderException {

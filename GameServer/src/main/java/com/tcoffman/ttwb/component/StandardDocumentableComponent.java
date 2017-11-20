@@ -21,12 +21,10 @@ public abstract class StandardDocumentableComponent extends StandardComponent im
 			requirePresent(CORE, "documentation", m_documentation);
 		}
 
-		public <E extends Editor<T>> E setDocumentation(GameComponentRef<GameComponentDocumentation> documentation) {
+		public Editor<T> setDocumentation(GameComponentRef<GameComponentDocumentation> documentation) {
 			requireNotDone();
 			m_documentation = documentation;
-			@SuppressWarnings("unchecked")
-			final E self = (E) this;
-			return self;
+			return this;
 		}
 	}
 

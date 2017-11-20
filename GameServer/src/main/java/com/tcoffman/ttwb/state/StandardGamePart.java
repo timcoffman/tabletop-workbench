@@ -3,8 +3,10 @@ package com.tcoffman.ttwb.state;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.tcoffman.ttwb.component.GameComponentRef;
@@ -54,7 +56,14 @@ public class StandardGamePart extends StandardComponent implements GamePart {
 	@Override
 	public GamePlace findPlace(GameComponentRef<GamePlaceType> placeType) {
 		return m_places.stream().filter((p) -> p.getPrototype().get().getType().get() == placeType.get()).findAny()
-				.orElseThrow(() -> new IllegalArgumentException(StandardGamePart.this + " does not have a place of type \"" + placeType.get() + "\""));
+				.orElseThrow(() -> missingPlaceException(placeType));
+	}
+
+	private IllegalArgumentException missingPlaceException(GameComponentRef<GamePlaceType> placeType) {
+		final List<GamePlaceType> availablePlaceTypes = m_places.stream().map(GamePlace::getPrototype).map(GameComponentRef::get)
+				.map(GamePlacePrototype::getType).map(GameComponentRef::get).collect(Collectors.toList());
+		return new IllegalArgumentException(StandardGamePart.this + " does not have a place of type \"" + placeType.get() + "\".  Try one of "
+				+ availablePlaceTypes.stream().map(Object::toString).collect(Collectors.joining(", ", "[", "]")));
 	}
 
 	@Override

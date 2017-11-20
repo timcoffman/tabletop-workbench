@@ -150,7 +150,7 @@ public class GameModelFileRepository implements GameModelRepository {
 		public BundleImpl(String id, String documentationLang) throws GameComponentBuilderException, XMLStreamException {
 			m_id = id;
 			m_documentationLang = documentationLang;
-			m_pluginSet = new PluginSet(m_pluginFactory);
+			m_pluginSet = new PluginSet(m_rootRepo.getBundle("root").getPluginSet(), m_pluginFactory);
 			try (InputStream s = getDocumentationResourcesAsStream(m_id, m_documentationLang)) {
 				m_documentation = m_documentationParser.parse(s, m_id);
 				m_documentationRefResolver = m_documentationParser.createResolver(m_id);

@@ -98,6 +98,11 @@ public class StandardRootGameModel extends StandardDocumentableComponent impleme
 		private ModelPlugin m_corePlugin;
 
 		@Override
+		public Editor setDocumentation(GameComponentRef<GameComponentDocumentation> documentation) {
+			return (Editor) super.setDocumentation(documentation);
+		}
+
+		@Override
 		protected void validate() throws GameComponentBuilderException {
 			super.validate();
 			requirePresent(CORE, "core plugin", m_corePlugin);

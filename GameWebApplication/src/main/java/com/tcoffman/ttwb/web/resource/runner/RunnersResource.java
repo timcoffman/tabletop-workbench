@@ -48,7 +48,7 @@ public class RunnersResource extends AbstractRootResource {
 	}
 
 	// "sub-resource locator" (no http-method // annotations)
-	@Path("/{runnerId}")
+	@Path("/{stateId}")
 	public RunnerResource getRunner(@PathParam("stateId") String stateId) throws GameComponentBuilderException, XMLStreamException {
 		return createRunnerResource(getStateBundle(stateId));
 	}
@@ -76,8 +76,8 @@ public class RunnersResource extends AbstractRootResource {
 	public RunnerResource createRunner(RunnerCreationForm runnerCreationForm) throws JSONException, GameComponentBuilderException, XMLStreamException {
 		final String modelId = runnerCreationForm.getState();
 		final GameModelFileRepository.Bundle modelBundle = m_modelRepository.getBundle(modelId);
-		final GameStateFileRepository.Bundle stateBundle = m_stateRepository.create(modelBundle.getModel(), modelBundle.getModelId(), modelBundle.getPluginSet(),
-				modelBundle.getModelRefResolver());
+		final GameStateFileRepository.Bundle stateBundle = m_stateRepository.create(modelBundle.getModel(), modelBundle.getModelId(),
+				modelBundle.getPluginSet(), modelBundle.getModelRefResolver());
 
 		return createRunnerResource(stateBundle);
 	}

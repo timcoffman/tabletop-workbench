@@ -9,12 +9,13 @@ import java.util.stream.Stream;
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.component.GameComponentRef;
 import com.tcoffman.ttwb.component.StandardDocumentableComponent;
+import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 import com.tcoffman.ttwb.model.pattern.operation.GameOperationPattern;
 import com.tcoffman.ttwb.model.pattern.operation.StandardGameOperationPattern;
 
 public class StandardGameRule extends StandardDocumentableComponent implements GameRule {
 
-	public Collection<GameOperationPattern> m_operationPatterns = new ArrayList<GameOperationPattern>();
+	public Collection<GameOperationPattern> m_operationPatterns = new ArrayList<>();
 	private GameComponentRef<GameStage> m_result;
 
 	private StandardGameRule() {
@@ -39,6 +40,11 @@ public class StandardGameRule extends StandardDocumentableComponent implements G
 	}
 
 	public final class Editor extends StandardDocumentableComponent.Editor<StandardGameRule> {
+
+		@Override
+		public Editor setDocumentation(GameComponentRef<GameComponentDocumentation> documentation) {
+			return (Editor) super.setDocumentation(documentation);
+		}
 
 		@Override
 		protected void validate() throws GameComponentBuilderException {

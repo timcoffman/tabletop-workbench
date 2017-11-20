@@ -13,6 +13,7 @@ import com.tcoffman.ttwb.component.AbstractEditor;
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.component.GameComponentRef;
 import com.tcoffman.ttwb.component.StandardDocumentableComponent;
+import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 import com.tcoffman.ttwb.plugin.PluginName;
 
 public class StandardGamePlacePrototype extends StandardDocumentableComponent implements GamePlacePrototype {
@@ -20,11 +21,11 @@ public class StandardGamePlacePrototype extends StandardDocumentableComponent im
 	private final Reference<StandardGamePartPrototype> m_prototype;
 	private GameComponentRef<GamePlaceType> m_type;
 	private Optional<GameComponentRef<GameRole>> m_roleBinding = Optional.empty();
-	private final Collection<GameModelProperty> m_properties = new ArrayList<GameModelProperty>();
-	private final Collection<GameModelComponent> m_components = new ArrayList<GameModelComponent>();
+	private final Collection<GameModelProperty> m_properties = new ArrayList<>();
+	private final Collection<GameModelComponent> m_components = new ArrayList<>();
 
 	private StandardGamePlacePrototype(StandardGamePartPrototype prototype) {
-		m_prototype = new WeakReference<StandardGamePartPrototype>(prototype);
+		m_prototype = new WeakReference<>(prototype);
 	}
 
 	@Override
@@ -61,6 +62,11 @@ public class StandardGamePlacePrototype extends StandardDocumentableComponent im
 	}
 
 	public final class Editor extends StandardDocumentableComponent.Editor<StandardGamePlacePrototype> {
+
+		@Override
+		public Editor setDocumentation(GameComponentRef<GameComponentDocumentation> documentation) {
+			return (Editor) super.setDocumentation(documentation);
+		}
 
 		@Override
 		protected void validate() throws GameComponentBuilderException {
