@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -45,8 +46,8 @@ public class StandardGameModel extends StandardDocumentableComponent implements 
 	}
 
 	@Override
-	public GameComponentRef<GameStage> getInitialStage() {
-		return m_initialStage;
+	public Optional<GameComponentRef<GameStage>> getInitialStage() {
+		return Optional.of(m_initialStage);
 	}
 
 	@Override

@@ -136,10 +136,10 @@
 		</rule>		
 	</stage>
 	
-	<stage id="turn">
+	<stage id="turn" doc="turns">
 		<initial-stage ref="x-turn"/>
 		
-		<stage id="x-turn">
+		<stage id="x-turn" doc="x-turn">
 			<rule to-stage="o-turn">
 				<move xmlns="urn:com.tcoffman.ttwb.model/v/1.0">
 					<role> <filter binding="x"/> </role>
@@ -152,7 +152,7 @@
 			</rule>		
 		</stage>
 		
-		<stage id="o-turn">
+		<stage id="o-turn" doc="o-turn">
 			<rule to-stage="x-turn">
 				<move xmlns="urn:com.tcoffman.ttwb.model/v/1.0">
 					<role> <filter binding="o"/> </role>

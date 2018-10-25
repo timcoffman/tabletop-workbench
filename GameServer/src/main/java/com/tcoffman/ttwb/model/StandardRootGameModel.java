@@ -5,6 +5,7 @@ import static com.tcoffman.ttwb.plugin.CorePlugins.CORE;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
@@ -39,7 +40,7 @@ public class StandardRootGameModel extends StandardDocumentableComponent impleme
 	}
 
 	@Override
-	public GameComponentRef<GameStage> getInitialStage() {
+	public Optional<GameComponentRef<GameStage>> getInitialStage() {
 		throw new UnsupportedOperationException("initial stage not supported");
 	}
 

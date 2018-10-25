@@ -57,9 +57,10 @@ public class StandardGameRule extends StandardDocumentableComponent implements G
 			return configure(StandardGameOperationPattern.create().completed(m_operationPatterns::add), initializer);
 		}
 
-		public void setResult(GameComponentRef<GameStage> result) {
+		public Editor setResult(GameComponentRef<GameStage> result) {
 			requireNotDone();
 			m_result = result;
+			return this;
 		}
 
 	}

@@ -130,7 +130,7 @@ public class GameRunnerTest {
 		pd.dump(StandardAnyPlacePattern.create().done());
 		pd.dump(StandardAnyPlacePattern.create().setQuantityPattern(StandardAnyQuantityPattern.create().done()).done());
 
-		modelBundle.getModel().getInitialStage().get().rules().findFirst().get().operationPatterns().forEach((op) -> {
+		modelBundle.getModel().getInitialStage().get().get().rules().findFirst().get().operationPatterns().forEach((op) -> {
 			System.out.println("---");
 			pd.dump(op);
 		});

@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,6 +31,7 @@ import com.tcoffman.ttwb.model.GamePartPrototype;
 import com.tcoffman.ttwb.model.GamePlacePrototype;
 import com.tcoffman.ttwb.model.GamePlaceType;
 import com.tcoffman.ttwb.model.GameRole;
+import com.tcoffman.ttwb.model.GameStage;
 import com.tcoffman.ttwb.model.StandardGameModelBuilder;
 import com.tcoffman.ttwb.model.StandardGamePartPrototype;
 import com.tcoffman.ttwb.model.StandardGameStage;
@@ -49,6 +51,8 @@ import com.tcoffman.ttwb.plugin.PluginName;
 import com.tcoffman.ttwb.plugin.PluginSet;
 import com.tcoffman.ttwb.state.mutation.GameOperation;
 import com.tcoffman.ttwb.state.mutation.ResolvedOperationSet;
+
+import junit.framework.AssertionFailedError;
 
 public class StandardGameStateTest {
 
@@ -86,6 +90,7 @@ public class StandardGameStateTest {
 		when(model.getRequiredPlugins()).thenReturn(Arrays.asList(PLUGIN_NAME));
 		when(model.parts()).thenReturn(Stream.empty());
 		when(model.effectiveRootPrototype()).thenReturn(GameComponentRef.wrap(rootPrototype));
+		when(model.getInitialStage()).thenReturn(Optional.of(GameComponentRef.wrap(mock(GameStage.class))));
 
 		final StandardGameState state = new StandardGameState(model, pluginSet);
 		assertThat(state, notNullValue());
@@ -234,7 +239,8 @@ public class StandardGameStateTest {
 
 	@Test
 	public void canSpecifyInitialStage() throws PluginException {
-		assertThat(m_model.getInitialStage().get(), equalTo(m_prologueStage));
+		final GameComponentRef<GameStage> initialStage = m_model.getInitialStage().orElseThrow(AssertionFailedError::new);
+		assertThat(initialStage.get(), equalTo(m_prologueStage));
 	}
 
 	@Test

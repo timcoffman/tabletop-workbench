@@ -92,9 +92,31 @@
 		</description>
 	</stage>
 	
-	<stage id="turn">
-		<name format="short">Turn</name>
-		<name format="long">Player Turn</name>
+	<stage id="turns">
+		<name format="short">Turns</name>
+		<name format="long">Player Turns</name>
+		<description>
+			Take turns putting <a href="stage#piece">pieces</a> from <a href="prototype#supply">players' supplies</a> onto a empty spaces on <a href="stage#board">the board</a>.
+		</description>
+		
+	</stage>
+	
+	<stage id="x-turn">
+		<name format="short">Turn (X)</name>
+		<name format="long">Player X Turn</name>
+		<description>
+			Put <a href="stage#piece">a piece</a> from <a href="prototype#supply">the supply</a> onto an empty space on <a href="stage#board">the board</a> that does not finish a row of three.
+			Next, start <a href="stage#turn">the next turn</a>.
+			Or
+			Put <a href="stage#piece">a piece</a> from <a href="prototype#supply">the supply</a> onto an empty space on <a href="stage#board">the board</a> that finishes a row of three.
+			Next, the game is <a href="stage#epilogue">finished</a>.
+		</description>
+		
+	</stage>
+	
+	<stage id="o-turn">
+		<name format="short">Turn (O)</name>
+		<name format="long">Player O Turn</name>
 		<description>
 			Put <a href="stage#piece">a piece</a> from <a href="prototype#supply">the supply</a> onto an empty space on <a href="stage#board">the board</a> that does not finish a row of three.
 			Next, start <a href="stage#turn">the next turn</a>.

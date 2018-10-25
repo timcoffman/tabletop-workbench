@@ -69,16 +69,16 @@ public class StateMutationResource extends AbstractStateSubresource {
 			public URI visit(GameStateAddRelationship addRelationship) throws GameComponentBuilderException {
 				final GamePlace source = addRelationship.getSource();
 				final GamePlaceType placeType = source.getPrototype().get().getType().get();
-				return PlacesResource.pathTo(baseUriBuilder()).build(stateBundle().getStateId(), requireId(source.getOwner()), placeType.getDeclaringPlugin(),
-						placeType.getLocalName());
+				return PlacesResource.pathTo(baseUriBuilder()).build(stateBundle().getStateId(), requireId(source.getOwner()),
+						placeType.getDeclaringPlugin().toURI(), placeType.getLocalName());
 			}
 
 			@Override
 			public URI visit(GameStateRemoveRelationship removeRelationship) throws GameComponentBuilderException {
 				final GamePlace subject = removeRelationship.getSource();
 				final GamePlaceType placeType = subject.getPrototype().get().getType().get();
-				return PlacesResource.pathTo(baseUriBuilder()).build(stateBundle().getStateId(), requireId(subject.getOwner()), placeType.getDeclaringPlugin(),
-						placeType.getLocalName());
+				return PlacesResource.pathTo(baseUriBuilder()).build(stateBundle().getStateId(), requireId(subject.getOwner()),
+						placeType.getDeclaringPlugin().toURI(), placeType.getLocalName());
 			}
 
 		});
@@ -99,8 +99,8 @@ public class StateMutationResource extends AbstractStateSubresource {
 			public URI visit(GameStateRemoveRelationship removeRelationship) throws GameComponentBuilderException {
 				final GamePlace subject = removeRelationship.getDestination();
 				final GamePlaceType placeType = subject.getPrototype().get().getType().get();
-				return PlacesResource.pathTo(baseUriBuilder()).build(stateBundle().getStateId(), requireId(subject.getOwner()), placeType.getDeclaringPlugin(),
-						placeType.getLocalName());
+				return PlacesResource.pathTo(baseUriBuilder()).build(stateBundle().getStateId(), requireId(subject.getOwner()),
+						placeType.getDeclaringPlugin().toURI(), placeType.getLocalName());
 			}
 
 		});

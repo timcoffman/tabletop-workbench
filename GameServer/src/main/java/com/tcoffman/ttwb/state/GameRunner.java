@@ -146,7 +146,7 @@ public class GameRunner {
 	}
 
 	private Predicate<GameOperationPattern> matchesMoveSubject(ResolvedMoveSubjectTargetPairs subject) {
-		// check the target quantity here!!
+		// check the subject quantity here!!
 		return (op) -> {
 			final GamePlacePattern subjectPattern = op.getSubjectPlacePattern()
 					.orElseThrow(() -> new IllegalArgumentException("missing subject place pattern"));

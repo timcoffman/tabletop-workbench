@@ -2,6 +2,7 @@ package com.tcoffman.ttwb.web.resource.state;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -181,6 +182,15 @@ public class LogEntriesResource extends AbstractStateSubresource {
 
 	private LogEntryResource createLogEntryResource(long logEntryIndex, GameStateLogEntry logEntry) {
 		return subresource(new LogEntryResource(stateBundle(), logEntryIndex, logEntry));
+	}
+
+	@POST
+	@Path("/mutations")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public List<StateMutationForm> mutations(StateMutationForm stateMutationForm) throws XMLStreamException, UnrecognizedValueException, PluginException {
+		System.out.println(stateMutationForm);
+		return Collections.emptyList();
 	}
 
 }

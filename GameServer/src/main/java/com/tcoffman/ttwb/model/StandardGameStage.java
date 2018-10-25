@@ -4,6 +4,7 @@ import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
@@ -18,6 +19,7 @@ public class StandardGameStage extends StandardDocumentableComponent implements 
 	private final Reference<GameStageContainer> m_owner;
 	private final Collection<GameStage> m_stages = new ArrayList<>();
 	public boolean m_terminal = false;
+	private Optional<GameComponentRef<GameStage>> m_initialStage = Optional.empty();
 
 	private StandardGameStage(GameStageContainer owner) {
 		m_owner = new WeakReference<>(owner);
@@ -31,6 +33,11 @@ public class StandardGameStage extends StandardDocumentableComponent implements 
 	@Override
 	public boolean isTerminal() {
 		return m_terminal;
+	}
+
+	@Override
+	public Optional<GameComponentRef<GameStage>> getInitialStage() {
+		return m_initialStage;
 	}
 
 	@Override
@@ -66,6 +73,12 @@ public class StandardGameStage extends StandardDocumentableComponent implements 
 		public Editor setTerminal(boolean isTerminal) {
 			requireNotDone();
 			m_terminal = isTerminal;
+			return this;
+		}
+
+		public Editor setInitialStage(GameComponentRef<GameStage> initialStage) {
+			requireNotDone();
+			m_initialStage = Optional.of(initialStage);
 			return this;
 		}
 

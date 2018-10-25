@@ -20,7 +20,7 @@ public class GameStateRemoveRelationship extends GameStateRelationshipMutation {
 
 	@Override
 	public void apply(GameState.Mutator stateMutator) {
-		stateMutator.createRelationship(m_relationshipType, m_source, m_destination);
+		stateMutator.destroyRelationship(m_relationshipType, m_source, m_destination);
 	}
 
 	@Override

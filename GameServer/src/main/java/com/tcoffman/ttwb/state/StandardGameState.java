@@ -49,7 +49,7 @@ public class StandardGameState implements GameState {
 	public StandardGameState(GameModel model, PluginSet pluginSet) {
 		m_model = model;
 		m_pluginSet = pluginSet;
-		m_currentStage = m_model.getInitialStage();
+		m_currentStage = m_model.getInitialStage().get();
 
 		final GameComponentRef<GamePartPrototype> rootPrototype = m_model.effectiveRootPrototype();
 		m_partRoot = new StandardGamePart(rootPrototype, Optional.empty());
@@ -240,6 +240,8 @@ public class StandardGameState implements GameState {
 		};
 		log.forwardMutations().forEach((m) -> m.apply(mutator));
 		m_currentStage = log.getForward();
+		while (m_currentStage.get().getInitialStage().isPresent())
+			m_currentStage = m_currentStage.get().getInitialStage().get();
 	}
 
 	private final QueryExecutor m_executor = new QueryExecutor(() -> m_parts.stream());

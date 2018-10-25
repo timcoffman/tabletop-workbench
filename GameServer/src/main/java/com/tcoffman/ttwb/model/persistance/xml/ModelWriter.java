@@ -160,7 +160,7 @@ public class ModelWriter {
 	private void writeInitialStage(Element modelElement) {
 
 		final Element initialStageElement = createAndAppendElement(modelElement, MODEL_ELEMENT_QNAME_INITIAL_STAGE);
-		initialStageElement.setAttribute(MODEL_ATTR_NAME_REF, idForStage(m_model.getInitialStage()));
+		initialStageElement.setAttribute(MODEL_ATTR_NAME_REF, idForStage(m_model.getInitialStage().get()));
 
 	}
 
@@ -322,7 +322,7 @@ public class ModelWriter {
 			@Override
 			public Element visit(GameSingleQuantityPattern pattern) {
 				quantityElement.setAttribute("min", "1");
-				quantityElement.setAttribute("mix", "1");
+				quantityElement.setAttribute("max", "1");
 				return null;
 			}
 		});

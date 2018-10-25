@@ -346,6 +346,12 @@ class ModelParser extends AbstractGameParser {
 
 		}
 
+		private void parseInitialStage(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher)
+				throws GameComponentBuilderException, XMLStreamException {
+			dispatcher.attr(MODEL_ATTR_NAME_STAGE_REF, (id) -> m_editor.setInitialStage(m_modelRefManager.getStageManager().createRef(id)));
+			dispatcher.read();
+		}
+
 		private void parseRule(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher)
 				throws GameComponentBuilderException, XMLStreamException {
 			final Creator<StandardGameRule.Editor> creator = (i) -> m_editor.createRule(CORE, i);
@@ -354,14 +360,6 @@ class ModelParser extends AbstractGameParser {
 				new RuleParser(r).parse(startElement, dispatcher);
 
 			});
-		}
-
-		private void parseInitialStage(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher)
-				throws GameComponentBuilderException, XMLStreamException {
-
-			dispatcher.attr(MODEL_ATTR_NAME_STAGE_REF, (id) -> {
-			});
-			dispatcher.read();
 		}
 
 		private void parseStage(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher)

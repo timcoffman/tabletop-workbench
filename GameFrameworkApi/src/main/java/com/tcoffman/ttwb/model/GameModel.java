@@ -23,8 +23,6 @@ public interface GameModel extends GameStageContainer, GameDocumentableComponent
 
 	Stream<? extends GameRole> roles();
 
-	GameComponentRef<GameStage> getInitialStage();
-
 	boolean isAbstract();
 
 	GameComponentRef<GamePartPrototype> effectiveRootPrototype();
