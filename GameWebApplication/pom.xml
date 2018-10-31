@@ -25,6 +25,43 @@
 				</configuration>
 			</plugin>
 
+			<!--
+			<plugin>
+				<groupId>com.github.kongchen</groupId>
+				<artifactId>swagger-maven-plugin</artifactId>
+				<version>3.1.7</version>
+				<executions>
+					<execution>
+						<phase>compile</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<apiSources>
+						<apiSource>
+							<springmvc>false</springmvc>
+							<locations>
+								<location>com.tcoffman.ttwb.web.resource.model</location>
+								<location>com.tcoffman.ttwb.web.resource.state</location>
+							</locations>
+							<schemes>
+								<scheme>http</scheme>
+							</schemes>
+							<host>localhost:9900</host>
+							<basePath>/tabletop-web/api</basePath>
+							<info>
+								<title>Tabletop Workbench</title>
+								<version>v0.1</version>
+							</info>
+							<swaggerDirectory>${basedir}/generated/swagger-ui</swaggerDirectory>
+						</apiSource>
+					</apiSources>
+				</configuration>
+			</plugin>
+			-->
+			<!--
 			<plugin>
 				<groupId>io.swagger</groupId>
 				<artifactId>swagger-codegen-maven-plugin</artifactId>
@@ -45,6 +82,7 @@
 					</execution>
 				</executions>
 			</plugin>
+			-->
 		</plugins>
 	</build>
 	<dependencies>
@@ -128,15 +166,17 @@
 		<dependency>
 			<groupId>io.swagger</groupId>
 			<artifactId>swagger-jersey2-jaxrs</artifactId>
-			<version>1.5.13</version>
+			<version>1.5.21</version>
 		</dependency>
 
+		<!--
 		<dependency>
 			<groupId>io.swagger</groupId>
 			<artifactId>swagger-codegen-cli</artifactId>
-			<version>2.2.2</version>
+			<version>2.2.1</version>
 		</dependency>
-
+		-->
+		
 		<!-- java.lang.LinkageError: loader constraint violation: when resolving 
 			method "org.slf4j.impl.StaticLoggerBinder.getLoggerFactory()Lorg/slf4j/ILoggerFactory;" 
 			the class loader (instance of org/apache/catalina/loader/WebappClassLoader) 

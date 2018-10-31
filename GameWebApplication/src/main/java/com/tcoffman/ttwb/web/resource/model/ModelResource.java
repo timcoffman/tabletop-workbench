@@ -7,10 +7,14 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 import com.tcoffman.ttwb.web.GameModelFileRepository;
+import com.tcoffman.ttwb.web.resource.ResourceMetaData.Builder;
 import com.tcoffman.ttwb.web.resource.model.plugin.ModelPluginsResource;
+
+import io.swagger.annotations.ApiOperation;
 
 public class ModelResource extends AbstractModelSubresource {
 
@@ -18,14 +22,21 @@ public class ModelResource extends AbstractModelSubresource {
 		super(modelBundle);
 	}
 
+	@ApiOperation("Retrieve a Game Model")
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public ModelResource get() {
+	@JsonIgnore
+	public ModelResource getModel() {
 		return this;
 	}
 
 	public URI getResource() {
 		return ModelsResource.pathTo(baseUriBuilder()).build(modelBundle().getModelId());
+	}
+
+	@Override
+	protected Builder metaDataBuilder() {
+		return super.metaDataBuilder().identifiedBy(modelBundle().getModelId()).labelled(getLabel());
 	}
 
 	public String getLabel() {

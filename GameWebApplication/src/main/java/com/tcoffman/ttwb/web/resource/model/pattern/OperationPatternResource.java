@@ -5,6 +5,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tcoffman.ttwb.model.pattern.operation.GameOperationPattern;
 import com.tcoffman.ttwb.model.pattern.place.GamePlacePattern;
 import com.tcoffman.ttwb.model.pattern.quantity.GameQuantityPattern;
@@ -22,7 +23,8 @@ public class OperationPatternResource extends AbstractModelSubresource {
 
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public OperationPatternResource get() {
+	@JsonIgnore
+	public OperationPatternResource getPatternResource() {
 		return this;
 	}
 

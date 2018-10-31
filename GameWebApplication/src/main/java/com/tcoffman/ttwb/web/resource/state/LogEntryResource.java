@@ -8,6 +8,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.state.mutation.GameStateLogEntry;
 import com.tcoffman.ttwb.state.mutation.GameStateMutation;
@@ -27,7 +28,8 @@ public class LogEntryResource extends AbstractStateSubresource {
 
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public LogEntryResource get() {
+	@JsonIgnore
+	public LogEntryResource getLogEntry() {
 		return this;
 	}
 

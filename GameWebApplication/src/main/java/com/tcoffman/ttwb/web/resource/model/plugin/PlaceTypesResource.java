@@ -1,9 +1,15 @@
 package com.tcoffman.ttwb.web.resource.model.plugin;
 
-import java.net.URI;
+import static java.util.stream.Collectors.toList;
 
+import java.net.URI;
+import java.util.Collection;
+
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
 
 import com.tcoffman.ttwb.model.GamePlaceType;
@@ -11,6 +17,8 @@ import com.tcoffman.ttwb.plugin.ModelPlugin;
 import com.tcoffman.ttwb.plugin.PluginException;
 import com.tcoffman.ttwb.web.GameModelFileRepository;
 import com.tcoffman.ttwb.web.resource.model.AbstractModelSubresource;
+
+import io.swagger.annotations.ApiOperation;
 
 public class PlaceTypesResource extends AbstractModelSubresource {
 
@@ -26,8 +34,21 @@ public class PlaceTypesResource extends AbstractModelSubresource {
 	}
 
 	public URI getResource() {
-		return ModelPluginsResource.pathTo(baseUriBuilder()).path(ModelPluginResource.class, "getPlaceTypes")
-				.build(modelBundle().getModelId(), m_plugin.getName());
+		return ModelPluginsResource.pathTo(baseUriBuilder()).path(ModelPluginResource.class, "getPlaceTypes").build(modelBundle().getModelId(),
+				m_plugin.getName());
+	}
+
+	@ApiOperation("List of all Place Types")
+	@GET
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public Collection<PlaceTypeResource> getPlaceTypes() {
+		return m_plugin.getPlaceTypeLocalNames().stream().map(ln -> {
+			try {
+				return getPlaceType(ln);
+			} catch (final PluginException ex) {
+				return null;
+			}
+		}).filter(p -> null != p).collect(toList());
 	}
 
 	public String getLabel() {

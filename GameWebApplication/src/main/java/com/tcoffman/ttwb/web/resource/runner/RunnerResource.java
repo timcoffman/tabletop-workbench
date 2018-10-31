@@ -8,9 +8,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.xml.stream.XMLStreamException;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 import com.tcoffman.ttwb.web.GameStateFileRepository;
+import com.tcoffman.ttwb.web.resource.ResourceMetaData.Builder;
 import com.tcoffman.ttwb.web.resource.state.AbstractStateSubresource;
 import com.tcoffman.ttwb.web.resource.state.LogEntriesResource;
 import com.tcoffman.ttwb.web.resource.state.ParticipantsResource;
@@ -19,20 +21,29 @@ import com.tcoffman.ttwb.web.resource.state.RelationshipsResource;
 import com.tcoffman.ttwb.web.resource.state.StatesResource;
 import com.tcoffman.ttwb.web.resource.state.pattern.OperationPatternSetsResource;
 
+import io.swagger.annotations.ApiOperation;
+
 public class RunnerResource extends AbstractStateSubresource {
 
 	public RunnerResource(GameStateFileRepository.Bundle stateBundle) {
 		super(stateBundle);
 	}
 
+	@ApiOperation("Retrieve a Runner")
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public RunnerResource get() {
+	@JsonIgnore
+	public RunnerResource getRunner() {
 		return this;
 	}
 
 	public URI getResource() {
 		return StatesResource.pathTo(baseUriBuilder()).build(stateBundle().getStateId());
+	}
+
+	@Override
+	protected Builder metaDataBuilder() {
+		return super.metaDataBuilder().identifiedBy(stateBundle().getModelId() + ":" + stateBundle().getStateId()).labelled(getLabel());
 	}
 
 	public String getLabel() {

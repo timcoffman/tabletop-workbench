@@ -17,6 +17,8 @@ import com.tcoffman.ttwb.model.GameStageContainer;
 import com.tcoffman.ttwb.web.GameModelFileRepository;
 import com.tcoffman.ttwb.web.UnrecognizedValueException;
 
+import io.swagger.annotations.ApiOperation;
+
 public class StagesResource extends AbstractModelSubresource {
 
 	private final GameStageContainer m_container;
@@ -30,10 +32,11 @@ public class StagesResource extends AbstractModelSubresource {
 		return ModelsResource.pathTo(uriBuilder).path(ModelResource.class, "getStages").path(StagesResource.class, "getStage");
 	}
 
+	@ApiOperation("List of Game Stages")
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public List<StageResource> getStages() {
-		final List<StageResource> stages = new ArrayList<StageResource>();
+		final List<StageResource> stages = new ArrayList<>();
 		for (final Iterator<? extends GameStage> i = m_container.stages().iterator(); i.hasNext();)
 			try {
 				final GameStage stage = i.next();

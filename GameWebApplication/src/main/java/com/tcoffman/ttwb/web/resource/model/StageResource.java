@@ -7,10 +7,13 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 import com.tcoffman.ttwb.model.GameStage;
 import com.tcoffman.ttwb.web.GameModelFileRepository;
+
+import io.swagger.annotations.ApiOperation;
 
 public class StageResource extends AbstractModelSubresource {
 
@@ -23,9 +26,11 @@ public class StageResource extends AbstractModelSubresource {
 		m_stage = stage;
 	}
 
+	@ApiOperation("Retrieve a Stage")
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public StageResource get() {
+	@JsonIgnore
+	public StageResource getStage() {
 		return this;
 	}
 

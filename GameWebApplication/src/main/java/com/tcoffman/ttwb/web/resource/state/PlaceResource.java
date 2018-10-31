@@ -6,6 +6,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 import com.tcoffman.ttwb.model.GamePlaceType;
 import com.tcoffman.ttwb.state.GamePart;
@@ -28,7 +29,8 @@ public class PlaceResource extends AbstractStateSubresource {
 
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public PlaceResource get() {
+	@JsonIgnore
+	public PlaceResource getPlace() {
 		return this;
 	}
 

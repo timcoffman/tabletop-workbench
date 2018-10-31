@@ -15,6 +15,8 @@ import com.tcoffman.ttwb.model.GameRule;
 import com.tcoffman.ttwb.model.GameStage;
 import com.tcoffman.ttwb.web.GameModelFileRepository;
 
+import io.swagger.annotations.ApiOperation;
+
 public class RulesResource extends AbstractModelSubresource {
 
 	private final String m_stageId;
@@ -26,10 +28,11 @@ public class RulesResource extends AbstractModelSubresource {
 		m_stage = stage;
 	}
 
+	@ApiOperation("List of Game Rules")
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public List<RuleResource> getRules() {
-		final List<RuleResource> rules = new ArrayList<RuleResource>();
+		final List<RuleResource> rules = new ArrayList<>();
 		foreachWithIndex(m_stage.rules(), (i, r) -> rules.add(createRuleResource(i, r)));
 		return rules;
 	}

@@ -22,6 +22,13 @@ import com.tcoffman.ttwb.web.GameStateFileRepository;
 import com.tcoffman.ttwb.web.GameStateFileRepository.Bundle;
 import com.tcoffman.ttwb.web.resource.AbstractRootResource;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Info;
+import io.swagger.annotations.SwaggerDefinition;
+
+@Api("Runners")
+@SwaggerDefinition(info = @Info(description = "Access to view and modify running game states", version = "1.0.0", title = "Game Runners API"))
 @Path("/runners")
 public class RunnersResource extends AbstractRootResource {
 
@@ -33,6 +40,7 @@ public class RunnersResource extends AbstractRootResource {
 		return uriBuilder.path(RunnersResource.class).path(RunnersResource.class, "getRunner");
 	}
 
+	@ApiOperation("List of all runners")
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public List<RunnerResource> getRunners() {
@@ -64,7 +72,7 @@ public class RunnersResource extends AbstractRootResource {
 			return m_state;
 		}
 
-		public void setModel(String state) {
+		public void setState(String state) {
 			m_state = state;
 		}
 

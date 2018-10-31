@@ -4,6 +4,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tcoffman.ttwb.model.pattern.part.GameAnyPartPattern;
 import com.tcoffman.ttwb.model.pattern.part.GameFilterPartPattern;
 import com.tcoffman.ttwb.model.pattern.part.GameIntersectionPartPattern;
@@ -24,7 +25,8 @@ public abstract class PartPatternResource<T extends GamePartPattern> extends Abs
 
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public PartPatternResource<T> get() {
+	@JsonIgnore
+	public PartPatternResource<T> getPartPattern() {
 		return this;
 	}
 

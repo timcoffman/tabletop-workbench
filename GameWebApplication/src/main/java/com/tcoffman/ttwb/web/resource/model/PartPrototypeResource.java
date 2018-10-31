@@ -7,10 +7,13 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 import com.tcoffman.ttwb.model.GamePartPrototype;
 import com.tcoffman.ttwb.web.GameModelFileRepository;
+
+import io.swagger.annotations.ApiOperation;
 
 public class PartPrototypeResource extends AbstractModelSubresource {
 
@@ -23,9 +26,11 @@ public class PartPrototypeResource extends AbstractModelSubresource {
 		m_prototype = prototype;
 	}
 
+	@ApiOperation("Retrieve a Part Prototype")
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public PartPrototypeResource get() {
+	@JsonIgnore
+	public PartPrototypeResource getPartPrototype() {
 		return this;
 	}
 

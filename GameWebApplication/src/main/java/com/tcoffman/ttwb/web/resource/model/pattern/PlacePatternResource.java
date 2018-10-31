@@ -4,6 +4,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tcoffman.ttwb.model.pattern.part.GamePartPattern;
 import com.tcoffman.ttwb.model.pattern.place.GameAnyPlacePattern;
 import com.tcoffman.ttwb.model.pattern.place.GameFilterPlacePattern;
@@ -25,7 +26,8 @@ public abstract class PlacePatternResource<T extends GamePlacePattern> extends A
 
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public PlacePatternResource<T> get() {
+	@JsonIgnore
+	public PlacePatternResource<T> getPlacePattern() {
 		return this;
 	}
 

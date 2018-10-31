@@ -8,6 +8,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 import com.tcoffman.ttwb.model.pattern.operation.GameOperationPattern;
@@ -29,7 +30,8 @@ public class OperationPatternSetResource extends AbstractStateSubresource {
 
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public OperationPatternSetResource get() {
+	@JsonIgnore
+	public OperationPatternSetResource getOperationPatternSet() {
 		return this;
 	}
 

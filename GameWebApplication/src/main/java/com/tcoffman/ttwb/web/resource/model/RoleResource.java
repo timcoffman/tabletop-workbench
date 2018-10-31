@@ -6,9 +6,12 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 import com.tcoffman.ttwb.model.GameRole;
 import com.tcoffman.ttwb.web.GameModelFileRepository;
+
+import io.swagger.annotations.ApiOperation;
 
 public class RoleResource extends AbstractModelSubresource {
 
@@ -21,9 +24,11 @@ public class RoleResource extends AbstractModelSubresource {
 		m_role = role;
 	}
 
+	@ApiOperation("Retrieve a Role")
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public RoleResource get() {
+	@JsonIgnore
+	public RoleResource getRole() {
 		return this;
 	}
 

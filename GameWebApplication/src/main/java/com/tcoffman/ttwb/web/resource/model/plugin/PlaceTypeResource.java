@@ -6,6 +6,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tcoffman.ttwb.component.persistence.GameModelRepository;
 import com.tcoffman.ttwb.model.GamePlaceType;
 import com.tcoffman.ttwb.web.resource.model.AbstractModelSubresource;
@@ -21,7 +22,8 @@ public class PlaceTypeResource extends AbstractModelSubresource {
 
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public PlaceTypeResource get() {
+	@JsonIgnore
+	public PlaceTypeResource getPlaceType() {
 		return this;
 	}
 

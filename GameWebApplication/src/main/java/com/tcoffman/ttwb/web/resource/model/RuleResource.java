@@ -9,6 +9,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 import com.tcoffman.ttwb.model.GameRule;
@@ -16,6 +17,8 @@ import com.tcoffman.ttwb.model.GameStage;
 import com.tcoffman.ttwb.model.pattern.operation.GameOperationPattern;
 import com.tcoffman.ttwb.web.GameModelFileRepository;
 import com.tcoffman.ttwb.web.resource.model.pattern.OperationPatternResource;
+
+import io.swagger.annotations.ApiOperation;
 
 public class RuleResource extends AbstractModelSubresource {
 
@@ -32,9 +35,11 @@ public class RuleResource extends AbstractModelSubresource {
 		m_rule = rule;
 	}
 
+	@ApiOperation("Retrieve a Game Rule")
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public RuleResource get() {
+	@JsonIgnore
+	public RuleResource getRule() {
 		return this;
 	}
 
