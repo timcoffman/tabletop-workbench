@@ -144,6 +144,10 @@
 		<dependency>
 			<groupId>io.swagger</groupId>
 			<artifactId>swagger-jersey2-jaxrs</artifactId>
+<<<<<<< HEAD
+=======
+			<version>1.5.21</version>
+>>>>>>> dfa05573edc8209b3b75475353c18094affb6444
 		</dependency>
 
 		<!--

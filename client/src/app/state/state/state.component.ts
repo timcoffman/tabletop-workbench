@@ -1,10 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable, BehaviorSubject } from 'rxjs';
+<<<<<<< HEAD
 import { StateResource, PlaceResource } from 'src/app/api/models';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import { StatesService } from 'src/app/api/services';
 import { switchMap, finalize } from 'rxjs/operators';
 import * as shape from 'd3-shape';
+=======
+import { StateResource } from 'src/app/api/models';
+import { ActivatedRoute, Router, ParamMap } from '@angular/router';
+import { StatesService } from 'src/app/api/services';
+import { switchMap, finalize } from 'rxjs/operators';
+>>>>>>> dfa05573edc8209b3b75475353c18094affb6444
 
 @Component({
   selector: 'app-state',
@@ -16,6 +23,7 @@ export class StateComponent implements OnInit {
   public loading = false;
   public state: StateResource ;
 
+<<<<<<< HEAD
   graphView: any[] = [ 500, 500 ];
   graphCurve: any = shape.curveLinear ;
   graphColorScheme: any = {
@@ -23,6 +31,8 @@ export class StateComponent implements OnInit {
   };
   graphShowLegend = false ;
   graphOrientation = 'LR' ;
+=======
+>>>>>>> dfa05573edc8209b3b75475353c18094affb6444
 
   constructor(
     private route: ActivatedRoute,
@@ -43,6 +53,7 @@ export class StateComponent implements OnInit {
       ;
   }
 
+<<<<<<< HEAD
   relationshipsHavingSource(place: PlaceResource) {
     const placeDesc = this.parsePlaceUrl(place.resource) ;
     const matchPlace = placeDesc.ownerPartId + '|' + placeDesc.declaringPluginUrl + '/' + placeDesc.localName ;
@@ -85,4 +96,6 @@ export class StateComponent implements OnInit {
       { source: 'y', target: 'z', label: 'c' }
     ] ;
   }
+=======
+>>>>>>> dfa05573edc8209b3b75475353c18094affb6444
 }

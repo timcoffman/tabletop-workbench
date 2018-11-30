@@ -72,6 +72,7 @@
       <mat-panel-description>
         this model defines {{model.partPrototypes.partPrototypes.length}} part prototypes
       </mat-panel-description>
+<<<<<<< HEAD
     </mat-expansion-panel-header>
 
     <mat-chip-list *ngIf="model.partPrototypes.partPrototypes.length">
@@ -79,12 +80,25 @@
       <mat-chip *ngFor="let partPrototype of model.partPrototypes.partPrototypes">{{partPrototype.label}}</mat-chip>
     </mat-chip-list>
     <p *ngFor="let partPrototype of model.partPrototypes.partPrototypes">
+=======
+    </mat-expansion-panel-header>PPR
+
+    <mat-chip-list *ngIf="model.partPrototypes.partPrototypes.length">
+        Part Prototypes:
+        <mat-chip *ngFor="let partPrototype of model.partPrototypes.partPrototypes">{{partPrototype.label}}</mat-chip>
+      </mat-chip-list>
+      <p *ngFor="let partPrototype of model.partPrototypes.partPrototypes">
+>>>>>>> dfa05573edc8209b3b75475353c18094affb6444
       <mat-expansion-panel>
         <mat-expansion-panel-header>
           <mat-panel-title>
             {{partPrototype.label}}
             <ng-container *ngIf="partPrototype.extends">
+<<<<<<< HEAD
               <ng-container *ngTemplateOutlet="partPrototypeParentRef;context:partPrototype"></ng-container>
+=======
+              &larr; {{partPrototype.extends}}
+>>>>>>> dfa05573edc8209b3b75475353c18094affb6444
             </ng-container>
           </mat-panel-title>
           <mat-panel-description>
@@ -98,14 +112,22 @@
           </mat-chip-list>
     
       </mat-expansion-panel>
+<<<<<<< HEAD
     </p>
+=======
+      </p>
+>>>>>>> dfa05573edc8209b3b75475353c18094affb6444
         
 
 
   </mat-expansion-panel>
   </p>
 </div>
+<<<<<<< HEAD
 
 <ng-template #partPrototypeParentRef let-extends="extends">
   &larr; {{idFromUrl(extends)}}
 </ng-template>
+=======
+  
+>>>>>>> dfa05573edc8209b3b75475353c18094affb6444

@@ -9,6 +9,8 @@ import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
 import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Request;
@@ -35,6 +37,7 @@ import com.tcoffman.ttwb.state.persistence.ModelProvider;
 import com.tcoffman.ttwb.web.GameModelFileRepository;
 import com.tcoffman.ttwb.web.GameStateFileRepository;
 import com.tcoffman.ttwb.web.UnrecognizedValueException;
+import com.tcoffman.ttwb.web.resource.ResourceMetaData.Builder;
 
 public abstract class AbstractResource {
 
@@ -68,6 +71,16 @@ public abstract class AbstractResource {
 
 	protected UriBuilder baseUriBuilder() {
 		return m_uriInfo.getBaseUriBuilder();
+	}
+
+	@GET
+	@Path("/meta")
+	public final ResourceMetaData getMeta() {
+		return metaDataBuilder().build();
+	}
+
+	protected Builder metaDataBuilder() {
+		return ResourceMetaData.forResource(this);
 	}
 
 	protected <T extends AbstractResource> T subresource(T resource) {

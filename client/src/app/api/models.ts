@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 export { AppInfo } from './models/app-info';
 export { ResourceMetaData } from './models/resource-meta-data';
+=======
+>>>>>>> dfa05573edc8209b3b75475353c18094affb6444
 export { ModelPluginResource } from './models/model-plugin-resource';
 export { ModelPluginsResource } from './models/model-plugins-resource';
 export { ModelResource } from './models/model-resource';
@@ -16,6 +19,10 @@ export { PlaceTypeResource } from './models/place-type-resource';
 export { PlaceTypesResource } from './models/place-types-resource';
 export { RelationshipTypeResource } from './models/relationship-type-resource';
 export { RelationshipTypesResource } from './models/relationship-types-resource';
+<<<<<<< HEAD
+=======
+export { ResourceMetaData } from './models/resource-meta-data';
+>>>>>>> dfa05573edc8209b3b75475353c18094affb6444
 export { RoleResource } from './models/role-resource';
 export { RolesResource } from './models/roles-resource';
 export { RuleResource } from './models/rule-resource';

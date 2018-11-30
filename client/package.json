@@ -22,8 +22,11 @@
     "@angular/platform-browser": "~7.0.0",
     "@angular/platform-browser-dynamic": "~7.0.0",
     "@angular/router": "~7.0.0",
+<<<<<<< HEAD
     "@swimlane/ngx-charts": "^10.0.0",
     "@swimlane/ngx-graph": "^5.1.1",
+=======
+>>>>>>> dfa05573edc8209b3b75475353c18094affb6444
     "core-js": "^2.5.4",
     "hammerjs": "^2.0.8",
     "rxjs": "~6.3.3",

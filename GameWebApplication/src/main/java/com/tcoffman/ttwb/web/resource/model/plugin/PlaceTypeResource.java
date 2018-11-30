@@ -7,7 +7,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+<<<<<<< HEAD
 import com.tcoffman.ttwb.model.persistance.GameModelRepository;
+=======
+import com.tcoffman.ttwb.component.persistence.GameModelRepository;
+>>>>>>> dfa05573edc8209b3b75475353c18094affb6444
 import com.tcoffman.ttwb.model.GamePlaceType;
 import com.tcoffman.ttwb.web.resource.model.AbstractModelSubresource;
 

@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 import com.tcoffman.ttwb.web.GameStateFileRepository;
+import com.tcoffman.ttwb.web.resource.ResourceMetaData.Builder;
 import com.tcoffman.ttwb.web.resource.state.AbstractStateSubresource;
 import com.tcoffman.ttwb.web.resource.state.LogEntriesResource;
 import com.tcoffman.ttwb.web.resource.state.ParticipantsResource;
@@ -37,6 +38,11 @@ public class RunnerResource extends AbstractStateSubresource {
 
 	public URI getResource() {
 		return StatesResource.pathTo(baseUriBuilder()).build(stateBundle().getStateId());
+	}
+
+	@Override
+	protected Builder metaDataBuilder() {
+		return super.metaDataBuilder().identifiedBy(stateBundle().getModelId() + ":" + stateBundle().getStateId()).labelled(getLabel());
 	}
 
 	public String getLabel() {

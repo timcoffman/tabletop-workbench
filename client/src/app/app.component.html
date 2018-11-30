@@ -1,5 +1,6 @@
 
 
+<<<<<<< HEAD
 <div>
 
   <nav mat-tab-nav-bar mat-align-tab="center">
@@ -11,5 +12,14 @@
   </nav>
 
 </div>
+=======
+<nav mat-tab-nav-bar mat-align-tabs="center">
+  <a mat-tab-link *ngFor="let link of navLinks"
+    [routerLink]="link.path"
+    routerLinkActive #rla="routerLinkActive"
+    [active]="rla.isActive"
+    ><img *ngIf="link.image" src="assets/{{link.image}}">{{link.label}}</a>
+</nav>
+>>>>>>> dfa05573edc8209b3b75475353c18094affb6444
 
 <router-outlet></router-outlet>

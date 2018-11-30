@@ -23,6 +23,7 @@ import com.tcoffman.ttwb.state.GamePart;
 import com.tcoffman.ttwb.state.GamePlace;
 import com.tcoffman.ttwb.web.GameStateFileRepository;
 import com.tcoffman.ttwb.web.UnrecognizedValueException;
+import com.tcoffman.ttwb.web.resource.ResourceMetaData.Builder;
 import com.tcoffman.ttwb.web.resource.model.ModelsResource;
 import com.tcoffman.ttwb.web.resource.model.StagesResource;
 import com.tcoffman.ttwb.web.resource.state.pattern.OperationPatternSetsResource;
@@ -32,6 +33,11 @@ public class StateResource extends AbstractStateSubresource {
 
 	public StateResource(GameStateFileRepository.Bundle stateBundle) {
 		super(stateBundle);
+	}
+
+	@Override
+	protected Builder metaDataBuilder() {
+		return super.metaDataBuilder().identifiedBy(stateBundle().getStateId()).labelled(getLabel());
 	}
 
 	@GET
