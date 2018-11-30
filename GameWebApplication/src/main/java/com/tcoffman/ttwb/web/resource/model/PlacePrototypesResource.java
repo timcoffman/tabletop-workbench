@@ -20,6 +20,8 @@ import com.tcoffman.ttwb.plugin.PluginException;
 import com.tcoffman.ttwb.plugin.PluginName;
 import com.tcoffman.ttwb.web.GameModelFileRepository;
 
+import io.swagger.annotations.ApiOperation;
+
 public class PlacePrototypesResource extends AbstractModelSubresource {
 
 	private final String m_partPrototypeId;
@@ -35,6 +37,7 @@ public class PlacePrototypesResource extends AbstractModelSubresource {
 		return ModelsResource.pathTo(uriBuilder).path(ModelResource.class, "getPartPrototypes").path(PlacePrototypesResource.class, "getPlacePrototype");
 	}
 
+	@ApiOperation("List of Place Prototypes")
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public List<PlacePrototypeResource> getPlacePrototypes() {

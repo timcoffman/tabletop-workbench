@@ -1,0 +1,36 @@
+
+
+<div class="mixed-tab-bar">
+  <nav mat-tab-nav-bar mat-align-tab="center">
+    <a mat-tab-link *ngFor="let link of navLinks"
+      [routerLink]="link.path"
+      routerLinkActive #rla="routerLinkActive"
+      [active]="rla.isActive"
+      > <img *ngIf="link.image" src="assets/{{link.image}}">{{link.label}}</a>
+  </nav>
+  <div class="general-tabs">
+    <div>
+      <span *ngIf="null == (engineInfo | async)" title="Disconnected">
+        <button mat-raised-button mat-small active="false">
+          <mat-icon>not_interested</mat-icon>
+          Start
+        </button>
+      </span>
+      <span *ngIf="(engineInfo | async)?.status === true" title="Running">
+        <button mat-raised-button mat-small class="stop-button" (click)="stopEngine()">
+          <mat-icon>stop</mat-icon>
+          Stop
+        </button>
+      </span>
+      <span *ngIf="(engineInfo | async)?.status === false" title="Stopped">
+        <button mat-raised-button mat-small class="start-button" (click)="startEngine()">
+          <mat-icon>play_circle_outline</mat-icon>
+          Start
+        </button>
+      </span>
+    </div>
+  </div>
+
+</div>
+
+<router-outlet></router-outlet>

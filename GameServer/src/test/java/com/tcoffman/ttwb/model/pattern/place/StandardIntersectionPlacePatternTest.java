@@ -26,6 +26,7 @@ import com.tcoffman.ttwb.model.GameRole;
 import com.tcoffman.ttwb.model.pattern.part.GamePartPattern;
 import com.tcoffman.ttwb.state.GamePart;
 import com.tcoffman.ttwb.state.GamePlace;
+import com.tcoffman.ttwb.state.PartStreamQueryExecutor;
 import com.tcoffman.ttwb.state.QueryExecutor;
 
 public class StandardIntersectionPlacePatternTest {
@@ -121,7 +122,7 @@ public class StandardIntersectionPlacePatternTest {
 		when(m_matchesPrototypeBPattern.matches()).thenReturn((p) -> true);
 		when(m_matchesPrototypeBPattern.matchesParts()).thenReturn((p) -> p.getPrototype().get() == m_prototypeB);
 
-		m_queryExecutor = new QueryExecutor(() -> Stream.of(m_partA, m_partB));
+		m_queryExecutor = new PartStreamQueryExecutor(() -> Stream.of(m_partA, m_partB));
 	}
 
 	@Rule

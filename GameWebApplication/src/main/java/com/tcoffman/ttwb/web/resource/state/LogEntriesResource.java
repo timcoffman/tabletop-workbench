@@ -125,21 +125,15 @@ public class LogEntriesResource extends AbstractStateSubresource {
 	public LogEntryResource mutate(StateMutationForm stateMutationForm) throws XMLStreamException, UnrecognizedValueException, PluginException {
 
 		final GameRunner runner = new GameRunner(stateBundle().getState());
-		GameStateLogEntry logEntry;
-		if (null != stateMutationForm.getResult()) {
-			final StandardGameOperationSet operationSet = createOperationSet(stateMutationForm);
+		final StandardGameOperationSet operationSet = createOperationSet(stateMutationForm);
 
-			final ResolvedOperationSet resolvedOperationSet = runner.resolve(operationSet);
-			System.out.println(resolvedOperationSet);
+		final ResolvedOperationSet resolvedOperationSet = runner.resolve(operationSet);
+		System.out.println(resolvedOperationSet);
 
-			logEntry = runner.advance(resolvedOperationSet);
-		} else {
-			final Optional<GameStateLogEntry> autoLogEntry = runner.autoAdvance();
-			if (!autoLogEntry.isPresent())
-				return null;
-			logEntry = autoLogEntry.get();
-		}
+		final GameStateLogEntry logEntry = runner.advance(resolvedOperationSet);
+		runner.autoRun();
 		final long logEntryIndex = -1;
+
 		stateBundle().store(this::getModelProvider);
 		return createLogEntryResource(logEntryIndex, logEntry);
 	}

@@ -4,6 +4,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tcoffman.ttwb.model.pattern.quantity.GameAnyQuantityPattern;
 import com.tcoffman.ttwb.model.pattern.quantity.GameQuantityPattern;
 import com.tcoffman.ttwb.model.pattern.quantity.GameRangeQuantityPattern;
@@ -22,7 +23,8 @@ public class QuantityPatternResource extends AbstractModelSubresource {
 
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public QuantityPatternResource get() {
+	@JsonIgnore
+	public QuantityPatternResource getQuantityPattern() {
 		return this;
 	}
 

@@ -6,6 +6,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.model.GamePlaceType;
 import com.tcoffman.ttwb.state.GamePlace;
@@ -34,7 +35,8 @@ public class StateMutationResource extends AbstractStateSubresource {
 
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public StateMutationResource get() {
+	@JsonIgnore
+	public StateMutationResource getStateMutation() {
 		return this;
 	}
 

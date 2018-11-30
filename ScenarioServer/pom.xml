@@ -1,0 +1,61 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.tcoffman</groupId>
+    <artifactId>tabletop-workbench-pom</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <relativePath>../TabletopWorkbenchPom/pom.xml</relativePath>
+  </parent>
+  <artifactId>game-scenario-server</artifactId>
+  <packaging>jar</packaging>
+  <name>ScenarioServer</name>
+  
+  <properties>
+  	<jgraph.version>1.2.0</jgraph.version>
+  </properties>
+  
+  <dependencies>
+  	<dependency>
+  		<groupId>com.tcoffman</groupId>
+  		<artifactId>game-framework-api</artifactId>
+  		<version>${project.version}</version>
+  	</dependency>
+
+  	<dependency>
+  		<groupId>com.tcoffman</groupId>
+  		<artifactId>game-remote-repository</artifactId>
+  		<version>${project.version}</version>
+  	</dependency>
+
+	<dependency>
+		<groupId>org.jgrapht</groupId>
+		<artifactId>jgrapht-core</artifactId>
+		<version>${jgraph.version}</version>
+	</dependency>
+
+	<dependency>
+		<groupId>org.jgrapht</groupId>
+		<artifactId>jgrapht-ext</artifactId>
+		<version>${jgraph.version}</version>
+	</dependency>
+
+	<dependency>
+		<groupId>org.jdbi</groupId>
+		<artifactId>jdbi3-core</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>org.jdbi</groupId>
+		<artifactId>jdbi3-sqlobject</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>org.jdbi</groupId>
+		<artifactId>jdbi3-postgres</artifactId>
+	</dependency>
+	
+	<dependency>
+		<groupId>org.postgresql</groupId>
+		<artifactId>postgresql</artifactId>
+	</dependency>
+  </dependencies>
+</project>

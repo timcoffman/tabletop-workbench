@@ -2,6 +2,7 @@ package com.tcoffman.ttwb.state;
 
 import static com.tcoffman.ttwb.core.Core.TOKEN_SUBJECT;
 import static com.tcoffman.ttwb.plugin.CorePlugins.CORE;
+import static java.util.Collections.emptyList;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -306,6 +307,25 @@ public class GameRunner {
 		m_state.mutate(log);
 
 		return log;
+	}
+
+	public List<GameStateLogEntry> autoRun() throws GameComponentBuilderException {
+		return autoRun(AutomaticResolutionStrategy::new);
+	}
+
+	public List<GameStateLogEntry> autoRun(Function<GameState, ResolutionStrategy> strategyFactory) throws GameComponentBuilderException {
+		Optional<GameStateLogEntry> logEntry = autoAdvance(strategyFactory);
+		if (!logEntry.isPresent())
+			return emptyList();
+		final List<GameStateLogEntry> logEntries = new ArrayList<>();
+		int i = 99;
+		while (logEntry.isPresent()) {
+			if (--i == 0)
+				break;
+			logEntries.add(logEntry.get());
+			logEntry = autoAdvance(strategyFactory);
+		}
+		return logEntries;
 	}
 
 	public Optional<GameStateLogEntry> autoAdvance() throws GameComponentBuilderException {

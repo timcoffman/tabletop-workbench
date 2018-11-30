@@ -12,9 +12,9 @@ import javax.xml.transform.TransformerException;
 import org.w3c.dom.Document;
 
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
+import com.tcoffman.ttwb.doc.persistence.DocumentationRefResolver;
 import com.tcoffman.ttwb.component.persistence.xml.StandardGameParser;
 import com.tcoffman.ttwb.doc.StandardModelDocumentation;
-import com.tcoffman.ttwb.doc.persistence.DocumentationRefResolver;
 import com.tcoffman.ttwb.doc.persistence.StandardDocumentationRefManager;
 import com.tcoffman.ttwb.persistence.xml.EventDispatcher;
 

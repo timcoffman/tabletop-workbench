@@ -6,6 +6,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.model.GamePartRelationshipType;
 import com.tcoffman.ttwb.model.GamePlaceType;
@@ -25,7 +26,8 @@ public class RelationshipResource extends AbstractStateSubresource {
 
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public RelationshipResource get() {
+	@JsonIgnore
+	public RelationshipResource getRelationship() {
 		return this;
 	}
 

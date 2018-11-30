@@ -1,0 +1,22 @@
+
+<div class="spinner-container" *ngIf="stateDataSource.loading$ | async">
+  <mat-spinner></mat-spinner>
+</div>
+  
+  <mat-table [dataSource]="stateDataSource" class="mat-elevation-z8">
+  
+    <ng-container matColumnDef="name">
+      <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+      <mat-cell *matCellDef="let stateUrl"><a >{{idFromUrl(stateUrl)}}</a></mat-cell>
+    </ng-container>
+  
+    <ng-container matColumnDef="url">
+      <mat-header-cell *matHeaderCellDef> Url </mat-header-cell>
+      <mat-cell *matCellDef="let stateUrl"> {{stateUrl}} </mat-cell>
+    </ng-container>
+      
+  <mat-header-row *matHeaderRowDef="stateColumnsToDisplay"></mat-header-row>
+  <mat-row *matRowDef="let stateUrl; columns: stateColumnsToDisplay;" [routerLink]="[ idFromUrl(stateUrl) ]"></mat-row>
+  </mat-table>
+  
+  

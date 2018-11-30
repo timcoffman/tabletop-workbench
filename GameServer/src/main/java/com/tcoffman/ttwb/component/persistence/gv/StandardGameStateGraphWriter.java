@@ -21,8 +21,8 @@ import com.tcoffman.ttwb.state.GameAuthorizationManager;
 import com.tcoffman.ttwb.state.GamePart;
 import com.tcoffman.ttwb.state.GamePartRelationship;
 import com.tcoffman.ttwb.state.GameState;
+import com.tcoffman.ttwb.state.persistence.ModelProvider;
 import com.tcoffman.ttwb.state.persistence.StateRefManager;
-import com.tcoffman.ttwb.state.persistence.xml.StandardGameStateParser.ModelProvider;
 
 public class StandardGameStateGraphWriter {
 

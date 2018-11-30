@@ -1,0 +1,139 @@
+
+<div class="spinner-container" *ngIf="loading">
+  <mat-spinner></mat-spinner>
+</div>
+  
+<div *ngIf="!loading && !state">
+    some kind of error
+</div>
+
+<div *ngIf="state">
+    <h3>{{state.label}}: {{idFromUrl(state.stage)}}</h3>
+
+    <p>
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title>Parts</mat-panel-title>
+                <mat-panel-description>
+                    this state contains {{state.parts.parts.length}} parts
+                </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <mat-chip-list *ngIf="state.parts.parts.length">
+                Parts:
+                <mat-chip *ngFor="let partPrototype of state.parts.parts">{{partPrototype.label}}</mat-chip>
+            </mat-chip-list>
+            <p *ngFor="let part of state.parts.parts">
+                <mat-expansion-panel>
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            {{part.label}} [{{idFromUrl(part.prototypeResource)}}]
+                        </mat-panel-title>
+                        <mat-panel-description>
+                            this part has {{part.places.places.length}} places
+                        </mat-panel-description>
+                    </mat-expansion-panel-header>
+
+                    <mat-chip-list *ngIf="part.places.places.length">
+                        Places:
+                        <mat-chip *ngFor="let place of part.places.places">{{place.label}}</mat-chip>
+                    </mat-chip-list>
+
+                    <p *ngFor="let place of part.places.places">
+                        <mat-expansion-panel>
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    {{place.label}} [{{idFromUrl(place.typeResource)}}]
+                                </mat-panel-title>
+                                <mat-panel-description>
+                                    this place is linked to {{relationshipsHavingSource(place).length}} places
+                                    and is linked from {{relationshipsHavingDestination(place).length}} places
+                                </mat-panel-description>
+                            </mat-expansion-panel-header>
+                    
+                            <mat-chip-list *ngIf="relationshipsHavingSource(place).length">
+                                Relationships:
+                                <mat-chip *ngFor="let relationship of relationshipsHavingSource(place)">{{idFromUrl(relationship.type)}}</mat-chip>
+                                <mat-chip *ngFor="let relationship of relationshipsHavingDestination(place)">{{idFromUrl(relationship.type)}}</mat-chip>
+                            </mat-chip-list>
+                            <p *ngFor="let relationship of relationshipsHavingSource(place)">
+                                <mat-expansion-panel>
+                                    <mat-expansion-panel-header>
+                                        <mat-panel-title>
+                                            {{idFromUrl(relationship.type)}}
+                                        </mat-panel-title>
+                                        <mat-panel-description>
+                                            this relationship links this place to {{relationship.destination}}
+                                        </mat-panel-description>
+                                    </mat-expansion-panel-header>
+                            
+                                </mat-expansion-panel>
+                            </p>
+                            <p *ngFor="let relationship of relationshipsHavingDestination(place)">
+                                <mat-expansion-panel>
+                                    <mat-expansion-panel-header>
+                                        <mat-panel-title>
+                                            {{idFromUrl(relationship.type)}}
+                                        </mat-panel-title>
+                                        <mat-panel-description>
+                                            this relationship links this place to {{relationship.source}}
+                                        </mat-panel-description>
+                                    </mat-expansion-panel-header>
+                            
+                                </mat-expansion-panel>
+                            </p>
+    
+                        </mat-expansion-panel>
+                    </p>
+
+                </mat-expansion-panel>
+            </p>
+
+        </mat-expansion-panel>
+    </p>
+
+</div>
+
+<ng-template #partPrototypeParentRef let-extends="extends">
+&larr; {{idFromUrl(extends)}}
+</ng-template>
+
+
+
+<ng-template #unused>
+    <ngx-graph
+            class="chart-container"
+            [nodes]="partsAsNodes()"
+            [links]="relationshipsAsLinks()"
+            [curve]="graphCurve"
+            [view]="graphView"
+            [scheme]="graphColorScheme"
+            [legend]="graphShowLegend"
+            [orientation]="graphOrientation"
+            >
+
+        <ng-template #defsTemplate>
+            <svg:marker id="arrow" viewBox="0 -5 10 10" refX="8" refY="0" markerWidth="4" markerHeight="4" orient="auto">
+                <svg:path d="M0,-5L10,0L0,5" class="arrow-head" />
+            </svg:marker>
+        </ng-template>
+
+        <ng-template #nodeTemplate let-node>
+            <svg:g class="node">
+                <svg:rect [attr.width]="node.width" [attr.height]="node.height" [attr.fill]="node.options.color" />
+                <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.height / 2">{{node.label}}</svg:text>
+            </svg:g>
+        </ng-template>
+
+        <ng-template #linkTemplate let-link>
+            <svg:g class="edge">
+                <svg:path class="line"
+                    stroke-width="2"
+                    marker-end="url(#arrow)" >
+                </svg:path>
+            </svg:g>
+        </ng-template>
+        
+
+    </ngx-graph>
+</ng-template>

@@ -6,10 +6,13 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 import com.tcoffman.ttwb.model.GamePartInstance;
 import com.tcoffman.ttwb.web.GameModelFileRepository;
+
+import io.swagger.annotations.ApiOperation;
 
 public class PartInstanceResource extends AbstractModelSubresource {
 
@@ -22,9 +25,11 @@ public class PartInstanceResource extends AbstractModelSubresource {
 		m_partInstance = partInstance;
 	}
 
+	@ApiOperation("Retrieve a Part")
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public PartInstanceResource get() {
+	@JsonIgnore
+	public PartInstanceResource getPart() {
 		return this;
 	}
 

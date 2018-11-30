@@ -1,0 +1,40 @@
+nav a img {
+    height: 2em;
+    margin: 0.5em ;
+}
+
+.mat-tab-link {
+    flex-grow: 1 ;
+}
+
+.mixed-tab-bar {
+    display: flex;
+    flex-flow: row nowrap ;
+    justify-content: space-between ; 
+}
+
+.mixed-tab-bar > * {
+    flex: 0 1 auto ;
+}
+
+.general-tabs {
+    display: flex;
+    flex-flow: row nowrap ;
+}
+
+.general-tabs > * {
+    flex: 0 1 auto ;
+    margin: 0 1em ;
+}
+
+.stop-button .material-icons { color: rgba(255, 31, 31, 0.54); }
+.stop-button .material-icons.md-inactive { color: rgba(127, 31, 31, 0.26); }
+
+.stop-button .material-icons.md-light { color: rgba(255, 191, 191, 1); }
+.stop-button .material-icons.md-light.md-inactive { color: rgba(255, 191, 191, 0.3); }
+
+.start-button .material-icons { color: rgba(31, 255, 31, 0.54); }
+.start-button .material-icons.md-inactive { color: rgba(31, 127 , 31, 0.26); }
+
+.start-button .material-icons.md-light { color: rgba(191, 255, 191, 1); }
+.start-button .material-icons.md-light.md-inactive { color: rgba(191, 255, 191, 0.3); }

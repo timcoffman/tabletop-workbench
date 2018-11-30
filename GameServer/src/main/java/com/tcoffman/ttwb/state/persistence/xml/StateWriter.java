@@ -38,6 +38,7 @@ import org.w3c.dom.Element;
 
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.component.GameComponentRef;
+import com.tcoffman.ttwb.model.persistance.ModelRefResolver;
 import com.tcoffman.ttwb.component.persistence.StandardComponentRefManager;
 import com.tcoffman.ttwb.component.persistence.xml.AbstractWriter;
 import com.tcoffman.ttwb.model.GamePartPrototype;
@@ -45,7 +46,6 @@ import com.tcoffman.ttwb.model.GamePartRelationshipType;
 import com.tcoffman.ttwb.model.GamePlaceType;
 import com.tcoffman.ttwb.model.GameRole;
 import com.tcoffman.ttwb.model.GameStage;
-import com.tcoffman.ttwb.model.persistance.ModelRefResolver;
 import com.tcoffman.ttwb.plugin.PluginName;
 import com.tcoffman.ttwb.state.GameAuthorizationManager;
 import com.tcoffman.ttwb.state.GamePart;

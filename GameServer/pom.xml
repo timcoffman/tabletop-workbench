@@ -5,7 +5,7 @@
     <groupId>com.tcoffman</groupId>
     <artifactId>tabletop-workbench-pom</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <relativePath/>
+    <relativePath>../TabletopWorkbenchPom/pom.xml</relativePath>
   </parent>
   <artifactId>game-server</artifactId>
   <packaging>jar</packaging>
@@ -19,6 +19,11 @@
   	<dependency>
   		<groupId>com.tcoffman</groupId>
   		<artifactId>game-framework-api</artifactId>
+  		<version>${project.version}</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>com.tcoffman</groupId>
+  		<artifactId>game-repository-api</artifactId>
   		<version>${project.version}</version>
   	</dependency>
   	<dependency>

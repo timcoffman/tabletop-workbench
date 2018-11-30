@@ -29,6 +29,7 @@ import com.tcoffman.ttwb.plugin.PluginSet;
 import com.tcoffman.ttwb.state.GameAuthorizationManager;
 import com.tcoffman.ttwb.state.GameState;
 import com.tcoffman.ttwb.state.StandardGameState;
+import com.tcoffman.ttwb.state.persistence.ModelProvider;
 import com.tcoffman.ttwb.state.persistence.StandardStateRefManager;
 import com.tcoffman.ttwb.state.persistence.StateRefManager;
 import com.tcoffman.ttwb.state.persistence.StateRefResolver;
@@ -38,20 +39,12 @@ public class StandardGameStateParser extends StandardGameParser {
 	private final Function<String, ModelProvider> m_modelProviderFactory;
 	private final GameAuthorizationManager m_authorizationManager;
 
-	public interface ModelProvider {
-		GameModel getModel() throws GameComponentBuilderException, XMLStreamException;
-
-		PluginSet getPluginSet() throws GameComponentBuilderException, XMLStreamException;
-
-		ModelRefResolver getModelRefResolver() throws GameComponentBuilderException, XMLStreamException;
-	}
-
 	public StandardGameStateParser(GameAuthorizationManager authorizationManager, Function<String, ModelProvider> modelProviderFactory) {
 		m_modelProviderFactory = modelProviderFactory;
 		m_authorizationManager = authorizationManager;
 	}
 
-	private final Map<String, StateRefManager> m_refManagers = new HashMap<String, StateRefManager>();
+	private final Map<String, StateRefManager> m_refManagers = new HashMap<>();
 
 	public StateRefResolver createResolver(String stateId) {
 		final StateRefResolver stateRefResolver = m_refManagers.get(stateId);
@@ -119,8 +112,8 @@ public class StandardGameStateParser extends StandardGameParser {
 			return m_modelProviderFactory.apply(modelId);
 		}
 
-		public void parse(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher) throws XMLStreamException,
-		GameComponentBuilderException {
+		public void parse(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher)
+				throws XMLStreamException, GameComponentBuilderException {
 			final String modelIdRef = startElement.getAttributeByName(new QName(STATE_ATTR_NAME_MODEL)).getValue();
 			final ModelProvider modelProvider = parseModelIdRef(modelIdRef, startElement.getNamespaceContext());
 			final GameModel model = modelProvider.getModel();

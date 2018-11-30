@@ -6,6 +6,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 import com.tcoffman.ttwb.state.GameParticipant;
 import com.tcoffman.ttwb.web.GameStateFileRepository;
@@ -24,7 +25,8 @@ public class ParticipantResource extends AbstractStateSubresource {
 
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public ParticipantResource get() {
+	@JsonIgnore
+	public ParticipantResource getParticipant() {
 		return this;
 	}
 

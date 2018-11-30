@@ -31,7 +31,7 @@ import com.tcoffman.ttwb.plugin.PluginException;
 import com.tcoffman.ttwb.plugin.PluginName;
 import com.tcoffman.ttwb.state.GamePart;
 import com.tcoffman.ttwb.state.GameState;
-import com.tcoffman.ttwb.state.persistence.xml.StandardGameStateParser;
+import com.tcoffman.ttwb.state.persistence.ModelProvider;
 import com.tcoffman.ttwb.web.GameModelFileRepository;
 import com.tcoffman.ttwb.web.GameStateFileRepository;
 import com.tcoffman.ttwb.web.UnrecognizedValueException;
@@ -74,7 +74,7 @@ public abstract class AbstractResource {
 		return m_resources.initResource(resource);
 	}
 
-	protected StandardGameStateParser.ModelProvider getModelProvider(String modelId) {
+	protected ModelProvider getModelProvider(String modelId) {
 		return new RespositoryBasedModelProvider(modelId, () -> m_modelRepository);
 	}
 
@@ -96,7 +96,8 @@ public abstract class AbstractResource {
 		return new UnrecognizedValueException(Stream.empty());
 	}
 
-	protected GameComponentRef<GamePlaceType> lookupPlaceType(GameModelFileRepository.Bundle modelBundle, String placeTypeId) throws UnrecognizedValueException {
+	protected GameComponentRef<GamePlaceType> lookupPlaceType(GameModelFileRepository.Bundle modelBundle, String placeTypeId)
+			throws UnrecognizedValueException {
 		final int delimiterPos = placeTypeId.lastIndexOf('/');
 		final PluginName pluginName = PluginName.create(URI.create(placeTypeId.substring(0, delimiterPos)));
 		final String localName = placeTypeId.substring(delimiterPos + 1);

@@ -8,12 +8,15 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tcoffman.ttwb.model.GameModelProperty;
 import com.tcoffman.ttwb.model.GamePartPrototype;
 import com.tcoffman.ttwb.model.GamePlacePrototype;
 import com.tcoffman.ttwb.model.GamePlaceType;
 import com.tcoffman.ttwb.web.GameModelFileRepository;
 import com.tcoffman.ttwb.web.resource.model.plugin.PlaceTypesResource;
+
+import io.swagger.annotations.ApiOperation;
 
 public class PlacePrototypeResource extends AbstractModelSubresource {
 
@@ -29,9 +32,11 @@ public class PlacePrototypeResource extends AbstractModelSubresource {
 		m_prototype = prototype;
 	}
 
+	@ApiOperation("Retrive a Place Prototype")
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public PlacePrototypeResource get() {
+	@JsonIgnore
+	public PlacePrototypeResource getPlacePrototype() {
 		return this;
 	}
 

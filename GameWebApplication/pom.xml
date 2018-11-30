@@ -5,15 +5,11 @@
 		<groupId>com.tcoffman</groupId>
 		<artifactId>tabletop-workbench-pom</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../TabletopWorkbenchPom/pom.xml</relativePath>
 	</parent>
 	<artifactId>tabletop-web</artifactId>
 	<packaging>war</packaging>
 
-	<properties>
-		<jersey2.version>2.19</jersey2.version>
-		<jaxrs.version>2.0.1</jaxrs.version>
-		<jackson.version>2.8.5</jackson.version>
-	</properties>
 	<build>
 		<plugins>
 			<plugin>
@@ -25,6 +21,43 @@
 				</configuration>
 			</plugin>
 
+			<!--
+			<plugin>
+				<groupId>com.github.kongchen</groupId>
+				<artifactId>swagger-maven-plugin</artifactId>
+				<version>3.1.7</version>
+				<executions>
+					<execution>
+						<phase>compile</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<apiSources>
+						<apiSource>
+							<springmvc>false</springmvc>
+							<locations>
+								<location>com.tcoffman.ttwb.web.resource.model</location>
+								<location>com.tcoffman.ttwb.web.resource.state</location>
+							</locations>
+							<schemes>
+								<scheme>http</scheme>
+							</schemes>
+							<host>localhost:9900</host>
+							<basePath>/tabletop-web/api</basePath>
+							<info>
+								<title>Tabletop Workbench</title>
+								<version>v0.1</version>
+							</info>
+							<swaggerDirectory>${basedir}/generated/swagger-ui</swaggerDirectory>
+						</apiSource>
+					</apiSources>
+				</configuration>
+			</plugin>
+			-->
+			<!--
 			<plugin>
 				<groupId>io.swagger</groupId>
 				<artifactId>swagger-codegen-maven-plugin</artifactId>
@@ -45,6 +78,7 @@
 					</execution>
 				</executions>
 			</plugin>
+			-->
 		</plugins>
 	</build>
 	<dependencies>
@@ -52,6 +86,11 @@
 		<dependency>
 			<groupId>com.tcoffman</groupId>
 			<artifactId>game-framework-api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.tcoffman</groupId>
+			<artifactId>game-repository-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
@@ -70,73 +109,51 @@
 			<artifactId>jackrabbit-core</artifactId> <version>2.12.1</version> </dependency> -->
 
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.5.11</version>
-		</dependency>
-
-		<dependency>
 			<groupId>javax.websocket</groupId>
 			<artifactId>javax.websocket-api</artifactId>
-			<version>1.1</version>
 			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>javax.ws.rs-api</artifactId>
-			<version>${jaxrs.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.glassfish.jersey.containers</groupId>
 			<artifactId>jersey-container-servlet</artifactId>
-			<version>${jersey2.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-server</artifactId>
-			<version>${jersey2.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.core</groupId>
-			<artifactId>jersey-client</artifactId>
-			<version>${jersey2.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
 			<artifactId>jersey-media-json-jackson</artifactId>
-			<version>${jersey2.version}</version>
 			<scope>runtime</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>com.fasterxml.jackson.core</groupId>
-					<artifactId>jackson-annotations</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
 			<artifactId>jersey-media-jaxb</artifactId>
-			<version>${jersey2.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>io.swagger</groupId>
 			<artifactId>swagger-jersey2-jaxrs</artifactId>
-			<version>1.5.13</version>
 		</dependency>
 
+		<!--
 		<dependency>
 			<groupId>io.swagger</groupId>
 			<artifactId>swagger-codegen-cli</artifactId>
-			<version>2.2.2</version>
+			<version>2.2.1</version>
 		</dependency>
-
+		-->
+		
 		<!-- java.lang.LinkageError: loader constraint violation: when resolving 
 			method "org.slf4j.impl.StaticLoggerBinder.getLoggerFactory()Lorg/slf4j/ILoggerFactory;" 
 			the class loader (instance of org/apache/catalina/loader/WebappClassLoader) 
@@ -148,37 +165,31 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.dataformat</groupId>
 			<artifactId>jackson-dataformat-xml</artifactId>
-			<version>${jackson.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.fasterxml.jackson.dataformat</groupId>
 			<artifactId>jackson-dataformat-yaml</artifactId>
-			<version>${jackson.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>
 			<artifactId>jackson-datatype-joda</artifactId>
-			<version>${jackson.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.codeartisans</groupId>
 			<artifactId>org.json</artifactId>
-			<version>20161124</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.asual.lesscss</groupId>
 			<artifactId>lesscss-servlet</artifactId>
-			<version>1.3.0</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.tuckey</groupId>
 			<artifactId>urlrewritefilter</artifactId>
-			<version>4.0.3</version>
 		</dependency>
 	</dependencies>
 </project>

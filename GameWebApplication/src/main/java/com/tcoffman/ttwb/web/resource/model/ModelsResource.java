@@ -34,7 +34,7 @@ public class ModelsResource extends AbstractRootResource {
 		return uriBuilder.path(ModelsResource.class).path(ModelsResource.class, "getModel");
 	}
 
-	@ApiOperation("List of all models")
+	@ApiOperation("List of all Game Models")
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public List<URI> getModels() {

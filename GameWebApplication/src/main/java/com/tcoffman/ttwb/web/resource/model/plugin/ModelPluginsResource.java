@@ -31,7 +31,7 @@ public class ModelPluginsResource extends AbstractModelSubresource {
 
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public List<ModelPluginResource> getPlugins() {
+	public List<ModelPluginResource> getRequiredPlugins() {
 		return modelBundle().getModel().getRequiredPlugins().stream().map(this::createModelPluginResource).collect(Collectors.toList());
 	}
 

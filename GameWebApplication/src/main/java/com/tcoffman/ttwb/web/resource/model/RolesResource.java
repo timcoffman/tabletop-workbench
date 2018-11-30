@@ -16,6 +16,8 @@ import com.tcoffman.ttwb.model.GameRole;
 import com.tcoffman.ttwb.web.GameModelFileRepository;
 import com.tcoffman.ttwb.web.UnrecognizedValueException;
 
+import io.swagger.annotations.ApiOperation;
+
 public class RolesResource extends AbstractModelSubresource {
 
 	public RolesResource(GameModelFileRepository.Bundle modelBundle) {
@@ -26,10 +28,11 @@ public class RolesResource extends AbstractModelSubresource {
 		return ModelsResource.pathTo(uriBuilder).path(ModelResource.class, "getRoles").path(RolesResource.class, "getRole");
 	}
 
+	@ApiOperation("List of Game Roles")
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public List<RoleResource> getRoles() {
-		final List<RoleResource> roles = new ArrayList<RoleResource>();
+		final List<RoleResource> roles = new ArrayList<>();
 		for (final Iterator<? extends GameRole> i = modelBundle().getModel().roles().iterator(); i.hasNext();)
 			try {
 				final GameRole role = i.next();

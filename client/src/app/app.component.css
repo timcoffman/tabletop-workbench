@@ -1,0 +1,8 @@
+nav a img {
+    height: 2em;
+    margin: 0.5em ;
+}
+
+.mat-tab-link {
+    flex-grow: 1 ;
+}

@@ -27,7 +27,7 @@ public final class XmlConstants {
 	public static final QName MODEL_ELEMENT_QNAME_PATTERN_TARGET = new QName(MODEL_NS, "target");
 	public static final QName MODEL_ELEMENT_QNAME_PATTERN_QUANTITY = new QName(MODEL_NS, "quantity");
 	public static final QName MODEL_ELEMENT_QNAME_PATTERN_FILTER = new QName(MODEL_NS, "filter");
-	public static final QName MODEL_ELEMENT_QNAME_PATTERN_RELATIONHIP = new QName(MODEL_NS, "rel");
+	public static final QName MODEL_ELEMENT_QNAME_PATTERN_RELATIONSHIP = new QName(MODEL_NS, "rel");
 	public static final QName MODEL_ELEMENT_QNAME_PATTERN_INTERSECTION = new QName(MODEL_NS, "all");
 	public static final QName MODEL_ELEMENT_QNAME_PATTERN_INVERSION = new QName(MODEL_NS, "not");
 	public static final QName MODEL_ELEMENT_QNAME_PATTERN_ANY = new QName(MODEL_NS, "any");

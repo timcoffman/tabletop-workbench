@@ -25,12 +25,12 @@ import org.junit.Test;
 
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.component.GameComponentRef;
+import com.tcoffman.ttwb.doc.persistence.DocumentationRefResolver;
 import com.tcoffman.ttwb.component.persistence.GameComponentRefResolver;
 import com.tcoffman.ttwb.component.persistence.xml.BundleHelper;
 import com.tcoffman.ttwb.core.Core;
 import com.tcoffman.ttwb.core.Grid;
 import com.tcoffman.ttwb.doc.GameComponentDocumentation;
-import com.tcoffman.ttwb.doc.persistence.DocumentationRefResolver;
 import com.tcoffman.ttwb.model.GameModel;
 import com.tcoffman.ttwb.plugin.ModelPlugin;
 import com.tcoffman.ttwb.plugin.PluginException;

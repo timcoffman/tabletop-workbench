@@ -11,7 +11,7 @@ import javax.xml.stream.XMLStreamException;
 
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.component.GameComponentRef;
-import com.tcoffman.ttwb.component.persistence.GameModelRepository;
+import com.tcoffman.ttwb.model.persistance.GameModelRepository;
 import com.tcoffman.ttwb.component.persistence.RespositoryBasedModelProvider;
 import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 import com.tcoffman.ttwb.doc.GameModelDocumentation;
@@ -31,7 +31,7 @@ import com.tcoffman.ttwb.plugin.DefaultPluginFactory;
 import com.tcoffman.ttwb.plugin.PluginException;
 import com.tcoffman.ttwb.plugin.PluginFactory;
 import com.tcoffman.ttwb.plugin.PluginSet;
-import com.tcoffman.ttwb.state.persistence.xml.StandardGameStateParser.ModelProvider;
+import com.tcoffman.ttwb.state.persistence.ModelProvider;
 
 public final class BundleHelper implements GameModelRepository {
 

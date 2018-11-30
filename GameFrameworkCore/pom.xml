@@ -5,7 +5,7 @@
     <groupId>com.tcoffman</groupId>
     <artifactId>tabletop-workbench-pom</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <relativePath/>
+    <relativePath>../TabletopWorkbenchPom/pom.xml</relativePath>
   </parent>
   <artifactId>game-framework-core</artifactId>
   <packaging>jar</packaging>

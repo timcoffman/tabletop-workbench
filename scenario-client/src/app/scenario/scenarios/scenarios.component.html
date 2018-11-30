@@ -1,0 +1,54 @@
+
+<div class="spinner-container" *ngIf="scenarioDataSource.loading$ | async">
+  <mat-spinner></mat-spinner>
+  </div>
+  
+  <mat-table [dataSource]="scenarioDataSource" class="mat-elevation-z8">
+  
+  <ng-container matColumnDef="id">
+    <mat-header-cell *matHeaderCellDef> # </mat-header-cell>
+    <mat-cell *matCellDef="let scenario">{{scenario.id}}</mat-cell>
+  </ng-container>
+  
+  <ng-container matColumnDef="model">
+    <mat-header-cell *matHeaderCellDef> Model </mat-header-cell>
+    <mat-cell *matCellDef="let scenario">{{scenario.model}}</mat-cell>
+  </ng-container>
+  
+  <ng-container matColumnDef="description">
+    <mat-header-cell *matHeaderCellDef> Description </mat-header-cell>
+    <mat-cell *matCellDef="let scenario">{{scenario.description}}</mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="action">
+    <mat-header-cell *matHeaderCellDef> Edit </mat-header-cell>
+    <mat-cell *matCellDef="let scenario">
+        <button mat-raised-button color="accent" [routerLink]="[ '/scenario', scenario.id ]">
+          <mat-icon>settings</mat-icon>
+          Edit
+        </button>
+    </mat-cell>
+  </ng-container>
+  
+  <ng-container matColumnDef="action2">
+    <mat-header-cell *matHeaderCellDef> Run </mat-header-cell>
+    <mat-cell *matCellDef="let scenario">
+        <button mat-raised-button color="primary" (click)="runScenario(scenario)">
+          <mat-icon>play_circle_outline</mat-icon>
+          Run
+        </button>
+    </mat-cell>
+  </ng-container>
+  
+  <mat-header-row *matHeaderRowDef="scenarioColumnsToDisplay"></mat-header-row>
+  <mat-row *matRowDef="let scenario; columns: scenarioColumnsToDisplay;"></mat-row>
+  </mat-table>
+  
+  <p>
+
+    <button mat-raised-button color="primary">
+      <mat-icon>add_circle_outline</mat-icon>
+      New Scenario...
+    </button>
+
+  </p>

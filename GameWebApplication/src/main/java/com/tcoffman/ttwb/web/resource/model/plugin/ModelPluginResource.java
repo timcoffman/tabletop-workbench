@@ -7,6 +7,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tcoffman.ttwb.plugin.ModelPlugin;
 import com.tcoffman.ttwb.plugin.PluginException;
 import com.tcoffman.ttwb.plugin.PluginName;
@@ -24,7 +25,8 @@ public class ModelPluginResource extends AbstractModelSubresource {
 
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public ModelPluginResource get() {
+	@JsonIgnore
+	public ModelPluginResource getModelPlugin() {
 		return this;
 	}
 

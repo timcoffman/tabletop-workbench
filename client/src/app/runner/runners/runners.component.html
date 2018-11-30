@@ -1,0 +1,22 @@
+
+<div class="spinner-container" *ngIf="runnerDataSource.loading$ | async">
+    <mat-spinner></mat-spinner>
+  </div>
+  
+  <mat-table [dataSource]="runnerDataSource" class="mat-elevation-z8">
+  
+    <ng-container matColumnDef="resource">
+      <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+      <mat-cell *matCellDef="let runner"> {{runner.resource}} </mat-cell>
+    </ng-container>
+  
+    <ng-container matColumnDef="label">
+      <mat-header-cell *matHeaderCellDef> Url </mat-header-cell>
+      <mat-cell *matCellDef="let runner"> {{runner.label}} </mat-cell>
+    </ng-container>
+      
+  <mat-header-row *matHeaderRowDef="runnerColumnsToDisplay"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: runnerColumnsToDisplay;" (click)="onRowClicked(row)"></mat-row>
+  </mat-table>
+  
+  

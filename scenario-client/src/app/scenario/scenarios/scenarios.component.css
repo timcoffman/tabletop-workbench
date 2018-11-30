@@ -1,0 +1,8 @@
+
+.mat-column-id {
+    flex: 0 0 2em ;
+}
+
+.mat-column-action, .mat-column-action2 {
+    flex: 0 0 8em ;
+}

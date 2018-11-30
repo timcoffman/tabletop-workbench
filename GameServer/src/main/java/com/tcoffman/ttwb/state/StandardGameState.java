@@ -34,6 +34,7 @@ import com.tcoffman.ttwb.plugin.PluginException;
 import com.tcoffman.ttwb.plugin.PluginName;
 import com.tcoffman.ttwb.plugin.PluginSet;
 import com.tcoffman.ttwb.state.mutation.GameStateLogEntry;
+import com.tcoffman.ttwb.state.pool.GamePartStaticPool;
 
 public class StandardGameState implements GameState {
 
@@ -244,7 +245,7 @@ public class StandardGameState implements GameState {
 			m_currentStage = m_currentStage.get().getInitialStage().get();
 	}
 
-	private final QueryExecutor m_executor = new QueryExecutor(() -> m_parts.stream());
+	private final QueryExecutor m_executor = new PartPoolQueryExecutor(new GamePartStaticPool(m_parts));
 
 	@Override
 	public QueryExecutor queryExecutor() {

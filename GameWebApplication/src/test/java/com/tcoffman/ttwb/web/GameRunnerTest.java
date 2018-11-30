@@ -27,7 +27,7 @@ import com.tcoffman.ttwb.state.GamePlace;
 import com.tcoffman.ttwb.state.GameRunner;
 import com.tcoffman.ttwb.state.GameState;
 import com.tcoffman.ttwb.state.mutation.GameStateLogEntry;
-import com.tcoffman.ttwb.state.persistence.xml.StandardGameStateParser.ModelProvider;
+import com.tcoffman.ttwb.state.persistence.ModelProvider;
 
 public class GameRunnerTest {
 

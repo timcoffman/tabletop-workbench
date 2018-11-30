@@ -1,5 +1,6 @@
 package com.tcoffman.ttwb.doc.persistence;
 
+import com.tcoffman.ttwb.doc.persistence.DocumentationRefResolver;
 import com.tcoffman.ttwb.component.persistence.GameComponentRefManager;
 import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 

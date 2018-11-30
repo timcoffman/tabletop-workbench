@@ -1,6 +1,10 @@
 package com.tcoffman.ttwb.core;
 
+import static java.util.Arrays.asList;
+
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import com.tcoffman.ttwb.component.GameComponent;
@@ -22,13 +26,20 @@ public class Core extends AbstractGeneralPlugin {
 
 	public static final String PLACE_PHYSICAL_TOP = "top";
 	public static final String PLACE_PHYSICAL_BOTTOM = "bottom";
+	private static final Set<String> PLACE_NAMES = new HashSet<>(asList(PLACE_PHYSICAL_TOP, PLACE_PHYSICAL_BOTTOM));
 
 	public static final String RELATIONSHIP_PHYSICAL = "location";
+	private static final Set<String> RELATIONSHIP_NAMES = new HashSet<>(asList(RELATIONSHIP_PHYSICAL));
 
 	public static final String TOKEN_ROOT = "root";
 	public static final String TOKEN_SUBJECT = "subject";
 	public static final String TOKEN_TARGET = "target";
 	public static final String TOKEN_SYSTEM = "system";
+
+	@Override
+	public Set<String> getPlaceTypeLocalNames() {
+		return PLACE_NAMES;
+	}
 
 	@Override
 	public GameComponentRef<GamePlaceType> getPlaceType(String localName) throws PluginException {
@@ -38,6 +49,11 @@ public class Core extends AbstractGeneralPlugin {
 			return getPlaceTypePhysicalBottom();
 		else
 			return super.getPlaceType(localName);
+	}
+
+	@Override
+	public Set<String> getRelationshipTypeLocalNames() {
+		return RELATIONSHIP_NAMES;
 	}
 
 	@Override

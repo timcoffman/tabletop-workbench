@@ -15,6 +15,8 @@ import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.model.GamePartInstance;
 import com.tcoffman.ttwb.web.GameModelFileRepository;
 
+import io.swagger.annotations.ApiOperation;
+
 public class PartInstancesResource extends AbstractModelSubresource {
 
 	public PartInstancesResource(GameModelFileRepository.Bundle modelBundle) {
@@ -25,10 +27,11 @@ public class PartInstancesResource extends AbstractModelSubresource {
 		return ModelsResource.pathTo(uriBuilder).path(ModelResource.class, "getParts").path(PartInstancesResource.class, "getPart");
 	}
 
+	@ApiOperation("List of all Part Instances")
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public List<PartInstanceResource> getParts() {
-		final List<PartInstanceResource> parts = new ArrayList<PartInstanceResource>();
+		final List<PartInstanceResource> parts = new ArrayList<>();
 		foreachWithIndex(modelBundle().getModel().parts(), (i, r) -> parts.add(createPartInstanceResource(i, r)));
 		return parts;
 	}

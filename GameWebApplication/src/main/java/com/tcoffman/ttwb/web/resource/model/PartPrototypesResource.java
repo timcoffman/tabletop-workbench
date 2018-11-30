@@ -10,12 +10,13 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
-import javax.xml.stream.XMLStreamException;
 
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.model.GamePartPrototype;
 import com.tcoffman.ttwb.web.GameModelFileRepository;
 import com.tcoffman.ttwb.web.UnrecognizedValueException;
+
+import io.swagger.annotations.ApiOperation;
 
 public class PartPrototypesResource extends AbstractModelSubresource {
 
@@ -27,10 +28,11 @@ public class PartPrototypesResource extends AbstractModelSubresource {
 		return ModelsResource.pathTo(uriBuilder).path(ModelResource.class, "getPartPrototypes").path(PartPrototypesResource.class, "getPartPrototype");
 	}
 
+	@ApiOperation("List of Part Prototypes")
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public List<PartPrototypeResource> getPartPrototypes() {
-		final List<PartPrototypeResource> prototypes = new ArrayList<PartPrototypeResource>();
+		final List<PartPrototypeResource> prototypes = new ArrayList<>();
 		for (final Iterator<? extends GamePartPrototype> i = modelBundle().getModel().prototypes().iterator(); i.hasNext();)
 			try {
 				final GamePartPrototype prototype = i.next();

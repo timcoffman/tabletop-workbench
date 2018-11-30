@@ -32,7 +32,7 @@ import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_PATTERN_PART;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_PATTERN_QUANTITY;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_PATTERN_RELATED;
-import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_PATTERN_RELATIONHIP;
+import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_PATTERN_RELATIONSHIP;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_PATTERN_ROLE;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_PATTERN_ROOT;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_PATTERN_SUBJECT;
@@ -60,10 +60,10 @@ import javax.xml.stream.events.StartElement;
 import com.tcoffman.ttwb.component.GameComponent;
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.component.GameComponentRef;
+import com.tcoffman.ttwb.doc.persistence.DocumentationRefResolver;
 import com.tcoffman.ttwb.component.persistence.xml.AbstractGameParser;
 import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 import com.tcoffman.ttwb.doc.StandardComponentDocumentation;
-import com.tcoffman.ttwb.doc.persistence.DocumentationRefResolver;
 import com.tcoffman.ttwb.model.GamePlaceType;
 import com.tcoffman.ttwb.model.StandardGameModel;
 import com.tcoffman.ttwb.model.StandardGameModelComponent;
@@ -473,7 +473,7 @@ class ModelParser extends AbstractGameParser {
 		private void parse(StartElement startElement, EventDispatcher<GameComponentBuilderException> dispatcher)
 				throws GameComponentBuilderException, XMLStreamException {
 			dispatcher.on(MODEL_ELEMENT_QNAME_PATTERN_FILTER, this::parseFilterPlacePattern);
-			dispatcher.on(MODEL_ELEMENT_QNAME_PATTERN_RELATIONHIP, this::parseRelationshipPlacePattern);
+			dispatcher.on(MODEL_ELEMENT_QNAME_PATTERN_RELATIONSHIP, this::parseRelationshipPlacePattern);
 			dispatcher.on(MODEL_ELEMENT_QNAME_PATTERN_INTERSECTION, this::parseIntersectionPlacePattern);
 			dispatcher.on(MODEL_ELEMENT_QNAME_PATTERN_ANY, this::parseAnyPlacePattern);
 			dispatcher.read();

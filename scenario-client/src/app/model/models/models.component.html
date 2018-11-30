@@ -1,0 +1,26 @@
+
+<div class="spinner-container" *ngIf="modelDataSource.loading$ | async">
+  <mat-spinner></mat-spinner>
+</div>
+
+<mat-table [dataSource]="modelDataSource" class="mat-elevation-z8">
+
+  <ng-container matColumnDef="url">
+    <mat-header-cell *matHeaderCellDef> Url </mat-header-cell>
+    <mat-cell *matCellDef="let model"> {{model.url}} </mat-cell>
+  </ng-container>
+    
+  <ng-container matColumnDef="action">
+    <mat-header-cell *matHeaderCellDef> Scenario </mat-header-cell>
+    <mat-cell *matCellDef="let model">
+        <button mat-raised-button color="primary" (click)="createScenarioFor(model)">
+          <mat-icon>add_circle_outline</mat-icon>
+          Create Scenario
+        </button>
+    </mat-cell>
+  </ng-container>
+      
+<mat-header-row *matHeaderRowDef="modelColumnsToDisplay"></mat-header-row>
+<mat-row *matRowDef="let model; columns: modelColumnsToDisplay;"></mat-row>
+</mat-table>
+

@@ -27,8 +27,6 @@ import javax.xml.transform.TransformerException;
 import org.jgrapht.ext.ExportException;
 
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
-import com.tcoffman.ttwb.component.persistence.GameStateBundle;
-import com.tcoffman.ttwb.component.persistence.GameStateRepository;
 import com.tcoffman.ttwb.component.persistence.gv.StandardGameStateGraphWriter;
 import com.tcoffman.ttwb.model.GameModel;
 import com.tcoffman.ttwb.model.persistance.ModelRefResolver;
@@ -37,11 +35,13 @@ import com.tcoffman.ttwb.state.DefaultAuthorizationManager;
 import com.tcoffman.ttwb.state.GameAuthorizationManager;
 import com.tcoffman.ttwb.state.GameState;
 import com.tcoffman.ttwb.state.StandardGameState;
+import com.tcoffman.ttwb.state.persistence.GameStateBundle;
+import com.tcoffman.ttwb.state.persistence.GameStateRepository;
+import com.tcoffman.ttwb.state.persistence.ModelProvider;
 import com.tcoffman.ttwb.state.persistence.StandardStateRefManager;
 import com.tcoffman.ttwb.state.persistence.StateRefManager;
 import com.tcoffman.ttwb.state.persistence.StateRefResolver;
 import com.tcoffman.ttwb.state.persistence.xml.StandardGameStateParser;
-import com.tcoffman.ttwb.state.persistence.xml.StandardGameStateParser.ModelProvider;
 
 public class GameStateFileRepository implements GameStateRepository {
 
@@ -154,7 +154,7 @@ public class GameStateFileRepository implements GameStateRepository {
 	}
 
 	public Bundle create(GameModel model, String modelId, PluginSet pluginSet, ModelRefResolver modelRefResolver) throws GameComponentBuilderException {
-		final StandardGameStateParser parser = new StandardGameStateParser(m_authMgr, (id) -> new StandardGameStateParser.ModelProvider() {
+		final StandardGameStateParser parser = new StandardGameStateParser(m_authMgr, (id) -> new ModelProvider() {
 
 			@Override
 			public GameModel getModel() {
@@ -191,11 +191,11 @@ public class GameStateFileRepository implements GameStateRepository {
 	}
 
 	private static class ModelProviderFactoryListener {
-		private final Function<String, StandardGameStateParser.ModelProvider> m_modelProviderFactory;
+		private final Function<String, ModelProvider> m_modelProviderFactory;
 		private String m_modelId = null;
 		private ModelProvider m_modelProvider;
 
-		public ModelProviderFactoryListener(Function<String, StandardGameStateParser.ModelProvider> modelProviderFactory) {
+		public ModelProviderFactoryListener(Function<String, ModelProvider> modelProviderFactory) {
 			m_modelProviderFactory = modelProviderFactory;
 		}
 
@@ -207,7 +207,7 @@ public class GameStateFileRepository implements GameStateRepository {
 			return m_modelProvider;
 		}
 
-		public StandardGameStateParser.ModelProvider intercept(String modelId) {
+		public ModelProvider intercept(String modelId) {
 			m_modelId = modelId;
 			m_modelProvider = m_modelProviderFactory.apply(modelId);
 			return m_modelProvider;
@@ -215,7 +215,7 @@ public class GameStateFileRepository implements GameStateRepository {
 	}
 
 	@Override
-	public Bundle getBundle(String stateId, Function<String, StandardGameStateParser.ModelProvider> modelProviderFactory) throws GameComponentBuilderException {
+	public synchronized Bundle getBundle(String stateId, Function<String, ModelProvider> modelProviderFactory) throws GameComponentBuilderException {
 		final Reference<Bundle> bundleRef = m_cache.get(stateId);
 		if (null != bundleRef && null != bundleRef.get())
 			return bundleRef.get();
@@ -234,7 +234,7 @@ public class GameStateFileRepository implements GameStateRepository {
 		return bundle;
 	}
 
-	public void storeBundle(Bundle bundle, Function<String, StandardGameStateParser.ModelProvider> modelProviderFactory) throws GameComponentBuilderException {
+	public void storeBundle(Bundle bundle, Function<String, ModelProvider> modelProviderFactory) throws GameComponentBuilderException {
 		final StandardGameStateParser parser = new StandardGameStateParser(m_authMgr, modelProviderFactory);
 		parser.registerManager(bundle.getStateId(), bundle.getStateRefManager());
 		try (OutputStream os = openResourceAsStream(bundle.getStateId() + "-state.xml")) {
@@ -248,9 +248,10 @@ public class GameStateFileRepository implements GameStateRepository {
 			throw new GameComponentBuilderException(CORE, ex);
 		}
 
+		final long logEntryCount = bundle.getState().log().collect(Collectors.counting());
 		final StandardGameStateGraphWriter graphWriter = new StandardGameStateGraphWriter(m_authMgr, modelProviderFactory);
 		graphWriter.registerManager(bundle.getStateId(), bundle.getStateRefManager());
-		try (OutputStream os = openResourceAsStream(bundle.getStateId() + "-state.dot")) {
+		try (OutputStream os = openResourceAsStream(bundle.getStateId() + "-state#" + logEntryCount + ".dot")) {
 			graphWriter.write(bundle.getState(), os, bundle.getModelId());
 		} catch (final IOException ex) {
 			throw new GameComponentBuilderException(CORE, ex);

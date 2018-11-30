@@ -8,10 +8,13 @@ import com.tcoffman.ttwb.state.GamePlace;
 
 public interface GamePlacePattern {
 
+	@Deprecated
 	Predicate<GamePlace> matches();
 
+	@Deprecated
 	Predicate<GamePart> matchesParts();
 
+	@Deprecated
 	<T> Stream<T> limitQuantity(Stream<T> items) throws IllegalArgumentException;
 
 	interface Visitor<R, E extends Throwable> {

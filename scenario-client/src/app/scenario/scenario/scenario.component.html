@@ -1,0 +1,76 @@
+
+<form [formGroup]="scenarioForm">
+
+  <p>
+  <mat-form-field 
+      hintLabel="The model which this scenario will exercise"
+      >
+    <input matInput
+      formControlName="model"
+      placeholder="Model"
+      required
+      readonly
+      >
+  </mat-form-field>
+  </p>
+      
+  <p>
+  <mat-form-field 
+      hintLabel="Describe the goal of this scenario"
+      >
+    <input matInput
+      formControlName="description"
+      placeholder="Description"
+      required
+      >
+  </mat-form-field>
+  </p>
+
+  <p>
+  <mat-form-field 
+      hintLabel="Describe the goal of this scenario"
+      >
+    <input matInput
+      formControlName="description"
+      placeholder="Description"
+      required
+      >
+  </mat-form-field>
+  </p>
+
+  <p>
+  <mat-form-field>
+      <div matPrefix>At Least</div>
+      <input matInput
+      formControlName="participantCountMin"
+      placeholder="Participant Count (Minimum)"
+      required
+      >
+      <div matSuffiux>Participants</div>
+  </mat-form-field>
+  </p>
+
+  <p>
+  <mat-form-field
+      matPrefix="No More Than"
+      matSuffix="Participants"
+      >
+    <input matInput
+    formControlName="participantCountMax"
+    placeholder="Participant Count (Maximum)"
+      required
+      >
+  </mat-form-field>
+  </p>
+</form>
+
+<div class="buttons">
+  <button mat-raised-button color="primary" (click)="saveChanges( [ '/scenario' ] )">
+    <mat-icon>check_circle_outline</mat-icon>
+    Save
+  </button>
+  <button mat-raised-button color="warn" [routerLink]="[ '/scenario' ]">
+    <mat-icon>cancel</mat-icon>
+    Cancel
+  </button>
+</div>

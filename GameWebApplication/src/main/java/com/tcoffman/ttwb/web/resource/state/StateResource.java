@@ -13,8 +13,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.xml.stream.XMLStreamException;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
 import com.tcoffman.ttwb.doc.GameComponentDocumentation;
 import com.tcoffman.ttwb.model.pattern.place.GamePlacePattern;
@@ -36,7 +36,8 @@ public class StateResource extends AbstractStateSubresource {
 
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public StateResource get() {
+	@JsonIgnore
+	public StateResource getState() {
 		return this;
 	}
 
@@ -51,7 +52,7 @@ public class StateResource extends AbstractStateSubresource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public List<PlaceResource> find(PlacePatternForm patternForm) throws GameComponentBuilderException, UnrecognizedValueException {
-		final List<PlaceResource> places = new ArrayList<PlaceResource>();
+		final List<PlaceResource> places = new ArrayList<>();
 		final GamePlacePattern placePattern = createPlacePattern(patternForm).orElse(StandardAnyPlacePattern.create().done());
 		for (final Iterator<? extends GamePlace> i = stateBundle().getState().find(placePattern).iterator(); i.hasNext();) {
 			final GamePlace place = i.next();
@@ -82,7 +83,7 @@ public class StateResource extends AbstractStateSubresource {
 		String modelName;
 		try {
 			modelName = getModelProvider(stateBundle().getModelId()).getModel().getDocumentation().getName(GameComponentDocumentation.Format.LONG);
-		} catch (GameComponentBuilderException | XMLStreamException ex) {
+		} catch (final GameComponentBuilderException ex) {
 			modelName = "State";
 		}
 		return modelName + " #" + stateBundle().getStateId();

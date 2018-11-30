@@ -12,13 +12,13 @@ import javax.xml.transform.TransformerException;
 import org.w3c.dom.Document;
 
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
-import com.tcoffman.ttwb.component.persistence.GameModelRepository;
-import com.tcoffman.ttwb.component.persistence.xml.StandardGameParser;
 import com.tcoffman.ttwb.doc.persistence.DocumentationRefResolver;
+import com.tcoffman.ttwb.model.persistance.GameModelRepository;
+import com.tcoffman.ttwb.model.persistance.ModelRefResolver;
+import com.tcoffman.ttwb.component.persistence.xml.StandardGameParser;
 import com.tcoffman.ttwb.model.GameModel;
 import com.tcoffman.ttwb.model.StandardGameModel;
 import com.tcoffman.ttwb.model.persistance.ModelRefManager;
-import com.tcoffman.ttwb.model.persistance.ModelRefResolver;
 import com.tcoffman.ttwb.model.persistance.StandardModelRefManager;
 import com.tcoffman.ttwb.persistence.xml.EventDispatcher;
 import com.tcoffman.ttwb.plugin.PluginSet;

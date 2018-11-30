@@ -24,7 +24,8 @@ import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_PATTERN_INTERSECTION;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_PATTERN_INVERSION;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_PATTERN_QUANTITY;
-import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_PATTERN_RELATIONHIP;
+import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_PATTERN_RELATED;
+import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_PATTERN_RELATIONSHIP;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_PATTERN_ROLE;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_PATTERN_ROOT;
 import static com.tcoffman.ttwb.model.persistance.xml.XmlConstants.MODEL_ELEMENT_QNAME_PATTERN_SUBJECT;
@@ -399,8 +400,11 @@ public class ModelWriter {
 
 			@Override
 			public Element visit(GameRelationshipPlacePattern pattern) throws RuntimeException {
-				final Element relElement = createAndAppendElement(parentElement, MODEL_ELEMENT_QNAME_PATTERN_RELATIONHIP);
+				final Element relElement = createAndAppendElement(parentElement, MODEL_ELEMENT_QNAME_PATTERN_RELATIONSHIP);
 				writePattern(createAndAppendElement(relElement, MODEL_ELEMENT_QNAME_PART), pattern.getPartPattern());
+				pattern.getRelatedPlacePattern().ifPresent(p -> {
+					writePattern(createAndAppendElement(relElement, MODEL_ELEMENT_QNAME_PATTERN_RELATED), p);
+				});
 				return relElement;
 			}
 

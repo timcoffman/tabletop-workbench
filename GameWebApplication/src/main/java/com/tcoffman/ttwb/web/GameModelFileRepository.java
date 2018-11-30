@@ -20,13 +20,13 @@ import java.util.stream.Stream;
 import javax.xml.stream.XMLStreamException;
 
 import com.tcoffman.ttwb.component.GameComponentBuilderException;
-import com.tcoffman.ttwb.component.persistence.GameModelRepository;
-import com.tcoffman.ttwb.component.persistence.GameRootModelRepository;
-import com.tcoffman.ttwb.doc.GameModelDocumentation;
 import com.tcoffman.ttwb.doc.persistence.DocumentationRefResolver;
+import com.tcoffman.ttwb.model.persistance.GameModelRepository;
+import com.tcoffman.ttwb.component.persistence.GameRootModelRepository;
+import com.tcoffman.ttwb.model.persistance.ModelRefResolver;
+import com.tcoffman.ttwb.doc.GameModelDocumentation;
 import com.tcoffman.ttwb.doc.persistence.xml.StandardGameDocumentationParser;
 import com.tcoffman.ttwb.model.GameModel;
-import com.tcoffman.ttwb.model.persistance.ModelRefResolver;
 import com.tcoffman.ttwb.model.persistance.xml.StandardGameModelParser;
 import com.tcoffman.ttwb.plugin.DefaultPluginFactory;
 import com.tcoffman.ttwb.plugin.PluginFactory;
@@ -87,7 +87,7 @@ public class GameModelFileRepository implements GameModelRepository {
 	}
 
 	@Override
-	public GameModelRepository.Bundle getBundle(String name, String documentationLang) throws GameComponentBuilderException {
+	public synchronized GameModelRepository.Bundle getBundle(String name, String documentationLang) throws GameComponentBuilderException {
 		final String cacheKey = name + ":" + documentationLang;
 		final Reference<Bundle> bundleRef = m_cache.get(cacheKey);
 		if (null != bundleRef && null != bundleRef.get())
@@ -108,7 +108,7 @@ public class GameModelFileRepository implements GameModelRepository {
 	}
 
 	@Override
-	public GameModelRepository.Bundle getBundle(GameModel model) throws GameComponentBuilderException {
+	public synchronized GameModelRepository.Bundle getBundle(GameModel model) throws GameComponentBuilderException {
 		return m_cache.entrySet().stream().filter((e) -> e.getValue().get() != null).filter((e) -> e.getValue().get().getModel() == model)
 				.map(Map.Entry::getValue).map(Reference::get).findAny().orElseThrow(() -> new GameComponentBuilderException(CORE, "unknown model"));
 	}

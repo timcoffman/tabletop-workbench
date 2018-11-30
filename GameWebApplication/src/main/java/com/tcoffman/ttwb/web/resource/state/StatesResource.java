@@ -1,6 +1,8 @@
 package com.tcoffman.ttwb.web.resource.state;
 
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -76,13 +78,22 @@ public class StatesResource extends AbstractRootResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public StateResource createState(StateCreationForm stateCreationForm) throws JSONException, XMLStreamException, PluginException {
-		final String modelId = stateCreationForm.getModel();
+		String modelId;
+		try {
+			final String path = new URL(stateCreationForm.getModel()).getPath();
+			final int pos = path.indexOf("models/");
+			modelId = path.substring(pos + "models/".length());
+		} catch (final MalformedURLException ex) {
+			modelId = stateCreationForm.getModel();
+		}
 		final GameModelFileRepository.Bundle modelBundle = m_modelRepository.getBundle(modelId);
-		final GameStateFileRepository.Bundle stateBundle = m_stateRepository.create(modelBundle.getModel(), modelBundle.getModelId(), modelBundle.getPluginSet(),
-				modelBundle.getModelRefResolver());
+		final GameStateFileRepository.Bundle stateBundle = m_stateRepository.create(modelBundle.getModel(), modelBundle.getModelId(),
+				modelBundle.getPluginSet(), modelBundle.getModelRefResolver());
 
 		final GameRunner runner = new GameRunner(stateBundle.getState());
-		runner.autoAdvance();
+
+		if (!runner.autoRun().isEmpty())
+			stateBundle.store(this::getModelProvider);
 
 		return createStateResource(stateBundle);
 	}
