@@ -146,7 +146,7 @@
 				<move xmlns="urn:com.tcoffman.ttwb.model/v/1.0">
 					<role> <filter binding="x"/> </role>
 					<subject> <rel exists="true" inverse="no" type="core:location">
-								<related> <filter prototype-ref="supply"/> </related>
+								<related> <filter> <part> <filter prototype-ref="supply"/> </part> </filter> </related>
 								<part> <filter prototype-ref="player-piece" binding="x"/> </part>
 							</rel> </subject>
 					<target> <filter function="is-empty"> <part> <filter prototype-ref="board"/> </part> </filter> </target>
@@ -159,7 +159,7 @@
 				<move xmlns="urn:com.tcoffman.ttwb.model/v/1.0">
 					<role> <filter binding="o"/> </role>
 					<subject> <rel exists="true" inverse="no" type="core:location">
-								<related> <filter prototype-ref="supply"/> </related>
+								<related> <filter> <part> <filter prototype-ref="supply"/> </part> </filter> </related>
 								<part> <filter prototype-ref="player-piece" binding="o"/> </part>
 							</rel> </subject>
 					<target> <filter function="is-empty"> <part> <filter prototype-ref="board"/> </part> </filter> </target>

@@ -10,8 +10,12 @@
   <modules>
     <module>TabletopWorkbenchPom</module>
     <module>GameFrameworkApi</module>
+    <module>GameRepositoryApi</module>
+    <module>GameRemoteRepository</module>
     <module>GameFrameworkCore</module>
     <module>GameServer</module>
     <module>GameWebApplication</module>
+    <module>ScenarioServer</module>
+    <module>ScenarioWebApplication</module>
   </modules>
 </project>
